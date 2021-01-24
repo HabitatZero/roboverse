@@ -4,6 +4,8 @@ use std::path::Path;
 use image::io::Reader as ImageReader;
 use image::ImageFormat::Jpeg;
 
+use indicatif::{ProgressBar, ProgressStyle};
+
 const TEXTURE_IMAGE_TYPES: [&str; 7] = [
     r#"tif"#,
     r#"tga"#,
@@ -45,11 +47,11 @@ fn scan_dir_for_images(dir: &Path, mut images: Vec<Image>) -> std::io::Result<Ve
 
 fn convert_to_png(mut image: Image) -> std::io::Result<Image> {
     if image.extension == "png" {
-        println!("Skipping conversion for {:?}", image.path);
+        // println!("Skipping conversion for {:?}", image.path);
         return Ok(image);
     }
 
-    println!("Converting {:?}...", image.path);
+    // println!("Converting {:?}...", image.path);
     let image_reader = match ImageReader::open(image.path.clone()) {
         Ok(img) => img,
         Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
@@ -61,12 +63,12 @@ fn convert_to_png(mut image: Image) -> std::io::Result<Image> {
             Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
         };
         match img.save(image.path.with_extension("png")) {
-            Ok(_) => println!("Converted {:?} to PNG!", image.path),
+            Ok(_) => "",
             Err(e) => panic!("Could not convert {:?} to PNG: {:?}", image.path, e),
         };
 
         fs::remove_file(&image.path)?;
-        println!("Deleted {:?}", &image.path);
+        // println!("Deleted {:?}", &image.path);
         image.path = image.path.with_extension("png");
     }
 
@@ -79,7 +81,7 @@ fn move_to_textures_dir<'a>(mut image: Image, base_path: &Path) -> std::io::Resu
     let meshes_path = Path::new("meshes").join(file_name);
 
     if !image.path.ends_with(textures_path) && !image.path.ends_with(meshes_path) {
-        println!("{:?}", image.path);
+        // // println!("{:?}", image.path);
         let mut model_path_ancestors = image.path.strip_prefix(base_path).unwrap().ancestors();
         let model_path = model_path_ancestors.nth(model_path_ancestors.count() - 2).unwrap(); // There must be a better way to do this...
         let new_textures_path = base_path.join(model_path).join("materials").join("textures");
@@ -93,16 +95,16 @@ fn move_to_textures_dir<'a>(mut image: Image, base_path: &Path) -> std::io::Resu
     Ok(image)
 }
 
-fn main() {
+fn main() -> std::result::Result<(), std::io::Error> {
     let args: Vec<String> = env::args().collect();
     if args.len() <= 1 {
-        println!("Path not provided, no work to do.");
+        // println!("Path not provided, no work to do.");
         exit(1)
     }
 
     let path = Path::new(&args[1]);
     if !path.is_dir() {
-        println!("Path provided is a file, please provide a directory.");
+        // println!("Path provided is a file, please provide a directory.");
         exit(1)
     }
 
@@ -111,12 +113,25 @@ fn main() {
         Ok(image_list) => image_list
     };
     images.sort_by(|a, b| b.extension.cmp(&a.extension));
-    println!("Images found: {:?}", images.len());
+    // println!("Images found: {:?}", images.len());
+
+
+    let bar = ProgressBar::new(images.len() as u64);
+    bar.set_style(ProgressStyle::default_bar()
+        .template("{msg}\n[{elapsed_precise}] {bar:60.cyan/blue} {pos:>7}/{len:7}")
+        .progress_chars("█▓▒░")
+    );
 
     for image in images {
+        bar.inc(1);
+        bar.set_message(&format!("Moving to texture directory: {:?}", image.path));
         let moved_image = move_to_textures_dir(image, path).unwrap();
+        bar.set_message(&format!("Converting to PNG: {:?}", moved_image.path));
         convert_to_png(moved_image).unwrap();
     }
+    bar.finish_with_message("Models webified!");
 
     // Update texture path in DAE files
+
+    Ok(())
 }
