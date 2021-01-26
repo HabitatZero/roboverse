@@ -354,6 +354,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "webify_models"
 version = "0.1.0"
 dependencies = [
+ "console 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "indicatif 0.15.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
