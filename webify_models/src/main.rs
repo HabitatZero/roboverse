@@ -1,8 +1,8 @@
 use std::{fs, path::PathBuf, process::exit};
 use std::env;
 use std::path::Path;
-use image::io::Reader as ImageReader;
-use image::ImageFormat::Jpeg;
+use image::{io::Reader as ImageReader};
+use image::ImageFormat::{Tiff};
 
 use indicatif::{ProgressBar, ProgressStyle};
 use console::style;
@@ -60,12 +60,13 @@ fn convert_to_png(mut image: Image, progress_bar: &ProgressBar) -> std::io::Resu
         Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
     };
 
-    // TODO: Everything else that isn't JPG
-    if image_reader.format() == Some(Jpeg) {
+    // Somehow, Tiff conversion is problematic, so we'll skip that
+    if image_reader.format().is_some() && image_reader.format() != Some(Tiff) {
         let img = match image_reader.decode() {
             Ok(i) => i,
             Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
         };
+
         match img.save(image.path.with_extension("png")) {
             Ok(_) => "",
             Err(e) => panic!("Could not convert {:?} to PNG: {:?}", image.path, e),
@@ -74,6 +75,8 @@ fn convert_to_png(mut image: Image, progress_bar: &ProgressBar) -> std::io::Resu
         fs::remove_file(&image.path)?;
         progress_bar.set_message(&format!("{} converted!", styled_path));
         image.path = image.path.with_extension("png");
+    } else {
+        progress_bar.set_message(&format!("{} skipped, as conversion of this file is problematic at this moment.", styled_path));
     }
 
     Ok(image)
@@ -121,7 +124,7 @@ fn main() -> std::result::Result<(), std::io::Error> {
     }
 
     println!("\nScanning for images to webify...");
-    println!("Note that webify models is a destructive action and will DELETE the existing non-PNG files.");
+    println!("{}", &style("Note that webify models is a destructive action and will DELETE the existing non-PNG files.").on_red());
     let mut images = match scan_dir_for_images(path, Vec::new()) {
         Err(error) => panic!("Failed to scan all directories for images: {:?}", error),
         Ok(image_list) => image_list
@@ -141,7 +144,7 @@ fn main() -> std::result::Result<(), std::io::Error> {
     for image in images {
         bar.inc(1);
         let moved_image = move_to_textures_dir(image, path, &bar).unwrap();
-        convert_to_png(moved_image, &bar);
+        convert_to_png(moved_image, &bar).unwrap();
     }
     bar.finish_with_message("Models webified!");
 
