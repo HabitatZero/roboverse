@@ -5,7 +5,7 @@ use console::style;
 
 pub fn scan_dir_for_meshes(dir: &Path) -> std::io::Result<Vec<PathBuf>> {
   println!("\nScanning for meshes to webify...");
-  let mut meshes = match recursive_scan(dir, Vec::new()) {
+  let meshes = match recursive_scan(dir, Vec::new()) {
     Ok(mesh_list) => mesh_list,
     Err(error) => panic!("Failed to scan all directories for meshes: {:?}", error),
   };

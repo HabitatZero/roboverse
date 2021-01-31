@@ -9,6 +9,7 @@ pub fn process(dir: &Path) -> std::result::Result<(), std::io::Error> {
 
   for mesh in meshes {
     mesh_bar.inc(1);
+    mesh_update::rename_image_references(&mesh)?;
   }
   mesh_bar.finish_with_message("Meshes webified!");
 
