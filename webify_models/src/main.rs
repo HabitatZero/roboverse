@@ -8,7 +8,7 @@ mod image_processing;
 mod mesh_update;
 
 fn main() -> std::result::Result<(), std::io::Error> {
-    println!("{}", style("BelvedereSim").underlined().bold().white());
+    println!("{}", style("Roboverse").underlined().bold().white());
 
     let args: Vec<String> = env::args().collect();
     let path = match cli::parse_args_for_path(&args) {
