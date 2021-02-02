@@ -6,9 +6,12 @@ use image::ImageFormat::Tiff;
 use console::style;
 use indicatif::ProgressBar;
 
-use super::image::Image;
+use crate::image_processing::Image;
 
-pub fn convert_to_png(mut image: Image, progress_bar: &ProgressBar) -> std::io::Result<Image> {
+pub fn convert_to_png(
+  image: Image,
+  progress_bar: &ProgressBar,
+) -> std::result::Result<Image, std::io::Error> {
   progress_bar.set_prefix("PNG Conversion");
   let styled_path = style(image.path.to_string_lossy()).dim();
   if image.extension == "png" {
@@ -17,6 +20,13 @@ pub fn convert_to_png(mut image: Image, progress_bar: &ProgressBar) -> std::io::
   }
 
   progress_bar.set_message(&format!("Converting {}...", styled_path));
+  let converted_image = convert(image.clone())?;
+  progress_bar.set_message(&format!("{} converted!", styled_path));
+
+  Ok(converted_image)
+}
+
+fn convert(mut image: Image) -> std::result::Result<Image, std::io::Error> {
   let image_reader = match ImageReader::open(image.path.clone()) {
     Ok(img) => img,
     Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
@@ -35,13 +45,7 @@ pub fn convert_to_png(mut image: Image, progress_bar: &ProgressBar) -> std::io::
     };
 
     fs::remove_file(&image.path)?;
-    progress_bar.set_message(&format!("{} converted!", styled_path));
     image.path = image.path.with_extension("png");
-  } else {
-    progress_bar.set_message(&format!(
-      "{} skipped, as conversion of this file is problematic at this moment.",
-      styled_path
-    ));
   }
 
   Ok(image)
