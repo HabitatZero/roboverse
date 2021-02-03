@@ -1,3 +1,5 @@
+//! Move any stray textures to the textures path (typically materials/textures)
+
 use std::{
   fs,
   path::{Path, PathBuf},
@@ -8,6 +10,7 @@ use indicatif::ProgressBar;
 
 use crate::image_processing::Image;
 
+/// Move any stray textures to the textures path (typically materials/textures)
 pub fn move_to_textures_dir<'a>(
   mut image: Image,
   base_path: &Path,
@@ -22,7 +25,7 @@ pub fn move_to_textures_dir<'a>(
 
   if !image.path.ends_with(textures_path) && !image.path.ends_with(meshes_path) {
     progress_bar.set_message(&format!("Moving {} to textures directory...", styled_path));
-    let new_textures_path = find_new_textures_path(&image, base_path)?;
+    let new_textures_path = get_new_textures_path(&image, base_path)?;
     fs::create_dir_all(&new_textures_path)?;
 
     progress_bar.set_message(&format!(
@@ -46,7 +49,8 @@ pub fn move_to_textures_dir<'a>(
   Ok(image)
 }
 
-fn find_new_textures_path(
+/// Get the root path of the model and tack on the texture path
+fn get_new_textures_path(
   image: &Image,
   base_path: &Path,
 ) -> std::result::Result<PathBuf, std::io::Error> {

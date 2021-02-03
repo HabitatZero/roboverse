@@ -1,8 +1,11 @@
+//! Orchestrator to convert texture images from whatever format they're in to PNG
+
 use std::path::Path;
 
 use crate::cli;
 use crate::image_processing;
 
+/// Orchestrator to convert texture images from whatever format they're in to PNG
 pub fn process(dir: &Path) -> std::result::Result<(), std::io::Error> {
   let images = image_processing::scan_dir_for_images(dir).unwrap();
   let image_bar = cli::create_progress_bar(images.len() as u64);

@@ -1,3 +1,5 @@
+//! Progress bar factory function, for all your progress bar needs
+
 use indicatif::{ProgressBar, ProgressStyle};
 
 pub fn create_progress_bar(item_count: u64) -> ProgressBar {

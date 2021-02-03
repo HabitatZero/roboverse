@@ -1,3 +1,5 @@
+//! Converts all texture images in a model to be PNG, and update the relevant paths
+
 pub mod convert_to_png;
 pub mod image;
 pub mod move_to_textures_dir;

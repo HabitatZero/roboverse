@@ -1,3 +1,10 @@
+//! Webify_models is a script to convert Gazebo models to a format that
+//! that is friendlier for the web, mainly, to use PNGs and to move the
+//! texture files in consistent paths. To be honest, I'm not entirely sure
+//! this is necessary as browsers render pretty much everything nowadays,
+//! but hey, I'm not going to shake the tree too much before I fully understand
+//! the purpose of all these things are in somebody else's project that I'm rewriting.
+
 use std::env;
 use std::process::exit;
 

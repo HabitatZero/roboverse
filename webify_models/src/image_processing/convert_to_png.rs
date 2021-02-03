@@ -1,3 +1,5 @@
+//! Converts an image file to PNG, or skips if it's already PNG
+
 use std::fs;
 
 use image::io::Reader as ImageReader;
@@ -8,6 +10,7 @@ use indicatif::ProgressBar;
 
 use crate::image_processing::Image;
 
+/// Orchestrator to run the PNG conversion
 pub fn convert_to_png(
   image: Image,
   progress_bar: &ProgressBar,
@@ -26,6 +29,7 @@ pub fn convert_to_png(
   Ok(converted_image)
 }
 
+/// Convert the specified image to a PNG version
 fn convert(mut image: Image) -> std::result::Result<Image, std::io::Error> {
   let image_reader = match ImageReader::open(image.path.clone()) {
     Ok(img) => img,

@@ -1,3 +1,5 @@
+//! Set of functions related to the command-line interface for webify_models
+
 mod create_progress_bar;
 mod parse_args_for_path;
 

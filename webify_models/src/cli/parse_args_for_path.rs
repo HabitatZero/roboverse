@@ -1,3 +1,6 @@
+//! Extract the path from the arguments provided, or return errors when there is none
+//! or if a file is provided
+
 use std::{
   io::{Error, ErrorKind},
   path::Path,
