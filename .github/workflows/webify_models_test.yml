@@ -25,5 +25,4 @@ jobs:
       with:
         profile: minimal
         toolchain: stable
-        components: rustfmt, clippy
     - run: cargo test
