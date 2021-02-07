@@ -35,11 +35,11 @@ mod tests {
   fn test_correct_arg_is_returned() {
     let mut args: Vec<String> = Vec::new();
     args.push(String::from("foo/bar")); // Test base path
-    args.push(String::from("./tests/cli")); // Test provided arg path
+    args.push(String::from("tests/cli")); // Test provided arg path
 
     // Return the first argument as a path
     let arg = parse_args_for_path(&args).unwrap();
-    assert_eq!(arg, Path::new("./tests/cli"));
+    assert_eq!(arg, Path::new("tests/cli"));
   }
 
   #[test]
