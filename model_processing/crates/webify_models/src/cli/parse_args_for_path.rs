@@ -32,7 +32,7 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_correct_arg_is_returned() {
+  fn it_returns_the_correct_arg() {
     let mut args: Vec<String> = Vec::new();
     args.push(String::from("foo/bar")); // Test base path
     args.push(String::from("/")); // Test provided arg path
@@ -43,7 +43,7 @@ mod tests {
   }
 
   #[test]
-  fn test_error_on_no_path() {
+  fn it_errors_on_no_path() {
     let mut args: Vec<String> = Vec::new();
     args.push(String::from("foo/bar")); // Test base path
 
@@ -52,7 +52,7 @@ mod tests {
   }
 
   #[test]
-  fn test_error_on_path_to_file() {
+  fn it_errors_when_path_is_file() {
     let mut args: Vec<String> = Vec::new();
     args.push(String::from("foo/bar")); // Test base path
     args.push(String::from("tests/README.md"));
