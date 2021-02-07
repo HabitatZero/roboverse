@@ -1,9 +1,10 @@
 name: webify_models
 
-on:
-  push:
-    paths:
-    - 'model_processing/crates/webify_models/**'
+on: push
+# on:
+#   push:
+#     paths:
+#     - 'model_processing/crates/webify_models/**'
 
 defaults:
   run:
