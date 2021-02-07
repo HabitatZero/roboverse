@@ -10,7 +10,7 @@ build_*
 .vscode
 
 # Rust
-webify_models/target
+target
 
 # Etc
 *.*~

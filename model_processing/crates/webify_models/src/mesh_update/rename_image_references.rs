@@ -1,8 +1,11 @@
 //! Rename all image references inside a DAE mesh to be .PNG and point
 //! at the right textures path
 
-use std::{fs::{self}, path::Path};
 use std::path::PathBuf;
+use std::{
+  fs::{self},
+  path::Path,
+};
 
 use aho_corasick::AhoCorasickBuilder;
 
@@ -44,9 +47,18 @@ fn update_texture_path(contents: String) -> std::result::Result<String, std::io:
       } else if mat.pattern() == 1 {
         let texture_name = &line[start..mat.start()];
         // Prefix image reference with relative directory path to textures
-        if texture_name.ends_with(".png") && !texture_name.contains(&texture_path.to_str().unwrap()) {
+        if texture_name.ends_with(".png") && !texture_name.contains(&texture_path.to_str().unwrap())
+        {
           // TODO: Properly find the root path of the mesh, rather than assuming
-          new_line = line.replace(texture_name, Path::new("..").join("materials").join("textures").join(texture_name).to_str().unwrap());
+          new_line = line.replace(
+            texture_name,
+            Path::new("..")
+              .join("materials")
+              .join("textures")
+              .join(texture_name)
+              .to_str()
+              .unwrap(),
+          );
         }
       }
     }
@@ -56,8 +68,7 @@ fn update_texture_path(contents: String) -> std::result::Result<String, std::io:
     } else {
       new_contents.push_str(format!("{}\n", new_line).as_str());
     }
-
-  };
+  }
 
   Ok(new_contents)
 }

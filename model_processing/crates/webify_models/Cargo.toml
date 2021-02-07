@@ -3,6 +3,10 @@ name = "webify_models"
 version = "0.1.0"
 authors = ["Jean-Francois Arseneau <jf.arseneau@gmail.com>"]
 edition = "2018"
+readme = "README.md"
+exclude = [
+    "tests/*",
+]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
