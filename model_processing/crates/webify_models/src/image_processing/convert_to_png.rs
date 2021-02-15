@@ -62,7 +62,7 @@ fn convert(mut image: Image) -> std::result::Result<Image, std::io::Error> {
 }
 
 #[cfg(test)]
-mod tests {
+mod convert_tests {
   use super::*;
 
   fn setup(test_run_id: &str) -> std::result::Result<(), std::io::Error> {
@@ -108,7 +108,7 @@ mod tests {
   #[test]
   fn it_panics_on_non_images() {
     let test_run_name = "test_run_it_panics_on_non_images";
-    setup(test_run_name);
+    setup(test_run_name).unwrap();
 
     let test_image_path = Path::new("tests").join("image_processing").join(test_run_name).join("README.md");
     assert!(Path::exists(&test_image_path));
@@ -121,10 +121,10 @@ mod tests {
     // Catch the panic here so we can teardown after, otherwise
     // just using should_panic will leave use with no teardown
     let result = panic::catch_unwind(|| {
-      convert(non_image);
+      convert(non_image).unwrap();
     });
     assert!(result.is_err());
 
-    teardown(test_run_name);
+    teardown(test_run_name).unwrap();
   }
 }

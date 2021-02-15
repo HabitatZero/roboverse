@@ -28,7 +28,7 @@ pub fn parse_args_for_path<'a>(
 }
 
 #[cfg(test)]
-mod tests {
+mod parse_args_for_path_tests {
   use super::*;
 
   #[test]

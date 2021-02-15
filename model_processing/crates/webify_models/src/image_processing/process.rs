@@ -19,3 +19,13 @@ pub fn process(dir: &Path) -> std::result::Result<(), std::io::Error> {
 
   Ok(())
 }
+
+#[cfg(test)]
+mod process_tests {
+  use super::*;
+
+  #[test]
+  fn it_processes_the_dir() {
+    assert!(false);
+  }
+}

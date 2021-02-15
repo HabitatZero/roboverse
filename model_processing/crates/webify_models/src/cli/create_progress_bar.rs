@@ -16,7 +16,7 @@ pub fn create_progress_bar(item_count: u64) -> ProgressBar {
 }
 
 #[cfg(test)]
-mod tests {
+mod create_progress_bar_tests {
   use super::*;
 
   #[test]

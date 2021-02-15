@@ -72,3 +72,33 @@ fn update_texture_path(contents: String) -> std::result::Result<String, std::io:
 
   Ok(new_contents)
 }
+
+#[cfg(test)]
+mod rename_image_references_tests {
+  use super::*;
+
+  #[test]
+  fn it_has_a_test() {
+    assert!(false);
+  }
+}
+
+#[cfg(test)]
+mod find_and_rename_image_references_tests {
+  use super::*;
+
+  #[test]
+  fn it_has_a_test() {
+    assert!(false);
+  }
+}
+
+#[cfg(test)]
+mod update_texture_path_tests {
+  use super::*;
+
+  #[test]
+  fn it_has_a_test() {
+    assert!(false);
+  }
+}

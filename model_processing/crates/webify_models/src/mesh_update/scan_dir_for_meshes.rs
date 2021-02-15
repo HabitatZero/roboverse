@@ -43,3 +43,23 @@ fn recursive_scan(dir: &Path, mut meshes: Vec<PathBuf>) -> std::io::Result<Vec<P
 
   Ok(meshes)
 }
+
+#[cfg(test)]
+mod scan_dir_for_meshes_tests {
+  use super::*;
+
+  #[test]
+  fn it_has_a_test() {
+    assert!(false);
+  }
+}
+
+#[cfg(test)]
+mod recursive_scan_tests {
+  use super::*;
+
+  #[test]
+  fn it_has_a_test() {
+    assert!(false);
+  }
+}

@@ -65,3 +65,23 @@ fn get_new_textures_path(
 
   Ok(new_textures_path)
 }
+
+#[cfg(test)]
+mod move_to_textures_dir_tests {
+  use super::*;
+
+  #[test]
+  fn it_moves_the_files_to_the_textures_dir() {
+    assert!(false);
+  }
+}
+
+#[cfg(test)]
+mod get_new_textures_path_tests {
+  use super::*;
+
+  #[test]
+  fn it_extracts_the_model_name() {
+    assert!(false);
+  }
+}
