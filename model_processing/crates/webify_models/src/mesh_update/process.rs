@@ -26,9 +26,9 @@ pub fn process(dir: &Path) -> std::result::Result<(), std::io::Error> {
 
 #[cfg(test)]
 mod process_tests {
-  use super::*;
 
   #[test]
+  #[ignore = "not yet implemented"]
   fn it_processes_the_dir() {
     assert!(false);
   }

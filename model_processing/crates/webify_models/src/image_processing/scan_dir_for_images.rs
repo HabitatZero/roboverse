@@ -60,9 +60,9 @@ fn recursive_scan(dir: &Path, mut images: Vec<Image>) -> std::io::Result<Vec<Ima
 
 #[cfg(test)]
 mod scan_dir_for_images_tests {
-  use super::*;
 
   #[test]
+  #[ignore = "not yet implemented"]
   fn it_scans_the_dir() {
     assert!(false);
   }
@@ -70,9 +70,9 @@ mod scan_dir_for_images_tests {
 
 #[cfg(test)]
 mod recursive_scan_tests {
-  use super::*;
 
   #[test]
+  #[ignore = "not yet implemented"]
   fn it_recursively_scans_the_dir() {
     assert!(false);
   }
