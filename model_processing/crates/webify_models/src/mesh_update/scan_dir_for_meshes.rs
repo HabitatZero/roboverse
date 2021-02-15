@@ -49,8 +49,15 @@ mod scan_dir_for_meshes_tests {
   use super::*;
 
   #[test]
-  fn it_has_a_test() {
-    assert!(false);
+  fn it_returns_meshes() {
+    let dir = &Path::new("tests").join("mesh_update");
+    let results = match scan_dir_for_meshes(dir) {
+      Ok(mesh_list) => mesh_list,
+      Err(error) => panic!("Failed to scan all directories for meshes: {:?}", error),
+    };
+
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].to_str(), Some("tests/mesh_update/test/test.dae"));
   }
 }
 
@@ -59,7 +66,15 @@ mod recursive_scan_tests {
   use super::*;
 
   #[test]
-  fn it_has_a_test() {
-    assert!(false);
+  fn it_recursively_scans_the_dir() {
+    let dir = &Path::new("tests").join("mesh_update");
+    let results = match recursive_scan(dir, Vec::new()) {
+      Ok(mesh_list) => mesh_list,
+      Err(error) => panic!("Failed to scan all directories for meshes: {:?}", error),
+    };
+
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].to_str(), Some("tests/mesh_update/test/test.dae"));
+
   }
 }
