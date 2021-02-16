@@ -71,10 +71,14 @@ mod scan_dir_for_images_tests {
 
 #[cfg(test)]
 mod recursive_scan_tests {
+  use super::*;
 
   #[test]
-  #[ignore = "not yet implemented"]
   fn it_recursively_scans_the_dir() {
-    assert!(false);
+    let dir = &Path::new("tests").join("image_processing").join("image_scan");
+    let results = recursive_scan(dir, Vec::new()).unwrap();
+
+    assert_eq!(results.len(), 1);
+    assert_eq!(results[0].path, dir.join("textures").join("materials").join("example.jpg"));
   }
 }
