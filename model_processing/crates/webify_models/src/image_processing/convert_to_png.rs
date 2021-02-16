@@ -2,7 +2,6 @@
 
 use std::{
   fs,
-  path::Path,
   panic,
 };
 
@@ -35,6 +34,9 @@ pub fn convert_to_png(
 
 /// Convert the specified image to a PNG version
 fn convert(mut image: Image) -> std::result::Result<Image, std::io::Error> {
+  if image.extension == "tif" {
+    return Ok(image) // Skip tif!
+  }
   let image_reader = match ImageReader::open(image.path.clone()) {
     Ok(img) => img,
     Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
@@ -64,6 +66,8 @@ fn convert(mut image: Image) -> std::result::Result<Image, std::io::Error> {
 #[cfg(test)]
 mod convert_tests {
   use super::*;
+
+  use std::path::Path;
 
   fn setup(test_run_id: &str) -> std::result::Result<(), std::io::Error> {
     let example_image_path = Path::new("tests").join("image_processing").join("images");

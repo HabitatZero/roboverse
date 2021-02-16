@@ -2,18 +2,32 @@
 
 use std::path::Path;
 
-use crate::cli;
-use crate::image_processing;
+use console::style;
+
+use crate::cli::create_progress_bar;
+use crate::image_processing::{scan_dir_for_images, move_to_textures_dir, convert_to_png};
 
 /// Orchestrator to convert texture images from whatever format they're in to PNG
 pub fn process(dir: &Path) -> std::result::Result<(), std::io::Error> {
-  let images = image_processing::scan_dir_for_images(dir).unwrap();
-  let image_bar = cli::create_progress_bar(images.len() as u64);
+  let images = scan_dir_for_images(dir).unwrap();
+  let image_bar = create_progress_bar(images.len() as u64);
 
+  image_bar.set_prefix("Texture Move");
   for image in images {
     image_bar.inc(1);
-    let moved_image = image_processing::move_to_textures_dir(image, dir, &image_bar).unwrap();
-    image_processing::convert_to_png(moved_image, &image_bar).unwrap();
+    let styled_path = style(image.path.to_string_lossy()).dim().to_string();
+
+    image_bar.set_message(&format!("Moving {} to textures directory...", styled_path));
+    let moved_image = move_to_textures_dir(image, dir)?;
+    let moved_image_path = style(moved_image.path.to_string_lossy()).dim().to_string();
+
+    image_bar.set_message(&format!(
+      "Moved {} to {}",
+      styled_path,
+      moved_image_path
+    ));
+
+    convert_to_png(moved_image, &image_bar).unwrap();
   }
   image_bar.finish_with_message("Images webified!");
 

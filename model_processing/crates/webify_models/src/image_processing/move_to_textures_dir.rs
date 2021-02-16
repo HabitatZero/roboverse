@@ -5,43 +5,25 @@ use std::{
   path::{Path, PathBuf},
 };
 
-use console::style;
-use indicatif::ProgressBar;
-
 use crate::image_processing::Image;
 
 /// Move any stray textures to the textures path (typically materials/textures)
 pub fn move_to_textures_dir<'a>(
   mut image: Image,
   base_path: &Path,
-  progress_bar: &ProgressBar,
 ) -> std::result::Result<Image, std::io::Error> {
   let file_name = image.path.file_name().unwrap().to_str().unwrap();
   let textures_path: PathBuf = Path::new("materials").join("textures").join(file_name);
   let meshes_path: PathBuf = Path::new("meshes").join(file_name);
 
-  progress_bar.set_prefix("Texture Move");
-  let styled_path = style(image.path.to_string_lossy()).dim();
-
   if !image.path.ends_with(textures_path) && !image.path.ends_with(meshes_path) {
-    progress_bar.set_message(&format!("Moving {} to textures directory...", styled_path));
+
     let new_textures_path = get_new_textures_path(&image, base_path)?;
     fs::create_dir_all(&new_textures_path)?;
-
-    progress_bar.set_message(&format!(
-      "Created {}",
-      style(&new_textures_path.to_string_lossy()).dim()
-    ));
-
     fs::copy(&image.path, new_textures_path.join(file_name))?;
     fs::remove_file(&image.path)?;
 
     let new_textures_path_with_ext = new_textures_path.join(file_name).clone();
-    progress_bar.set_message(&format!(
-      "Moved {} to {}",
-      style(styled_path).dim(),
-      style(new_textures_path_with_ext.to_string_lossy()).dim()
-    ));
 
     image.path = new_textures_path_with_ext;
   }
@@ -78,10 +60,19 @@ mod move_to_textures_dir_tests {
 
 #[cfg(test)]
 mod get_new_textures_path_tests {
+  use super::*;
 
   #[test]
-  #[ignore = "not yet implemented"]
-  fn it_extracts_the_model_name() {
-    assert!(false);
+  fn it_extracts_the_model_name() -> std::result::Result<(), std::io::Error> {
+    let base_path = Path::new("some").join("random").join("path");
+    let img = Image {
+      path: base_path.join("foo_test").join("foo.jpg"),
+      extension: String::from("jpg"),
+    };
+    let result = get_new_textures_path(&img, &base_path)?;
+    let new_textures_path = &base_path.join("foo_test").join("materials").join("textures");
+    assert_eq!(result.to_str(), Some(new_textures_path.to_str().unwrap()));
+
+    Ok(())
   }
 }
