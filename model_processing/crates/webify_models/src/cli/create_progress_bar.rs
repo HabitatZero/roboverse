@@ -21,13 +21,13 @@ mod create_progress_bar_tests {
 
   #[test]
   fn it_returns_a_progress_bar() {
-    let progress_bar = create_progress_bar(10);
+    let progress_bar: ProgressBar = create_progress_bar(10);
     assert_eq!(progress_bar.length(), 10);
   }
 
   #[test]
   fn it_accepts_zero_length() {
-    let progress_bar = create_progress_bar(0);
+    let progress_bar: ProgressBar = create_progress_bar(0);
     assert_eq!(progress_bar.length(), 0);
   }
 }
