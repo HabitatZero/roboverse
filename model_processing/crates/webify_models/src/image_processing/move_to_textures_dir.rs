@@ -17,7 +17,6 @@ pub fn move_to_textures_dir<'a>(
   let meshes_path: PathBuf = Path::new("meshes").join(file_name);
 
   if !image.path.ends_with(textures_path) && !image.path.ends_with(meshes_path) {
-
     let new_textures_path = get_new_textures_path(&image, base_path)?;
     fs::create_dir_all(&new_textures_path)?;
     fs::copy(&image.path, new_textures_path.join(file_name))?;
@@ -70,7 +69,10 @@ mod get_new_textures_path_tests {
       extension: String::from("jpg"),
     };
     let result = get_new_textures_path(&img, &base_path)?;
-    let new_textures_path = &base_path.join("foo_test").join("materials").join("textures");
+    let new_textures_path = &base_path
+      .join("foo_test")
+      .join("materials")
+      .join("textures");
     assert_eq!(result.to_str(), Some(new_textures_path.to_str().unwrap()));
 
     Ok(())

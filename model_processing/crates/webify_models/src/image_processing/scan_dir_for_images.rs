@@ -1,14 +1,15 @@
 use console::style;
+use std::io::Result;
 use std::{fs, path::Path};
 
-use super::image::Image;
+use crate::image_processing::Image;
 
 const TEXTURE_IMAGE_TYPES: [&str; 7] = [
   r#"tif"#, r#"tga"#, r#"tiff"#, r#"jpeg"#, r#"jpg"#, r#"gif"#, r#"png"#,
 ];
 
 /// Find texture images in the specified path
-pub fn scan_dir_for_images(dir: &Path) -> std::io::Result<Vec<Image>> {
+pub fn scan_dir_for_images(dir: &Path) -> Result<Vec<Image>> {
   println!("\nScanning for images to webify...");
   println!(
     "{}",
@@ -31,7 +32,7 @@ pub fn scan_dir_for_images(dir: &Path) -> std::io::Result<Vec<Image>> {
 
 /// Recursively scan the directory and only return files that qualify
 /// as the images we're looking for
-fn recursive_scan(dir: &Path, mut images: Vec<Image>) -> std::io::Result<Vec<Image>> {
+fn recursive_scan(dir: &Path, mut images: Vec<Image>) -> Result<Vec<Image>> {
   if dir.is_dir() {
     for entry in fs::read_dir(dir)? {
       let e = entry?;

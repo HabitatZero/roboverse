@@ -4,11 +4,12 @@
 use std::{
   io::{Error, ErrorKind},
   path::Path,
+  result::Result,
 };
 
 pub fn parse_args_for_path<'a>(
   args: &'a Vec<String>,
-) -> std::result::Result<&'a std::path::Path, std::io::Error> {
+) -> Result<&'a std::path::Path, std::io::Error> {
   if args.len() <= 1 {
     return Err(Error::new(
       ErrorKind::Other,

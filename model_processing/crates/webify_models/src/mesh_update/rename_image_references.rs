@@ -87,7 +87,10 @@ mod rename_image_references_tests {
     fs::create_dir_all(&destination_path.join("meshes"))?;
     fs::create_dir_all(&destination_path.join("materials").join("textures"))?;
 
-    fs::copy(example_path.join("meshes").join("test.dae"), &destination_path.join("meshes").join("test.dae"))?;
+    fs::copy(
+      example_path.join("meshes").join("test.dae"),
+      &destination_path.join("meshes").join("test.dae"),
+    )?;
 
     Ok(())
   }
@@ -105,7 +108,11 @@ mod rename_image_references_tests {
 
     setup(&test_run_id)?;
 
-    let destination_path = Path::new("tests").join("mesh_update").join(&test_run_id).join("meshes").join("test.dae");
+    let destination_path = Path::new("tests")
+      .join("mesh_update")
+      .join(&test_run_id)
+      .join("meshes")
+      .join("test.dae");
     rename_image_references(&destination_path)?;
 
     let mut file = File::open(destination_path)?;
@@ -126,7 +133,11 @@ mod find_and_rename_image_references_tests {
 
   #[test]
   fn it_renamed_texture_references() -> std::result::Result<(), std::io::Error> {
-    let destination_path = Path::new("tests").join("mesh_update").join("test").join("meshes").join("test.dae");
+    let destination_path = Path::new("tests")
+      .join("mesh_update")
+      .join("test")
+      .join("meshes")
+      .join("test.dae");
     let result = find_and_rename_image_references(&destination_path)?;
     assert_eq!(result, "<!-- This is not a valid DAE, just a test file -->\n\n<image id=\"Test_Diffuse_png\">\n  <init_from>test_diffuse.png</init_from>\n</image>\n");
 
@@ -143,7 +154,11 @@ mod update_texture_path_tests {
 
   #[test]
   fn it_updated_texture_paths() -> std::result::Result<(), std::io::Error> {
-    let destination_path = Path::new("tests").join("mesh_update").join("already_png").join("meshes").join("already_png.dae");
+    let destination_path = Path::new("tests")
+      .join("mesh_update")
+      .join("already_png")
+      .join("meshes")
+      .join("already_png.dae");
 
     let mut file = File::open(destination_path)?;
     let mut contents = String::new();
