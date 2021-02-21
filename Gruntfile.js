@@ -44,12 +44,6 @@ module.exports = function (grunt) {
         dest: "gz3d/build/gz3d.gui.js",
       },
     },
-    jshint: {
-      options: {
-        jshintrc: ".jshintrc",
-      },
-      files: ["Gruntfile.js", "gz3d/build/gz3d.src.js"],
-    },
     uglify: {
       options: {
         report: "min",
@@ -81,7 +75,6 @@ module.exports = function (grunt) {
         },
         files: [
           "Gruntfile.js",
-          ".jshintrc",
           "gz3d/src/*.js",
           "gz3d/src/**/*.js",
         ],
@@ -106,14 +99,13 @@ module.exports = function (grunt) {
   });
 
   grunt.loadNpmTasks("grunt-contrib-concat");
-  grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-contrib-watch");
   grunt.loadNpmTasks("grunt-contrib-uglify-es");
   grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-jsdoc");
 
   grunt.registerTask("dev", ["concat", "watch"]);
-  grunt.registerTask("build", ["concat", "jshint", "uglify"]);
+  grunt.registerTask("build", ["concat", "uglify"]);
   grunt.registerTask("build_and_watch", ["watch"]);
   grunt.registerTask("doc", ["clean", "jsdoc"]);
 };
