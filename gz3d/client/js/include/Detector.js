@@ -4,21 +4,22 @@
  */
 
 var Detector = {
-  canvas : !!window.CanvasRenderingContext2D,
-  webgl : (function() {
+  canvas: !!window.CanvasRenderingContext2D,
+  webgl: (function () {
     try {
       const canvas = document.createElement("canvas");
-      return !!(window.WebGLRenderingContext &&
-                (canvas.getContext("webgl") ||
-                 canvas.getContext("experimental-webgl")));
+      return !!(
+        window.WebGLRenderingContext &&
+        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+      );
     } catch (e) {
       return false;
     }
   })(),
-  workers : !!window.Worker,
-  fileapi : window.File && window.FileReader && window.FileList && window.Blob,
+  workers: !!window.Worker,
+  fileapi: window.File && window.FileReader && window.FileList && window.Blob,
 
-  getWebGLErrorMessage : function() {
+  getWebGLErrorMessage: function () {
     const element = document.createElement("div");
     element.id = "webgl-error-message";
     element.style.fontFamily = "monospace";
@@ -46,13 +47,13 @@ var Detector = {
     return element;
   },
 
-  addGetWebGLMessage : function(parameters) {
+  addGetWebGLMessage: function (parameters) {
     let parent, id, element;
 
     parameters = parameters || {};
 
     parent =
-        parameters.parent !== undefined ? parameters.parent : document.body;
+      parameters.parent !== undefined ? parameters.parent : document.body;
     id = parameters.id !== undefined ? parameters.id : "oldie";
 
     element = Detector.getWebGLErrorMessage();

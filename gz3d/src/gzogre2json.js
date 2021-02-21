@@ -2,8 +2,9 @@
  * Converts an Ogre material script into JSON
  * @constructor
  */
-GZ3D.Ogre2Json = function() {
-  this.emitter = globalEmitter || new EventEmitter2({verboseMemoryLeak : true});
+GZ3D.Ogre2Json = function () {
+  this.emitter =
+    globalEmitter || new EventEmitter2({ verboseMemoryLeak: true });
 
   // Keeps the whole material file as an Object
   this.materialObj = [];
@@ -19,9 +20,9 @@ GZ3D.Ogre2Json = function() {
  *          * resolve: returns a boolean indicating success
  *          * reject: returns the HTTP status text
  */
-GZ3D.Ogre2Json.prototype.LoadFromUrl = function(_url) {
+GZ3D.Ogre2Json.prototype.LoadFromUrl = function (_url) {
   const fileLoader = new THREE.FileLoader();
-  const xhr = fileLoader.load(_url, function() {});
+  const xhr = fileLoader.load(_url, function () {});
 
   // TODO: remove this when whole code has been migrated to ES6
   /* jshint ignore:start */
@@ -41,7 +42,7 @@ GZ3D.Ogre2Json.prototype.LoadFromUrl = function(_url) {
  * Parse material script and store it into this.materials
  * @param _str Material script as a string.
  */
-GZ3D.Ogre2Json.prototype.Parse = function(_str) {
+GZ3D.Ogre2Json.prototype.Parse = function (_str) {
   let str = _str;
 
   // { and } in new lines
@@ -52,11 +53,12 @@ GZ3D.Ogre2Json.prototype.Parse = function(_str) {
   str = str.replace(/\s+$/gm, "");
 
   // Remove material alias (material Name : AnotherName {})
-  str = str.replace(/^material (.*):(.*)$/gm,
-                    function(match, p1, p2) { return "material " + p1; });
+  str = str.replace(/^material (.*):(.*)$/gm, function (match, p1, p2) {
+    return "material " + p1;
+  });
 
   // Remove "material " and properly add commas if more than one
-  str = str.replace(/^material /gm, function(match, offset) {
+  str = str.replace(/^material /gm, function (match, offset) {
     if (offset === 0) {
       return "";
     } else {
@@ -65,34 +67,43 @@ GZ3D.Ogre2Json.prototype.Parse = function(_str) {
   });
 
   // Handle vertex and fragment programs
-  str = str.replace(/^vertex_program .*$|^fragment_program .*$/gm,
-                    function(match, offset) {
-                      const underscores = match.replace(/ /g, "_");
-                      if (offset === 0) {
-                        return underscores;
-                      } else {
-                        return "},{" + underscores;
-                      }
-                    });
+  str = str.replace(
+    /^vertex_program .*$|^fragment_program .*$/gm,
+    function (match, offset) {
+      const underscores = match.replace(/ /g, "_");
+      if (offset === 0) {
+        return underscores;
+      } else {
+        return "},{" + underscores;
+      }
+    }
+  );
 
   // Ignore import lines
   str = str.replace(/^import .*$/gm, "");
 
   // Handle vertex and fragment programs refs
-  str =
-      str.replace(/^vertex_program_ref.*$|^fragment_program_ref.*$/gm,
-                  function(match, offset) { return match.replace(/ /g, "_"); });
+  str = str.replace(
+    /^vertex_program_ref.*$|^fragment_program_ref.*$/gm,
+    function (match, offset) {
+      return match.replace(/ /g, "_");
+    }
+  );
 
   // Strip name from named texture_unit
-  str = str.replace(/^texture_unit.*$/gm,
-                    function(match, offset) { return "texture_unit"; });
+  str = str.replace(/^texture_unit.*$/gm, function (match, offset) {
+    return "texture_unit";
+  });
 
   // Strip name from named pass
-  str = str.replace(/^pass.*$/gm, function(match, offset) { return "pass"; });
+  str = str.replace(/^pass.*$/gm, function (match, offset) {
+    return "pass";
+  });
 
   // Strip name from named technique
-  str = str.replace(/^technique.*$/gm,
-                    function(match, offset) { return "technique"; });
+  str = str.replace(/^technique.*$/gm, function (match, offset) {
+    return "technique";
+  });
 
   // Remove comments
   str = str.replace(/(\/\*[\s\S]*?\*\/)|(\/\/.*$)/gm, "");
@@ -105,7 +116,7 @@ GZ3D.Ogre2Json.prototype.Parse = function(_str) {
   str = str.replace(/"/gm, "");
 
   // If line has more than one space, it has an array
-  str = str.replace(/(.* .*){2,}/g, function(match) {
+  str = str.replace(/(.* .*){2,}/g, function (match) {
     const parts = match.split(/\s+/g);
 
     let res = parts[0] + " [";
@@ -125,7 +136,7 @@ GZ3D.Ogre2Json.prototype.Parse = function(_str) {
 
   // Add key-value separators
   str = str.replace(/\s/g, ": ");
-  str = str.replace(/{/g, function(match, offset, full) {
+  str = str.replace(/{/g, function (match, offset, full) {
     // Don't add if preceeded by comma
     if (full[offset - 1] === ",") {
       return "{";
@@ -170,67 +181,87 @@ GZ3D.Ogre2Json.prototype.Parse = function(_str) {
       this.materials[matName] = {};
 
       // Ambient
-      const ambient = _.get(this.materialObj[material],
-                            matName + ".technique.pass.ambient");
+      const ambient = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.ambient"
+      );
       if (ambient !== undefined && Array.isArray(ambient)) {
         this.materials[matName].ambient = ambient.map(Number);
       }
 
       // Diffuse
-      const diffuse = _.get(this.materialObj[material],
-                            matName + ".technique.pass.diffuse");
+      const diffuse = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.diffuse"
+      );
       if (diffuse !== undefined && Array.isArray(diffuse)) {
         this.materials[matName].diffuse = diffuse.map(Number);
       }
 
       // Specular
-      const specular = _.get(this.materialObj[material],
-                             matName + ".technique.pass.specular");
+      const specular = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.specular"
+      );
       if (specular !== undefined && Array.isArray(specular)) {
         this.materials[matName].specular = specular.map(Number);
       }
 
       // Emissive
-      const emissive = _.get(this.materialObj[material],
-                             matName + ".technique.pass.emissive");
+      const emissive = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.emissive"
+      );
       if (emissive !== undefined && Array.isArray(emissive)) {
         this.materials[matName].emissive = emissive.map(Number);
       }
 
       // Depth write
-      const depthWrite = _.get(this.materialObj[material],
-                               matName + ".technique.pass.depth_write");
+      const depthWrite = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.depth_write"
+      );
       if (depthWrite !== undefined) {
         this.materials[matName].depth_write = depthWrite !== "off";
       }
 
       // Depth check
-      const depthCheck = _.get(this.materialObj[material],
-                               matName + ".technique.pass.depth_check");
+      const depthCheck = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.depth_check"
+      );
       if (depthCheck !== undefined) {
         this.materials[matName].depth_check = depthCheck !== "off";
       }
 
       // Texture
-      const texture = _.get(this.materialObj[material],
-                            matName + ".technique.pass.texture_unit.texture");
+      const texture = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.texture_unit.texture"
+      );
       if (texture !== undefined) {
         this.materials[matName].texture = texture;
       }
 
       // Scale
-      const scale = _.get(this.materialObj[material],
-                          matName + ".technique.pass.texture_unit.scale");
+      const scale = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.texture_unit.scale"
+      );
       if (scale !== undefined && Array.isArray(scale)) {
         this.materials[matName].scale = scale.map(Number);
       }
 
       // Opacity
-      const alphaOpEx =
-          _.get(this.materialObj[material],
-                matName + ".technique.pass.texture_unit.alpha_op_ex");
-      if (alphaOpEx !== undefined && Array.isArray(alphaOpEx) &&
-          alphaOpEx.length === 4) {
+      const alphaOpEx = _.get(
+        this.materialObj[material],
+        matName + ".technique.pass.texture_unit.alpha_op_ex"
+      );
+      if (
+        alphaOpEx !== undefined &&
+        Array.isArray(alphaOpEx) &&
+        alphaOpEx.length === 4
+      ) {
         this.materials[matName].opacity = Number(alphaOpEx[3]);
       }
     }

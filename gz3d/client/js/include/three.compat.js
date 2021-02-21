@@ -7,9 +7,8 @@
  * compatibility all getDescendants() calls could eventually be replaced with
  * Object3D.traverse(function(node){...});
  */
-THREE.Object3D.prototype.getDescendants = function(array) {
-  if (array === undefined)
-    array = [];
+THREE.Object3D.prototype.getDescendants = function (array) {
+  if (array === undefined) array = [];
 
   Array.prototype.push.apply(array, this.children);
 

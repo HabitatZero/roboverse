@@ -5,8 +5,9 @@
  * @constructor
  * @param {GZ3D.Scene} scene - A scene to connect to
  */
-GZ3D.GZIface = function(scene, url) {
-  this.emitter = globalEmitter || new EventEmitter2({verboseMemoryLeak : true});
+GZ3D.GZIface = function (scene, url) {
+  this.emitter =
+    globalEmitter || new EventEmitter2({ verboseMemoryLeak: true });
   this.scene = scene;
   this.url = url || location.hostname + ":" + location.port + location.pathname;
   this.protocol = location.protocol;
@@ -21,21 +22,25 @@ GZ3D.GZIface = function(scene, url) {
   this.visualsToAdd = [];
 
   this.numConnectionTrials = 0;
-  this.maxConnectionTrials = 30;    // try to connect 30 times
+  this.maxConnectionTrials = 30; // try to connect 30 times
   this.timeToSleepBtwTrials = 1000; // wait 1 second between connection trials
 };
 
 /**
  * Attempt to establish websocket connection.
  */
-GZ3D.GZIface.prototype.connect = function() {
+GZ3D.GZIface.prototype.connect = function () {
   this.webSocket = new ROSLIB.Ros({
-    url : (this.secure ? "wss://" : "ws://") + this.url,
+    url: (this.secure ? "wss://" : "ws://") + this.url,
   });
 
   const that = this;
-  this.webSocket.on("connection", function() { that.onConnected(); });
-  this.webSocket.on("error", function() { that.onError(); });
+  this.webSocket.on("connection", function () {
+    that.onConnected();
+  });
+  this.webSocket.on("error", function () {
+    that.onError();
+  });
 
   this.numConnectionTrials++;
 };
@@ -43,7 +48,7 @@ GZ3D.GZIface.prototype.connect = function() {
 /**
  * Callback when the websocket fails to connect.
  */
-GZ3D.GZIface.prototype.onError = function() {
+GZ3D.GZIface.prototype.onError = function () {
   // Notify others about connection failure only once
   if (this.numConnectionTrials === 1) {
     this.emitter.emit("connectionError");
@@ -52,27 +57,29 @@ GZ3D.GZIface.prototype.onError = function() {
   const that = this;
   // retry to connect after certain time
   if (this.numConnectionTrials < this.maxConnectionTrials) {
-    setTimeout(function() { that.connect(); }, this.timeToSleepBtwTrials);
+    setTimeout(function () {
+      that.connect();
+    }, this.timeToSleepBtwTrials);
   }
 };
 
 /**
  * Callback when the websocket connects successfully.
  */
-GZ3D.GZIface.prototype.onConnected = function() {
+GZ3D.GZIface.prototype.onConnected = function () {
   this.isConnected = true;
   this.emitter.emit("connection");
 
   this.heartbeatTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/heartbeat",
-    messageType : "heartbeat",
+    ros: this.webSocket,
+    name: "~/heartbeat",
+    messageType: "heartbeat",
   });
 
   const that = this;
-  const publishHeartbeat = function() {
+  const publishHeartbeat = function () {
     const hearbeatMsg = {
-      alive : 1,
+      alive: 1,
     };
     that.heartbeatTopic.publish(hearbeatMsg);
   };
@@ -80,12 +87,12 @@ GZ3D.GZIface.prototype.onConnected = function() {
   setInterval(publishHeartbeat, 5000);
 
   const statusTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/status",
-    messageType : "status",
+    ros: this.webSocket,
+    name: "~/status",
+    messageType: "status",
   });
 
-  const statusUpdate = function(message) {
+  const statusUpdate = function (message) {
     if (message.status === "error") {
       that.isConnected = false;
       this.emitter.emit("gzstatus", "error");
@@ -94,24 +101,24 @@ GZ3D.GZIface.prototype.onConnected = function() {
   statusTopic.subscribe(statusUpdate.bind(this));
 
   const materialTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/material",
-    messageType : "material",
+    ros: this.webSocket,
+    name: "~/material",
+    messageType: "material",
   });
 
-  const materialUpdate = function(message) {
+  const materialUpdate = function (message) {
     this.material = message;
     this.emitter.emit("material", this.material);
   };
   materialTopic.subscribe(materialUpdate.bind(this));
 
   this.sceneTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/scene",
-    messageType : "scene",
+    ros: this.webSocket,
+    name: "~/scene",
+    messageType: "scene",
   });
 
-  const sceneUpdate = function(message) {
+  const sceneUpdate = function (message) {
     if (message.name) {
       this.scene.name = message.name;
     }
@@ -159,26 +166,30 @@ GZ3D.GZIface.prototype.onConnected = function() {
   this.sceneTopic.subscribe(sceneUpdate.bind(this));
 
   this.physicsTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/physics",
-    messageType : "physics",
+    ros: this.webSocket,
+    name: "~/physics",
+    messageType: "physics",
   });
 
-  const physicsUpdate = function(
-      message) { this.emitter.emit("setPhysicsStats", message); };
+  const physicsUpdate = function (message) {
+    this.emitter.emit("setPhysicsStats", message);
+  };
   this.physicsTopic.subscribe(physicsUpdate.bind(this));
 
   // Update model pose
   const poseTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/pose/info",
-    messageType : "pose",
+    ros: this.webSocket,
+    name: "~/pose/info",
+    messageType: "pose",
   });
 
-  const poseUpdate = function(message) {
+  const poseUpdate = function (message) {
     const entity = this.scene.getByName(message.name);
-    if (entity && entity !== this.scene.modelManipulator.object &&
-        entity.parent !== this.scene.modelManipulator.object) {
+    if (
+      entity &&
+      entity !== this.scene.modelManipulator.object &&
+      entity.parent !== this.scene.modelManipulator.object
+    ) {
       this.scene.updatePose(entity, message.position, message.orientation);
       this.emitter.emit("setModelStats", message, "update");
     }
@@ -188,20 +199,20 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Requests - for deleting models
   const requestTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/request",
-    messageType : "request",
+    ros: this.webSocket,
+    name: "~/request",
+    messageType: "request",
   });
 
-  const requestUpdate = function(message) {
+  const requestUpdate = function (message) {
     if (message.request === "entity_delete") {
       const entity = this.scene.getByName(message.data);
       if (entity) {
         if (entity.children[0] instanceof THREE.Light) {
-          this.emitter.emit("setLightStats", {name : message.data}, "delete");
+          this.emitter.emit("setLightStats", { name: message.data }, "delete");
           this.emitter.emit("notification_popup", message.data + " deleted");
         } else {
-          this.emitter.emit("setModelStats", {name : message.data}, "delete");
+          this.emitter.emit("setModelStats", { name: message.data }, "delete");
           this.emitter.emit("notification_popup", message.data + " deleted");
         }
         this.scene.remove(entity);
@@ -213,12 +224,12 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Model info messages - currently used for spawning new models
   const modelInfoTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/model/info",
-    messageType : "model",
+    ros: this.webSocket,
+    name: "~/model/info",
+    messageType: "model",
   });
 
-  const modelUpdate = function(message) {
+  const modelUpdate = function (message) {
     if (!this.scene.getByName(message.name)) {
       const modelObj = this.createModelFromMsg(message);
       if (modelObj) {
@@ -251,12 +262,12 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Visual messages - currently just used for collision visuals
   const visualTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/visual",
-    messageType : "visual",
+    ros: this.webSocket,
+    name: "~/visual",
+    messageType: "visual",
   });
 
-  const visualUpdate = function(message) {
+  const visualUpdate = function (message) {
     if (!this.scene.getByName(message.name)) {
       // accept only collision visual msgs for now
       if (message.name.indexOf("COLLISION_VISUAL") < 0) {
@@ -279,24 +290,25 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // world stats
   const worldStatsTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/world_stats",
-    messageType : "world_stats",
+    ros: this.webSocket,
+    name: "~/world_stats",
+    messageType: "world_stats",
   });
 
-  const worldStatsUpdate = function(
-      message) { this.forwardWorldStats(message); };
+  const worldStatsUpdate = function (message) {
+    this.forwardWorldStats(message);
+  };
 
   worldStatsTopic.subscribe(worldStatsUpdate.bind(this));
 
   // Spawn new lights
   const lightFactoryTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/factory/light",
-    messageType : "light",
+    ros: this.webSocket,
+    name: "~/factory/light",
+    messageType: "light",
   });
 
-  const lightCreate = function(message) {
+  const lightCreate = function (message) {
     const entity = this.scene.getByName(message.name);
     if (!entity) {
       const lightObj = this.createLightFromMsg(message);
@@ -320,15 +332,18 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Update existing lights
   const lightModifyTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/light/modify",
-    messageType : "light",
+    ros: this.webSocket,
+    name: "~/light/modify",
+    messageType: "light",
   });
 
-  const lightUpdate = function(message) {
+  const lightUpdate = function (message) {
     const entity = this.scene.getByName(message.name);
-    if (entity && entity !== this.scene.modelManipulator.object &&
-        entity.parent !== this.scene.modelManipulator.object) {
+    if (
+      entity &&
+      entity !== this.scene.modelManipulator.object &&
+      entity.parent !== this.scene.modelManipulator.object
+    ) {
       this.scene.updateLight(entity, message);
       this.emitter.emit("setLightStats", message, "update");
     }
@@ -338,43 +353,43 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // heightmap
   this.heightmapDataService = new ROSLIB.Service({
-    ros : this.webSocket,
-    name : "~/heightmap_data",
-    serviceType : "heightmap_data",
+    ros: this.webSocket,
+    name: "~/heightmap_data",
+    serviceType: "heightmap_data",
   });
 
   // road
   this.roadService = new ROSLIB.Service({
-    ros : this.webSocket,
-    name : "~/roads",
-    serviceType : "roads",
+    ros: this.webSocket,
+    name: "~/roads",
+    serviceType: "roads",
   });
 
   const request = new ROSLIB.ServiceRequest({
-    name : "roads",
+    name: "roads",
   });
 
   // send service request and load road on response
-  this.roadService.callService(request, function(result) {
+  this.roadService.callService(request, function (result) {
     const roadsObj = that.createRoadsFromMsg(result);
     this.scene.add(roadsObj);
   });
 
   // Model modify messages - for modifying models
   this.modelModifyTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/model/modify",
-    messageType : "model",
+    ros: this.webSocket,
+    name: "~/model/modify",
+    messageType: "model",
   });
 
   // Light messages - for modifying lights
   this.lightModifyTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/light/modify",
-    messageType : "light",
+    ros: this.webSocket,
+    name: "~/light/modify",
+    messageType: "light",
   });
 
-  const publishEntityModify = function(entity) {
+  const publishEntityModify = function (entity) {
     const matrix = entity.matrixWorld;
     const translation = new THREE.Vector3();
     const quaternion = new THREE.Quaternion();
@@ -382,39 +397,39 @@ GZ3D.GZIface.prototype.onConnected = function() {
     matrix.decompose(translation, quaternion, scale);
 
     const entityMsg = {
-      name : entity.name,
-      id : entity.userData.id,
-      createEntity : 0,
-      position : {
-        x : translation.x,
-        y : translation.y,
-        z : translation.z,
+      name: entity.name,
+      id: entity.userData.id,
+      createEntity: 0,
+      position: {
+        x: translation.x,
+        y: translation.y,
+        z: translation.z,
       },
-      orientation : {
-        w : quaternion.w,
-        x : quaternion.x,
-        y : quaternion.y,
-        z : quaternion.z,
+      orientation: {
+        w: quaternion.w,
+        x: quaternion.x,
+        y: quaternion.y,
+        z: quaternion.z,
       },
     };
     if (entity.children[0] && entity.children[0] instanceof THREE.Light) {
       entityMsg.diffuse = {
-        r : entity.children[0].color.r,
-        g : entity.children[0].color.g,
-        b : entity.children[0].color.b,
+        r: entity.children[0].color.r,
+        g: entity.children[0].color.g,
+        b: entity.children[0].color.b,
       };
       entityMsg.specular = {
-        r : entity.serverProperties.specular.r,
-        g : entity.serverProperties.specular.g,
-        b : entity.serverProperties.specular.b,
+        r: entity.serverProperties.specular.r,
+        g: entity.serverProperties.specular.g,
+        b: entity.serverProperties.specular.b,
       };
       entityMsg.direction = entity.direction;
       entityMsg.range = entity.children[0].distance;
       entityMsg.attenuation_constant =
-          entity.serverProperties.attenuation_constant;
+        entity.serverProperties.attenuation_constant;
       entityMsg.attenuation_linear = entity.serverProperties.attenuation_linear;
       entityMsg.attenuation_quadratic =
-          entity.serverProperties.attenuation_quadratic;
+        entity.serverProperties.attenuation_quadratic;
 
       that.lightModifyTopic.publish(entityMsg);
     } else {
@@ -426,21 +441,21 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Link messages - for modifying links
   this.linkModifyTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/link",
-    messageType : "link",
+    ros: this.webSocket,
+    name: "~/link",
+    messageType: "link",
   });
 
-  const publishLinkModify = function(entity, type) {
+  const publishLinkModify = function (entity, type) {
     const modelMsg = {
-      name : entity.parent.name,
-      id : entity.parent.userData.id,
-      link : {
-        name : entity.name,
-        id : entity.userData.id,
-        self_collide : entity.serverProperties.self_collide,
-        gravity : entity.serverProperties.gravity,
-        kinematic : entity.serverProperties.kinematic,
+      name: entity.parent.name,
+      id: entity.parent.userData.id,
+      link: {
+        name: entity.name,
+        id: entity.userData.id,
+        self_collide: entity.serverProperties.self_collide,
+        gravity: entity.serverProperties.gravity,
+        kinematic: entity.serverProperties.kinematic,
       },
     };
 
@@ -451,38 +466,38 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // Factory messages - for spawning new models
   this.factoryTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/factory",
-    messageType : "factory",
+    ros: this.webSocket,
+    name: "~/factory",
+    messageType: "factory",
   });
 
   // Factory messages - for spawning new lights
   this.lightFactoryTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/factory/light",
-    messageType : "light",
+    ros: this.webSocket,
+    name: "~/factory/light",
+    messageType: "light",
   });
 
-  const publishFactory = function(model, type) {
+  const publishFactory = function (model, type) {
     const matrix = model.matrixWorld;
     const translation = new THREE.Vector3();
     const quaternion = new THREE.Quaternion();
     const scale = new THREE.Vector3();
     matrix.decompose(translation, quaternion, scale);
     const entityMsg = {
-      name : model.name,
-      type : type,
-      createEntity : 1,
-      position : {
-        x : translation.x,
-        y : translation.y,
-        z : translation.z,
+      name: model.name,
+      type: type,
+      createEntity: 1,
+      position: {
+        x: translation.x,
+        y: translation.y,
+        z: translation.z,
       },
-      orientation : {
-        w : quaternion.w,
-        x : quaternion.x,
-        y : quaternion.y,
-        z : quaternion.z,
+      orientation: {
+        w: quaternion.w,
+        x: quaternion.x,
+        y: quaternion.y,
+        z: quaternion.z,
       },
     };
     if (model.children[0].children[0] instanceof THREE.Light) {
@@ -494,30 +509,31 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   // For deleting models
   this.deleteTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/entity_delete",
-    messageType : "entity_delete",
+    ros: this.webSocket,
+    name: "~/entity_delete",
+    messageType: "entity_delete",
   });
 
-  const publishDeleteEntity = function(entity) {
+  const publishDeleteEntity = function (entity) {
     const modelMsg = {
-      name : entity.name,
+      name: entity.name,
     };
 
     that.deleteTopic.publish(modelMsg);
   };
 
-  this.emitter.on("deleteEntity",
-                  function(entity) { publishDeleteEntity(entity); });
+  this.emitter.on("deleteEntity", function (entity) {
+    publishDeleteEntity(entity);
+  });
 
   // World control messages - for resetting world/models
   this.worldControlTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/world_control",
-    messageType : "world_control",
+    ros: this.webSocket,
+    name: "~/world_control",
+    messageType: "world_control",
   });
 
-  const publishWorldControl = function(state, resetType) {
+  const publishWorldControl = function (state, resetType) {
     const worldControlMsg = {};
     if (state !== null) {
       worldControlMsg.pause = state;
@@ -530,21 +546,24 @@ GZ3D.GZIface.prototype.onConnected = function() {
 
   this.emitter.on("entityCreated", publishFactory);
 
-  this.emitter.on(
-      "reset", function(resetType) { publishWorldControl(null, resetType); });
+  this.emitter.on("reset", function (resetType) {
+    publishWorldControl(null, resetType);
+  });
 
-  this.emitter.on("pause",
-                  function(paused) { publishWorldControl(paused, null); });
+  this.emitter.on("pause", function (paused) {
+    publishWorldControl(paused, null);
+  });
 
   // Log play control messages
   this.playbackControlTopic = new ROSLIB.Topic({
-    ros : this.webSocket,
-    name : "~/playback_control",
-    messageType : "playback_control",
+    ros: this.webSocket,
+    name: "~/playback_control",
+    messageType: "playback_control",
   });
 
-  const publishPlaybackControl = function(
-      playbackControl) { that.playbackControlTopic.publish(playbackControl); };
+  const publishPlaybackControl = function (playbackControl) {
+    that.playbackControlTopic.publish(playbackControl);
+  };
 
   this.emitter.on("logPlayChanged", publishPlaybackControl);
 };
@@ -553,16 +572,19 @@ GZ3D.GZIface.prototype.onConnected = function() {
  * Emit events with latest world stats
  * @param {Object} stats - World statistics message
  */
-GZ3D.GZIface.prototype.forwardWorldStats = function(stats) {
+GZ3D.GZIface.prototype.forwardWorldStats = function (stats) {
   if (stats.paused !== undefined) {
     this.emitter.emit("setPaused", stats.paused);
   }
 
   if (stats.log_playback_stats) {
     this.emitter.emit("setLogPlayVisible", true);
-    this.emitter.emit("setLogPlayStats", stats.sim_time,
-                      stats.log_playback_stats.start_time,
-                      stats.log_playback_stats.end_time);
+    this.emitter.emit(
+      "setLogPlayStats",
+      stats.sim_time,
+      stats.log_playback_stats.start_time,
+      stats.log_playback_stats.end_time
+    );
   } else {
     this.emitter.emit("setLogPlayVisible", false);
     this.emitter.emit("setRealTime", stats.real_time);
@@ -576,7 +598,7 @@ GZ3D.GZIface.prototype.forwardWorldStats = function(stats) {
  * @param {Object} model - Model message
  * @return {Object} Model object
  */
-GZ3D.GZIface.prototype.createModelFromMsg = function(model) {
+GZ3D.GZIface.prototype.createModelFromMsg = function (model) {
   const modelObj = new THREE.Object3D();
   modelObj.name = model.name;
   modelObj.userData.id = model.id;
@@ -589,9 +611,9 @@ GZ3D.GZIface.prototype.createModelFromMsg = function(model) {
     linkObj.name = link.name;
     linkObj.userData.id = link.id;
     linkObj.serverProperties = {
-      self_collide : link.self_collide,
-      gravity : link.gravity,
-      kinematic : link.kinematic,
+      self_collide: link.self_collide,
+      gravity: link.gravity,
+      kinematic: link.kinematic,
     };
 
     if (link.inertial) {
@@ -651,14 +673,17 @@ GZ3D.GZIface.prototype.createModelFromMsg = function(model) {
  * @param {Object} visual - Visual message
  * @return {Object} Visual object
  */
-GZ3D.GZIface.prototype.createVisualFromMsg = function(visual) {
+GZ3D.GZIface.prototype.createVisualFromMsg = function (visual) {
   if (visual.geometry) {
     const geom = visual.geometry;
     const visualObj = new THREE.Object3D();
     visualObj.name = visual.name;
     if (visual.pose) {
-      this.scene.setPose(visualObj, visual.pose.position,
-                         visual.pose.orientation);
+      this.scene.setPose(
+        visualObj,
+        visual.pose.position,
+        visual.pose.orientation
+      );
     }
 
     visualObj.castShadow = visual.cast_shadows;
@@ -675,7 +700,7 @@ GZ3D.GZIface.prototype.createVisualFromMsg = function(visual) {
  * @param {Object} light - Light message
  * @return {Object} Light object
  */
-GZ3D.GZIface.prototype.createLightFromMsg = function(light) {
+GZ3D.GZIface.prototype.createLightFromMsg = function (light) {
   let obj, range, direction;
 
   if (light.type === 1) {
@@ -697,14 +722,25 @@ GZ3D.GZIface.prototype.createLightFromMsg = function(light) {
   const r = 1;
   const L = light.attenuation_linear;
   const Q = light.attenuation_quadratic;
-  const intensity = E * (D / (D + L * r)) *
-                    (Math.pow(D, 2) / (Math.pow(D, 2) + Q * Math.pow(r, 2)));
+  const intensity =
+    E *
+    (D / (D + L * r)) *
+    (Math.pow(D, 2) / (Math.pow(D, 2) + Q * Math.pow(r, 2)));
 
-  obj = this.scene.createLight(light.type, light.diffuse, intensity, light.pose,
-                               range, light.cast_shadows, light.name, direction,
-                               light.specular, light.attenuation_constant,
-                               light.attenuation_linear,
-                               light.attenuation_quadratic);
+  obj = this.scene.createLight(
+    light.type,
+    light.diffuse,
+    intensity,
+    light.pose,
+    range,
+    light.cast_shadows,
+    light.name,
+    direction,
+    light.specular,
+    light.attenuation_constant,
+    light.attenuation_linear,
+    light.attenuation_quadratic
+  );
 
   return obj;
 };
@@ -714,7 +750,7 @@ GZ3D.GZIface.prototype.createLightFromMsg = function(light) {
  * @param {Object} roads - Road message
  * @return {Object} Road object
  */
-GZ3D.GZIface.prototype.createRoadsFromMsg = function(roads) {
+GZ3D.GZIface.prototype.createRoadsFromMsg = function (roads) {
   const roadObj = new THREE.Object3D();
 
   const mat = this.material["Gazebo/Road"];
@@ -733,7 +769,7 @@ GZ3D.GZIface.prototype.createRoadsFromMsg = function(roads) {
  * @param {string} uri - Full URI including scheme
  * @return {string} Updated URI
  */
-GZ3D.GZIface.prototype.parseUri = function(uri) {
+GZ3D.GZIface.prototype.parseUri = function (uri) {
   const uriPath = "assets";
   let idx = uri.indexOf("://");
   if (idx > 0) {
@@ -748,23 +784,30 @@ GZ3D.GZIface.prototype.parseUri = function(uri) {
  * @param {Object} material - material message
  * @param {Object} parent - parent object (i.e. visual)
  */
-GZ3D.GZIface.prototype.createGeom = function(geom, material, parent) {
+GZ3D.GZIface.prototype.createGeom = function (geom, material, parent) {
   let obj;
   const uriPath = "assets";
   const that = this;
   const mat = this.parseMaterial(material);
 
   if (geom.box) {
-    obj =
-        this.scene.createBox(geom.box.size.x, geom.box.size.y, geom.box.size.z);
+    obj = this.scene.createBox(
+      geom.box.size.x,
+      geom.box.size.y,
+      geom.box.size.z
+    );
   } else if (geom.cylinder) {
     obj = this.scene.createCylinder(geom.cylinder.radius, geom.cylinder.length);
   } else if (geom.sphere) {
     obj = this.scene.createSphere(geom.sphere.radius);
   } else if (geom.plane) {
-    obj = this.scene.createPlane(geom.plane.normal.x, geom.plane.normal.y,
-                                 geom.plane.normal.z, geom.plane.size.x,
-                                 geom.plane.size.y);
+    obj = this.scene.createPlane(
+      geom.plane.normal.x,
+      geom.plane.normal.y,
+      geom.plane.normal.z,
+      geom.plane.size.x,
+      geom.plane.size.y
+    );
   } else if (geom.mesh) {
     // get model name which the mesh is in
     let rootModel = parent;
@@ -853,35 +896,39 @@ GZ3D.GZIface.prototype.createGeom = function(geom, material, parent) {
         modelUri = this.protocol + "//" + this.url + "/" + modelUri;
 
         this.scene.loadMeshFromUri(
-            modelUri, submesh, centerSubmesh, function(mesh) {
-              if (mat) {
-                // Because the stl mesh doesn't have any children we cannot set
-                // the materials like other mesh types.
-                if (modelUri.indexOf(".stl") === -1) {
-                  const allChildren = [];
-                  mesh.getDescendants(allChildren);
-                  for (let c = 0; c < allChildren.length; ++c) {
-                    if (allChildren[c] instanceof THREE.Mesh) {
-                      that.scene.setMaterial(allChildren[c], mat);
-                      break;
-                    }
+          modelUri,
+          submesh,
+          centerSubmesh,
+          function (mesh) {
+            if (mat) {
+              // Because the stl mesh doesn't have any children we cannot set
+              // the materials like other mesh types.
+              if (modelUri.indexOf(".stl") === -1) {
+                const allChildren = [];
+                mesh.getDescendants(allChildren);
+                for (let c = 0; c < allChildren.length; ++c) {
+                  if (allChildren[c] instanceof THREE.Mesh) {
+                    that.scene.setMaterial(allChildren[c], mat);
+                    break;
                   }
-                } else {
-                  that.scene.setMaterial(mesh, mat);
                 }
               } else {
-                if (ext === ".stl") {
-                  that.scene.setMaterial(mesh, {ambient : [ 1, 1, 1, 1 ]});
-                }
+                that.scene.setMaterial(mesh, mat);
               }
-              parent.add(mesh);
-              loadGeom(parent);
-            });
+            } else {
+              if (ext === ".stl") {
+                that.scene.setMaterial(mesh, { ambient: [1, 1, 1, 1] });
+              }
+            }
+            parent.add(mesh);
+            loadGeom(parent);
+          }
+        );
       }
     }
   } else if (geom.heightmap) {
     const request = new ROSLIB.ServiceRequest({
-      name : that.scene.name,
+      name: that.scene.name,
     });
 
     // redirect the texture paths to the assets dir
@@ -894,14 +941,21 @@ GZ3D.GZIface.prototype.createGeom = function(geom, material, parent) {
     const sizes = geom.heightmap.size;
 
     // send service request and load heightmap on response
-    this.heightmapDataService.callService(request, function(result) {
+    this.heightmapDataService.callService(request, function (result) {
       const heightmap = result.heightmap;
       // gazebo heightmap is always square shaped,
       // and a dimension of: 2^N + 1
-      that.scene.loadHeightmap(heightmap.heights, heightmap.size.x,
-                               heightmap.size.y, heightmap.width,
-                               heightmap.height, heightmap.origin, textures,
-                               geom.heightmap.blend, parent);
+      that.scene.loadHeightmap(
+        heightmap.heights,
+        heightmap.size.x,
+        heightmap.size.y,
+        heightmap.width,
+        heightmap.height,
+        heightmap.origin,
+        textures,
+        geom.heightmap.blend,
+        parent
+      );
       // console.log('Result for service call on ' + result);
     });
 
@@ -951,7 +1005,7 @@ GZ3D.GZIface.prototype.createGeom = function(geom, material, parent) {
  * @param {Object} material - material message
  * @return Object containing material properties
  */
-GZ3D.GZIface.prototype.parseMaterial = function(material) {
+GZ3D.GZIface.prototype.parseMaterial = function (material) {
   if (!material) {
     return null;
   }
@@ -999,9 +1053,10 @@ GZ3D.GZIface.prototype.parseMaterial = function(material) {
             } else if (type === "file") {
               if (scriptUri.indexOf("materials") > 0) {
                 textureUri =
-                    scriptUri.substring(scriptUri.indexOf("://") + 3,
-                                        scriptUri.indexOf("materials") + 9) +
-                    "/textures";
+                  scriptUri.substring(
+                    scriptUri.indexOf("://") + 3,
+                    scriptUri.indexOf("materials") + 9
+                  ) + "/textures";
                 break;
               }
             }
@@ -1018,9 +1073,10 @@ GZ3D.GZIface.prototype.parseMaterial = function(material) {
   if (material.normal_map) {
     let mapUri;
     if (material.normal_map.indexOf("://") > 0) {
-      mapUri =
-          material.normal_map.substring(material.normal_map.indexOf("://") + 3,
-                                        material.normal_map.lastIndexOf("/"));
+      mapUri = material.normal_map.substring(
+        material.normal_map.indexOf("://") + 3,
+        material.normal_map.lastIndexOf("/")
+      );
     } else {
       mapUri = textureUri;
     }
@@ -1030,19 +1086,21 @@ GZ3D.GZIface.prototype.parseMaterial = function(material) {
         startIndex = 0;
       }
       const normalMapName = material.normal_map.substr(
-          startIndex, material.normal_map.lastIndexOf(".") - startIndex);
+        startIndex,
+        material.normal_map.lastIndexOf(".") - startIndex
+      );
       normalMap = uriPath + "/" + mapUri + "/" + normalMapName + ".png";
     }
   }
 
   return {
-    texture : texture,
-    normalMap : normalMap,
-    ambient : ambient,
-    diffuse : diffuse,
-    specular : specular,
-    opacity : opacity,
-    scale : scale,
+    texture: texture,
+    normalMap: normalMap,
+    ambient: ambient,
+    diffuse: diffuse,
+    specular: specular,
+    opacity: opacity,
+    scale: scale,
   };
 };
 

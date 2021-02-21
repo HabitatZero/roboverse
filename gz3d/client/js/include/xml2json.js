@@ -8,15 +8,16 @@
 */
 function xml2json(xml, tab) {
   var X = {
-    toObj : function(xml) {
+    toObj: function (xml) {
       let o = {};
       if (xml.nodeType == 1) {
         // element node ..
         if (xml.attributes.length) {
           // element with attributes  ..
           for (let i = 0; i < xml.attributes.length; i++) {
-            o["@" + xml.attributes[i].nodeName] =
-                (xml.attributes[i].nodeValue || "").toString();
+            o["@" + xml.attributes[i].nodeName] = (
+              xml.attributes[i].nodeValue || ""
+            ).toString();
           }
         }
         if (xml.firstChild) {
@@ -25,14 +26,12 @@ function xml2json(xml, tab) {
           let cdataChild = 0;
           let hasElementChild = false;
           for (var n = xml.firstChild; n; n = n.nextSibling) {
-            if (n.nodeType == 1)
-              hasElementChild = true;
+            if (n.nodeType == 1) hasElementChild = true;
             else if (n.nodeType == 3 && n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
               textChild++;
             }
             // non-whitespace text
-            else if (n.nodeType == 4)
-              cdataChild++; // cdata section node
+            else if (n.nodeType == 4) cdataChild++; // cdata section node
           }
           if (hasElementChild) {
             if (textChild < 2 && cdataChild < 2) {
@@ -51,7 +50,7 @@ function xml2json(xml, tab) {
                   if (o[n.nodeName] instanceof Array) {
                     o[n.nodeName][o[n.nodeName].length] = X.toObj(n);
                   } else {
-                    o[n.nodeName] = [ o[n.nodeName], X.toObj(n) ];
+                    o[n.nodeName] = [o[n.nodeName], X.toObj(n)];
                   }
                 } // first occurence of element..
                 else {
@@ -84,8 +83,7 @@ function xml2json(xml, tab) {
             }
           }
         }
-        if (!xml.attributes.length && !xml.firstChild)
-          o = null;
+        if (!xml.attributes.length && !xml.firstChild) o = null;
       } else if (xml.nodeType == 9) {
         // document.node
         o = X.toObj(xml.documentElement);
@@ -96,17 +94,18 @@ function xml2json(xml, tab) {
       }
       return o;
     },
-    toJson : function(o, name, ind) {
+    toJson: function (o, name, ind) {
       let json = name ? '"' + name + '"' : "";
       if (o instanceof Array) {
         for (let i = 0, n = o.length; i < n; i++) {
           o[i] = X.toJson(o[i], "", ind + "\t");
         }
-        json += (name ? ":[" : "[") +
-                (o.length > 1 ? "\n" + ind + "\t" + o.join(",\n" + ind + "\t") +
-                                    "\n" + ind
-                              : o.join("")) +
-                "]";
+        json +=
+          (name ? ":[" : "[") +
+          (o.length > 1
+            ? "\n" + ind + "\t" + o.join(",\n" + ind + "\t") + "\n" + ind
+            : o.join("")) +
+          "]";
       } else if (o == null) {
         json += (name && ":") + "null";
       } else if (typeof o === "object") {
@@ -114,11 +113,12 @@ function xml2json(xml, tab) {
         for (const m in o) {
           arr[arr.length] = X.toJson(o[m], m, ind + "\t");
         }
-        json += (name ? ":{" : "{") +
-                (arr.length > 1 ? "\n" + ind + "\t" +
-                                      arr.join(",\n" + ind + "\t") + "\n" + ind
-                                : arr.join("")) +
-                "}";
+        json +=
+          (name ? ":{" : "{") +
+          (arr.length > 1
+            ? "\n" + ind + "\t" + arr.join(",\n" + ind + "\t") + "\n" + ind
+            : arr.join("")) +
+          "}";
       } else if (typeof o === "string") {
         json += (name && ":") + '"' + o.toString() + '"';
       } else {
@@ -126,18 +126,22 @@ function xml2json(xml, tab) {
       }
       return json;
     },
-    innerXml : function(node) {
+    innerXml: function (node) {
       let s = "";
       if ("innerHTML" in node) {
         s = node.innerHTML;
       } else {
-        var asXml = function(n) {
+        var asXml = function (n) {
           let s = "";
           if (n.nodeType == 1) {
             s += "<" + n.nodeName;
             for (let i = 0; i < n.attributes.length; i++) {
-              s += " " + n.attributes[i].nodeName + '="' +
-                   (n.attributes[i].nodeValue || "").toString() + '"';
+              s +=
+                " " +
+                n.attributes[i].nodeName +
+                '="' +
+                (n.attributes[i].nodeValue || "").toString() +
+                '"';
             }
             if (n.firstChild) {
               s += ">";
@@ -161,15 +165,16 @@ function xml2json(xml, tab) {
       }
       return s;
     },
-    escape : function(txt) {
-      return txt.replace(/[\\]/g, "\\\\")
-          .replace(/[\"]/g, '\\"')
-          .replace(/[\n]/g, "\\n")
-          .replace(/[\r]/g, "\\r");
+    escape: function (txt) {
+      return txt
+        .replace(/[\\]/g, "\\\\")
+        .replace(/[\"]/g, '\\"')
+        .replace(/[\n]/g, "\\n")
+        .replace(/[\r]/g, "\\r");
     },
-    removeWhite : function(e) {
+    removeWhite: function (e) {
       e.normalize();
-      for (let n = e.firstChild; n;) {
+      for (let n = e.firstChild; n; ) {
         if (n.nodeType == 3) {
           // text node
           if (!n.nodeValue.match(/[^ \f\n\r\t\v]/)) {
@@ -197,7 +202,10 @@ function xml2json(xml, tab) {
     xml = xml.documentElement;
   }
   const json = X.toJson(X.toObj(X.removeWhite(xml)), xml.nodeName, "\t");
-  return ("{\n" + tab +
-          (tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "")) +
-          "\n}");
+  return (
+    "{\n" +
+    tab +
+    (tab ? json.replace(/\t/g, tab) : json.replace(/\t|\n/g, "")) +
+    "\n}"
+  );
 }

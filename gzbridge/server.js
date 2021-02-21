@@ -40,7 +40,7 @@ let isConnected = false;
  * @param req Request
  * @param res Response
  */
-const staticServe = function(req, res) {
+const staticServe = function (req, res) {
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Request-Method", "*");
@@ -55,7 +55,7 @@ const staticServe = function(req, res) {
 
   fileLoc = path.join(fileLoc, req.url);
 
-  fs.readFile(fileLoc, function(err, data) {
+  fs.readFile(fileLoc, function (err, data) {
     if (err) {
       res.writeHead(404, "Not Found");
       res.write("404: File Not Found!");
@@ -87,28 +87,34 @@ if (gzNode.getIsGzServerConnected()) {
   console.log("Gazebo transport node connected to gzserver.");
   console.log("Pose message filter parameters between successive messages: ");
   console.log("  minimum seconds: " + gzNode.getPoseMsgFilterMinimumAge());
-  console.log("  minimum XYZ distance squared: " +
-              gzNode.getPoseMsgFilterMinimumDistanceSquared());
-  console.log("  minimum Quartenion distance squared:" +
-              " " + gzNode.getPoseMsgFilterMinimumQuaternionSquared());
+  console.log(
+    "  minimum XYZ distance squared: " +
+      gzNode.getPoseMsgFilterMinimumDistanceSquared()
+  );
+  console.log(
+    "  minimum Quartenion distance squared:" +
+      " " +
+      gzNode.getPoseMsgFilterMinimumQuaternionSquared()
+  );
   console.log("--------------------------------------------------------------");
 } else {
-  materialScriptsMessage =
-      gzNode.getMaterialScriptsMessage(staticBasePath + "/assets");
+  materialScriptsMessage = gzNode.getMaterialScriptsMessage(
+    staticBasePath + "/assets"
+  );
 }
 
 // Start websocket server
 const wsServer = new WebSocketServer({
-  httpServer : httpServer,
+  httpServer: httpServer,
   // You should not use autoAcceptConnections for production
   // applications, as it defeats all standard cross-origin protection
   // facilities built into the protocol and the browser.  You should
   // *always* verify the connection's origin and decide whether or not
   // to accept it.
-  autoAcceptConnections : false,
+  autoAcceptConnections: false,
 });
 
-wsServer.on("request", function(request) {
+wsServer.on("request", function (request) {
   // Accept request
   const connection = request.accept(null, request.origin);
 
@@ -116,7 +122,7 @@ wsServer.on("request", function(request) {
   if (!gzNode.getIsGzServerConnected()) {
     // create error status and send it
     const statusMessage =
-        '{"op":"publish","topic":"~/status","msg":{"status":"error"}}';
+      '{"op":"publish","topic":"~/status","msg":{"status":"error"}}';
     connection.sendUTF(statusMessage);
     // send material scripts message
     connection.sendUTF(materialScriptsMessage);
@@ -130,27 +136,51 @@ wsServer.on("request", function(request) {
     gzNode.setConnected(isConnected);
   }
 
-  console.log(new Date() + " New connection accepted from: " + request.origin +
-              " " + connection.remoteAddress);
+  console.log(
+    new Date() +
+      " New connection accepted from: " +
+      request.origin +
+      " " +
+      connection.remoteAddress
+  );
 
   // Handle messages received from client
-  connection.on("message", function(message) {
+  connection.on("message", function (message) {
     if (message.type === "utf8") {
-      console.log(new Date() + " Received Message: " + message.utf8Data +
-                  " from " + request.origin + " " + connection.remoteAddress);
+      console.log(
+        new Date() +
+          " Received Message: " +
+          message.utf8Data +
+          " from " +
+          request.origin +
+          " " +
+          connection.remoteAddress
+      );
       gzNode.request(message.utf8Data);
     } else if (message.type === "binary") {
-      console.log(new Date() + " Received Binary Message of " +
-                  message.binaryData.length + " bytes from " + request.origin +
-                  " " + connection.remoteAddress);
+      console.log(
+        new Date() +
+          " Received Binary Message of " +
+          message.binaryData.length +
+          " bytes from " +
+          request.origin +
+          " " +
+          connection.remoteAddress
+      );
       connection.sendBytes(message.binaryData);
     }
   });
 
   // Handle client disconnection
-  connection.on("close", function(reasonCode, description) {
-    console.log(new Date() + " Peer " + request.origin + " " +
-                connection.remoteAddress + " disconnected.");
+  connection.on("close", function (reasonCode, description) {
+    console.log(
+      new Date() +
+        " Peer " +
+        request.origin +
+        " " +
+        connection.remoteAddress +
+        " disconnected."
+    );
 
     // remove connection from array
     const conIndex = connections.indexOf(connection);

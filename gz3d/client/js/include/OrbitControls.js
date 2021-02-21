@@ -26,7 +26,7 @@
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
 
-THREE.OrbitControls = function(object, domElement) {
+THREE.OrbitControls = function (object, domElement) {
   this.object = object;
   this.domElement = domElement !== undefined ? domElement : document;
 
@@ -38,12 +38,14 @@ THREE.OrbitControls = function(object, domElement) {
   // "target" sets the location of focus, where the control orbits around
   // and where it pans with respect to.
   this.target = new THREE.Vector3();
-  this.targetIndicator = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 20),
-                                        new THREE.MeshPhongMaterial({
-                                          emissive : 0x333300,
-                                          color : 0xffff00,
-                                          shading : THREE.SmoothShading,
-                                        }));
+  this.targetIndicator = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 20, 20),
+    new THREE.MeshPhongMaterial({
+      emissive: 0x333300,
+      color: 0xffff00,
+      shading: THREE.SmoothShading,
+    })
+  );
   this.targetIndicator.visible = false;
   this.showTargetIndicator = false;
   // center is old, deprecated; use "target" instead
@@ -71,13 +73,13 @@ THREE.OrbitControls = function(object, domElement) {
 
   // How far you can orbit vertically, upper and lower limits.
   // Range is 0 to Math.PI radians.
-  this.minPolarAngle = 0;       // radians
+  this.minPolarAngle = 0; // radians
   this.maxPolarAngle = Math.PI; // radians
 
   // Set to true to disable use of the keys
   this.noKeys = false;
   // The four arrow keys
-  this.keys = {LEFT : 37, UP : 38, RIGHT : 39, BOTTOM : 40};
+  this.keys = { LEFT: 37, UP: 38, RIGHT: 39, BOTTOM: 40 };
 
   /// /////////
   // internals
@@ -106,12 +108,12 @@ THREE.OrbitControls = function(object, domElement) {
   const lastPosition = new THREE.Vector3();
 
   const STATE = {
-    NONE : -1,
-    ROTATE : 0,
-    DOLLY : 1,
-    PAN : 2,
-    TOUCH_ROTATE : 3,
-    TOUCH_DOLLY_PAN : 4,
+    NONE: -1,
+    ROTATE: 0,
+    DOLLY: 1,
+    PAN: 2,
+    TOUCH_ROTATE: 3,
+    TOUCH_DOLLY_PAN: 4,
   };
   let state = STATE.NONE;
 
@@ -120,17 +122,17 @@ THREE.OrbitControls = function(object, domElement) {
   // events
 
   const changeEvent = {
-    type : "change",
+    type: "change",
   };
 
-  this.rotateLeft = function(angle) {
+  this.rotateLeft = function (angle) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
     thetaDelta -= angle;
   };
 
-  this.rotateUp = function(angle) {
+  this.rotateUp = function (angle) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
@@ -138,7 +140,7 @@ THREE.OrbitControls = function(object, domElement) {
   };
 
   // pass in distance in world space to move left
-  this.panLeft = function(distance) {
+  this.panLeft = function (distance) {
     const panOffset = new THREE.Vector3();
     const te = this.object.matrix.elements;
     // get X column of matrix
@@ -149,7 +151,7 @@ THREE.OrbitControls = function(object, domElement) {
   };
 
   // pass in distance in world space to move up
-  this.panUp = function(distance) {
+  this.panUp = function (distance) {
     const panOffset = new THREE.Vector3();
     const te = this.object.matrix.elements;
     // get Y column of matrix
@@ -161,9 +163,9 @@ THREE.OrbitControls = function(object, domElement) {
 
   // main entry point; pass in Vector2 of change desired in pixel space,
   // right and down are positive
-  this.pan = function(delta) {
-    const element = scope.domElement === document ? scope.domElement.body
-                                                  : scope.domElement;
+  this.pan = function (delta) {
+    const element =
+      scope.domElement === document ? scope.domElement.body : scope.domElement;
 
     if (scope.object.fov !== undefined) {
       // perspective
@@ -174,24 +176,34 @@ THREE.OrbitControls = function(object, domElement) {
 
       const vfov = (scope.object.fov * Math.PI) / 180.0;
       const hfov = 2 * Math.atan(Math.tan(vfov / 2.0) * scope.object.aspect);
-      scope.panLeft((2 * delta.x * targetDistance * Math.tan(hfov / 2)) /
-                    element.clientWidth);
-      scope.panUp((2 * delta.y * targetDistance * Math.tan(vfov / 2)) /
-                  element.clientHeight);
+      scope.panLeft(
+        (2 * delta.x * targetDistance * Math.tan(hfov / 2)) /
+          element.clientWidth
+      );
+      scope.panUp(
+        (2 * delta.y * targetDistance * Math.tan(vfov / 2)) /
+          element.clientHeight
+      );
     } else if (scope.object.top !== undefined) {
       // orthographic
-      scope.panLeft((delta.x * (scope.object.right - scope.object.left)) /
-                    element.clientWidth);
-      scope.panUp((delta.y * (scope.object.top - scope.object.bottom)) /
-                  element.clientHeight);
+      scope.panLeft(
+        (delta.x * (scope.object.right - scope.object.left)) /
+          element.clientWidth
+      );
+      scope.panUp(
+        (delta.y * (scope.object.top - scope.object.bottom)) /
+          element.clientHeight
+      );
     } else {
       // camera neither orthographic or perspective - warn user
-      console.warn("WARNING: OrbitControls.js encountered an unknown" +
-                   "camera type - pan disabled.");
+      console.warn(
+        "WARNING: OrbitControls.js encountered an unknown" +
+          "camera type - pan disabled."
+      );
     }
   };
 
-  this.dollyIn = function(dollyScale) {
+  this.dollyIn = function (dollyScale) {
     if (dollyScale === undefined) {
       dollyScale = getZoomScale();
     }
@@ -199,7 +211,7 @@ THREE.OrbitControls = function(object, domElement) {
     scale /= dollyScale;
   };
 
-  this.dollyOut = function(dollyScale) {
+  this.dollyOut = function (dollyScale) {
     if (dollyScale === undefined) {
       dollyScale = getZoomScale();
     }
@@ -207,7 +219,7 @@ THREE.OrbitControls = function(object, domElement) {
     scale *= dollyScale;
   };
 
-  this.update = function() {
+  this.update = function () {
     const position = this.object.position;
     const offset = position.clone().sub(this.target);
 
@@ -215,8 +227,10 @@ THREE.OrbitControls = function(object, domElement) {
     let theta = Math.atan2(offset.x, offset.y);
 
     // angle from z-axis
-    let phi = Math.atan2(Math.sqrt(offset.x * offset.x + offset.y * offset.y),
-                         offset.z);
+    let phi = Math.atan2(
+      Math.sqrt(offset.x * offset.x + offset.y * offset.y),
+      offset.z
+    );
 
     if (this.autoRotate) {
       this.rotateLeft(getAutoRotationAngle());
@@ -247,20 +261,26 @@ THREE.OrbitControls = function(object, domElement) {
     offset.y = radius * Math.sin(phi) * Math.cos(theta);
 
     if (thetaDelta || phiDelta) {
-      const rotateAroundWorldAxis = function(object, axis, radians) {
+      const rotateAroundWorldAxis = function (object, axis, radians) {
         rotWorldMatrix = new THREE.Matrix4();
         rotWorldMatrix.makeRotationAxis(axis.normalize(), radians);
         rotWorldMatrix.multiply(object.matrix); // pre-multiply
 
-        rotWorldMatrix.decompose(object.position, object.quaternion,
-                                 object.scale);
+        rotWorldMatrix.decompose(
+          object.position,
+          object.quaternion,
+          object.scale
+        );
         object.updateMatrix();
       };
 
       this.object.position.sub(this.target);
       this.object.updateMatrix();
-      rotateAroundWorldAxis(this.object, new THREE.Vector3(0, 0, 1),
-                            oldTheta - theta);
+      rotateAroundWorldAxis(
+        this.object,
+        new THREE.Vector3(0, 0, 1),
+        oldTheta - theta
+      );
       const localPitch = new THREE.Vector3(1, 0, 0);
       localPitch.applyQuaternion(this.object.quaternion);
       rotateAroundWorldAxis(this.object, localPitch, phi - oldPhi);
@@ -346,8 +366,11 @@ THREE.OrbitControls = function(object, domElement) {
       const scaleVec = new THREE.Vector3();
       scaleVec.copy(object.position).sub(scope.targetIndicator.position);
       const indicatorScale = scaleVec.length() / 100;
-      scope.targetIndicator.scale.set(indicatorScale, indicatorScale,
-                                      indicatorScale);
+      scope.targetIndicator.scale.set(
+        indicatorScale,
+        indicatorScale,
+        indicatorScale
+      );
     }
   };
 
@@ -362,7 +385,9 @@ THREE.OrbitControls = function(object, domElement) {
     return ((2 * Math.PI) / 60 / 60) * scope.autoRotateSpeed;
   }
 
-  function getZoomScale() { return Math.pow(0.95, scope.zoomSpeed); }
+  function getZoomScale() {
+    return Math.pow(0.95, scope.zoomSpeed);
+  }
 
   function onMouseDown(event) {
     if (scope.enabled === false) {
@@ -401,8 +426,11 @@ THREE.OrbitControls = function(object, domElement) {
 
       panStart.set(event.clientX, event.clientY);
     }
-    scope.targetIndicator.position.set(scope.target.x, scope.target.y,
-                                       scope.target.z);
+    scope.targetIndicator.position.set(
+      scope.target.x,
+      scope.target.y,
+      scope.target.z
+    );
     setTargetIndicatorVisible(true);
 
     scope.domElement.addEventListener("mousemove", onMouseMove, false);
@@ -418,8 +446,8 @@ THREE.OrbitControls = function(object, domElement) {
 
     event.preventDefault();
 
-    const element = scope.domElement === document ? scope.domElement.body
-                                                  : scope.domElement;
+    const element =
+      scope.domElement === document ? scope.domElement.body : scope.domElement;
 
     if (state === STATE.ROTATE) {
       if (scope.noRotate === true) {
@@ -430,12 +458,16 @@ THREE.OrbitControls = function(object, domElement) {
       rotateDelta.subVectors(rotateEnd, rotateStart);
 
       // rotating across whole screen goes 360 degrees around
-      scope.rotateLeft(((2 * Math.PI * rotateDelta.x) / element.clientWidth) *
-                       scope.rotateSpeed);
+      scope.rotateLeft(
+        ((2 * Math.PI * rotateDelta.x) / element.clientWidth) *
+          scope.rotateSpeed
+      );
       // rotating up and down along whole screen attempts to go 360,
       // but limited to 180
-      scope.rotateUp(((2 * Math.PI * rotateDelta.y) / element.clientHeight) *
-                     scope.rotateSpeed);
+      scope.rotateUp(
+        ((2 * Math.PI * rotateDelta.y) / element.clientHeight) *
+          scope.rotateSpeed
+      );
 
       rotateStart.copy(rotateEnd);
     } else if (state === STATE.DOLLY) {
@@ -486,8 +518,11 @@ THREE.OrbitControls = function(object, domElement) {
       return;
     }
 
-    scope.targetIndicator.position.set(scope.target.x, scope.target.y,
-                                       scope.target.z);
+    scope.targetIndicator.position.set(
+      scope.target.x,
+      scope.target.y,
+      scope.target.z
+    );
     setTargetIndicatorVisible(true);
     scrollTime = new Date().getTime();
 
@@ -522,22 +557,22 @@ THREE.OrbitControls = function(object, domElement) {
     let needUpdate = false;
 
     switch (event.keyCode) {
-    case scope.keys.UP:
-      scope.pan(new THREE.Vector2(0, scope.keyPanSpeed));
-      needUpdate = true;
-      break;
-    case scope.keys.BOTTOM:
-      scope.pan(new THREE.Vector2(0, -scope.keyPanSpeed));
-      needUpdate = true;
-      break;
-    case scope.keys.LEFT:
-      scope.pan(new THREE.Vector2(scope.keyPanSpeed, 0));
-      needUpdate = true;
-      break;
-    case scope.keys.RIGHT:
-      scope.pan(new THREE.Vector2(-scope.keyPanSpeed, 0));
-      needUpdate = true;
-      break;
+      case scope.keys.UP:
+        scope.pan(new THREE.Vector2(0, scope.keyPanSpeed));
+        needUpdate = true;
+        break;
+      case scope.keys.BOTTOM:
+        scope.pan(new THREE.Vector2(0, -scope.keyPanSpeed));
+        needUpdate = true;
+        break;
+      case scope.keys.LEFT:
+        scope.pan(new THREE.Vector2(scope.keyPanSpeed, 0));
+        needUpdate = true;
+        break;
+      case scope.keys.RIGHT:
+        scope.pan(new THREE.Vector2(-scope.keyPanSpeed, 0));
+        needUpdate = true;
+        break;
     }
 
     if (needUpdate) {
@@ -550,41 +585,44 @@ THREE.OrbitControls = function(object, domElement) {
       return;
     }
 
-    scope.targetIndicator.position.set(scope.target.x, scope.target.y,
-                                       scope.target.z);
+    scope.targetIndicator.position.set(
+      scope.target.x,
+      scope.target.y,
+      scope.target.z
+    );
     setTargetIndicatorVisible(true);
 
     switch (event.touches.length) {
-    case 1: // one-fingered touch: rotate
-      if (scope.noRotate === true) {
-        return;
-      }
+      case 1: // one-fingered touch: rotate
+        if (scope.noRotate === true) {
+          return;
+        }
 
-      state = STATE.TOUCH_ROTATE;
+        state = STATE.TOUCH_ROTATE;
 
-      rotateStart.set(event.touches[0].pageX, event.touches[0].pageY);
-      break;
+        rotateStart.set(event.touches[0].pageX, event.touches[0].pageY);
+        break;
 
-    case 2: // two-fingered touch: dolly + pan
-      if (scope.noZoom === false) {
-        state = STATE.TOUCH_DOLLY_PAN;
+      case 2: // two-fingered touch: dolly + pan
+        if (scope.noZoom === false) {
+          state = STATE.TOUCH_DOLLY_PAN;
 
-        const dx = event.touches[0].pageX - event.touches[1].pageX;
-        const dy = event.touches[0].pageY - event.touches[1].pageY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        dollyStart.set(0, distance);
-      }
+          const dx = event.touches[0].pageX - event.touches[1].pageX;
+          const dy = event.touches[0].pageY - event.touches[1].pageY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          dollyStart.set(0, distance);
+        }
 
-      if (scope.noPan === false) {
-        const panAvgX = (event.touches[0].pageX + event.touches[1].pageX) / 2;
-        const panAvgY = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+        if (scope.noPan === false) {
+          const panAvgX = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+          const panAvgY = (event.touches[0].pageY + event.touches[1].pageY) / 2;
 
-        panStart.set(panAvgX, panAvgY);
-      }
-      break;
+          panStart.set(panAvgX, panAvgY);
+        }
+        break;
 
-    default:
-      state = STATE.NONE;
+      default:
+        state = STATE.NONE;
     }
   }
 
@@ -596,91 +634,95 @@ THREE.OrbitControls = function(object, domElement) {
     event.preventDefault();
     event.stopPropagation();
 
-    const element = scope.domElement === document ? scope.domElement.body
-                                                  : scope.domElement;
+    const element =
+      scope.domElement === document ? scope.domElement.body : scope.domElement;
 
     switch (event.touches.length) {
-    case 1: // one-fingered touch: rotate
-      if (scope.noRotate === true) {
-        return;
-      }
-      if (state !== STATE.TOUCH_ROTATE) {
-        return;
-      }
-
-      rotateEnd.set(event.touches[0].pageX, event.touches[0].pageY);
-      rotateDelta.subVectors(rotateEnd, rotateStart);
-
-      // rotating across whole screen goes 360 degrees around
-      scope.rotateLeft(((2 * Math.PI * rotateDelta.x) / element.clientWidth) *
-                       scope.rotateSpeed);
-      // rotating up and down along whole screen attempts to go 360,
-      // but limited to 180
-      scope.rotateUp(((2 * Math.PI * rotateDelta.y) / element.clientHeight) *
-                     scope.rotateSpeed);
-
-      rotateStart.copy(rotateEnd);
-      break;
-
-    case 2: // two-fingered touch: dolly + pan
-      if (state !== STATE.TOUCH_DOLLY_PAN) {
-        return;
-      }
-
-      // Dolly delta
-      if (scope.noZoom === false) {
-        const dx = event.touches[0].pageX - event.touches[1].pageX;
-        const dy = event.touches[0].pageY - event.touches[1].pageY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        dollyEnd.set(0, distance);
-        dollyDelta.subVectors(dollyEnd, dollyStart);
-        var dollyAbs = Math.abs(dollyDelta.y);
-        dollyStart.copy(dollyEnd);
-      }
-
-      // Pan delta
-      if (scope.noPan === false) {
-        const panAvgX = (event.touches[0].pageX + event.touches[1].pageX) / 2;
-        const panAvgY = (event.touches[0].pageY + event.touches[1].pageY) / 2;
-
-        panEnd.set(panAvgX, panAvgY);
-        panDelta.subVectors(panEnd, panStart);
-        var panAbs = Math.max(Math.abs(panDelta.x), Math.abs(panDelta.y));
-        panStart.copy(panEnd);
-      }
-
-      // Choose one
-      if (scope.noPan === false && scope.noZoom === false) {
-        if (dollyAbs > panAbs) {
-          // Only dolly
-          scope.noPan = true;
-        } else {
-          // Only pan
-          scope.noZoom = true;
+      case 1: // one-fingered touch: rotate
+        if (scope.noRotate === true) {
+          return;
         }
-      }
+        if (state !== STATE.TOUCH_ROTATE) {
+          return;
+        }
 
-      // Dolly
-      if (scope.noZoom === false) {
-        // Threshold
-        if (Math.abs(dollyDelta.y) > 1.3) {
-          if (dollyDelta.y > 0) {
-            scope.dollyOut();
+        rotateEnd.set(event.touches[0].pageX, event.touches[0].pageY);
+        rotateDelta.subVectors(rotateEnd, rotateStart);
+
+        // rotating across whole screen goes 360 degrees around
+        scope.rotateLeft(
+          ((2 * Math.PI * rotateDelta.x) / element.clientWidth) *
+            scope.rotateSpeed
+        );
+        // rotating up and down along whole screen attempts to go 360,
+        // but limited to 180
+        scope.rotateUp(
+          ((2 * Math.PI * rotateDelta.y) / element.clientHeight) *
+            scope.rotateSpeed
+        );
+
+        rotateStart.copy(rotateEnd);
+        break;
+
+      case 2: // two-fingered touch: dolly + pan
+        if (state !== STATE.TOUCH_DOLLY_PAN) {
+          return;
+        }
+
+        // Dolly delta
+        if (scope.noZoom === false) {
+          const dx = event.touches[0].pageX - event.touches[1].pageX;
+          const dy = event.touches[0].pageY - event.touches[1].pageY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          dollyEnd.set(0, distance);
+          dollyDelta.subVectors(dollyEnd, dollyStart);
+          var dollyAbs = Math.abs(dollyDelta.y);
+          dollyStart.copy(dollyEnd);
+        }
+
+        // Pan delta
+        if (scope.noPan === false) {
+          const panAvgX = (event.touches[0].pageX + event.touches[1].pageX) / 2;
+          const panAvgY = (event.touches[0].pageY + event.touches[1].pageY) / 2;
+
+          panEnd.set(panAvgX, panAvgY);
+          panDelta.subVectors(panEnd, panStart);
+          var panAbs = Math.max(Math.abs(panDelta.x), Math.abs(panDelta.y));
+          panStart.copy(panEnd);
+        }
+
+        // Choose one
+        if (scope.noPan === false && scope.noZoom === false) {
+          if (dollyAbs > panAbs) {
+            // Only dolly
+            scope.noPan = true;
           } else {
-            scope.dollyIn();
+            // Only pan
+            scope.noZoom = true;
           }
         }
-      }
 
-      // Pan
-      if (scope.noPan === false) {
-        scope.pan(panDelta);
-      }
-      break;
+        // Dolly
+        if (scope.noZoom === false) {
+          // Threshold
+          if (Math.abs(dollyDelta.y) > 1.3) {
+            if (dollyDelta.y > 0) {
+              scope.dollyOut();
+            } else {
+              scope.dollyIn();
+            }
+          }
+        }
 
-    default:
-      state = STATE.NONE;
+        // Pan
+        if (scope.noPan === false) {
+          scope.pan(panDelta);
+        }
+        break;
+
+      default:
+        state = STATE.NONE;
     }
   }
 
@@ -697,11 +739,15 @@ THREE.OrbitControls = function(object, domElement) {
   }
 
   this.domElement.addEventListener(
-      "contextmenu", function(event) { event.preventDefault(); }, false);
+    "contextmenu",
+    function (event) {
+      event.preventDefault();
+    },
+    false
+  );
   this.domElement.addEventListener("mousedown", onMouseDown, false);
   this.domElement.addEventListener("mousewheel", onMouseWheel, false);
-  this.domElement.addEventListener("DOMMouseScroll", onMouseWheel,
-                                   false); // firefox
+  this.domElement.addEventListener("DOMMouseScroll", onMouseWheel, false); // firefox
 
   this.domElement.addEventListener("keydown", onKeyDown, false);
 

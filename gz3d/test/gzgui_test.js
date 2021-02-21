@@ -1,9 +1,11 @@
-describe("Gui tests", function() {
+describe("Gui tests", function () {
   let $controller;
 
-  beforeAll(function() { module("gzangular"); });
+  beforeAll(function () {
+    module("gzangular");
+  });
 
-  beforeEach(inject(function(_$controller_) {
+  beforeEach(inject(function (_$controller_) {
     // The injector unwraps the underscores (_) from around the parameter names
     // when matching
     $controller = _$controller_;
@@ -11,8 +13,8 @@ describe("Gui tests", function() {
 
   // Perform all GUI tests on a single spec because the timing between fixture
   // loading and jquery readiness is tricky
-  describe("jQuery interactions", function() {
-    it("check GUI events", function() {
+  describe("jQuery interactions", function () {
+    it("check GUI events", function () {
       // Check global emitter
       expect(globalEmitter).toBeDefined();
 
@@ -54,8 +56,9 @@ describe("Gui tests", function() {
       expect(globalEmitter.listeners("openTab").length).toEqual(1);
       expect(globalEmitter.listeners("pointerOnMenu").length).toEqual(1);
       expect(globalEmitter.listeners("pointerOffMenu").length).toEqual(1);
-      expect(globalEmitter.listeners("longpress_container_start").length)
-          .toEqual(1);
+      expect(
+        globalEmitter.listeners("longpress_container_start").length
+      ).toEqual(1);
 
       // Check GUI initial values
       expect(gui.spawnState).toEqual(null);
@@ -104,8 +107,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#translate-mode");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("manipulation_mode", "translate");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "manipulation_mode",
+        "translate"
+      );
       globalEmitter.emit.calls.reset();
 
       // Click view mode
@@ -114,8 +119,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#view-mode");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("manipulation_mode", "view");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "manipulation_mode",
+        "view"
+      );
       globalEmitter.emit.calls.reset();
 
       // Click rotate mode
@@ -124,8 +131,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#rotate-mode");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("manipulation_mode", "rotate");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "manipulation_mode",
+        "rotate"
+      );
       globalEmitter.emit.calls.reset();
 
       // close tabs when clicking to open one
@@ -135,8 +144,11 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn(".tab");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("openTab", "mainMenu", "mainMenu");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "openTab",
+        "mainMenu",
+        "mainMenu"
+      );
       globalEmitter.emit.calls.reset();
 
       // close tabs when clicking on closePanels class
@@ -155,8 +167,10 @@ describe("Gui tests", function() {
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(2);
       expect(globalEmitter.emit).toHaveBeenCalledWith("closeTabs", false);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("spawn_entity_start", "box");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "spawn_entity_start",
+        "box"
+      );
       globalEmitter.emit.calls.reset();
 
       // play
@@ -165,8 +179,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#play");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(2);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("notification_popup", "Physics engine running");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "notification_popup",
+        "Physics engine running"
+      );
       expect(globalEmitter.emit).toHaveBeenCalledWith("pause", false);
       globalEmitter.emit.calls.reset();
 
@@ -269,8 +285,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#view-transparent");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("set_view_as", "transparent");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "set_view_as",
+        "transparent"
+      );
       globalEmitter.emit.calls.reset();
 
       // view wireframe
@@ -279,8 +297,10 @@ describe("Gui tests", function() {
       expect("click").toHaveBeenTriggeredOn("#view-wireframe");
       expect(spyEvent).toHaveBeenTriggered();
       expect(globalEmitter.emit.calls.count()).toEqual(1);
-      expect(globalEmitter.emit)
-          .toHaveBeenCalledWith("set_view_as", "wireframe");
+      expect(globalEmitter.emit).toHaveBeenCalledWith(
+        "set_view_as",
+        "wireframe"
+      );
       globalEmitter.emit.calls.reset();
 
       // not view joints if there isn't an entity with joints selected
@@ -319,12 +339,14 @@ describe("Gui tests", function() {
       // Return the model title given the model path
       expect(getNameFromPath("box")).toEqual("Box");
       expect(getNameFromPath("spotlight")).toEqual("Spot Light");
-      expect(getNameFromPath("stone_10_2_5_1cm"))
-          .toEqual("Stone 10 x 2.5 x 1 cm");
+      expect(getNameFromPath("stone_10_2_5_1cm")).toEqual(
+        "Stone 10 x 2.5 x 1 cm"
+      );
       expect(getNameFromPath("depth_camera")).toEqual("Depth Camera");
       expect(getNameFromPath("cinder_block_wide")).toEqual("Cinder Block Wide");
-      expect(getNameFromPath("polaris_ranger_xp900_no_roll_cage"))
-          .toEqual("Polaris Ranger without roll cage");
+      expect(getNameFromPath("polaris_ranger_xp900_no_roll_cage")).toEqual(
+        "Polaris Ranger without roll cage"
+      );
     });
   });
 });
