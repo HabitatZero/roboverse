@@ -882,7 +882,10 @@ GZ3D.GZIface.prototype.createGeom = function (geom, material, parent) {
           const checkModel = new XMLHttpRequest();
           checkModel.open("HEAD", modelUri + "_coarse.dae", false);
           checkModel.send();
-          modelUri = checkModel.status === 404 ? modelUri + ".dae" : modelUri + "_coarse.dae";
+          modelUri =
+            checkModel.status === 404
+              ? modelUri + ".dae"
+              : modelUri + "_coarse.dae";
         }
 
         const ext = modelUri.substr(-4).toLowerCase();
@@ -1068,10 +1071,13 @@ GZ3D.GZIface.prototype.parseMaterial = function (material) {
   // normal map
   if (material.normal_map) {
     let mapUri;
-    mapUri = material.normal_map.indexOf("://") > 0 ? material.normal_map.substring(
-        material.normal_map.indexOf("://") + 3,
-        material.normal_map.lastIndexOf("/")
-      ) : textureUri;
+    mapUri =
+      material.normal_map.indexOf("://") > 0
+        ? material.normal_map.substring(
+            material.normal_map.indexOf("://") + 3,
+            material.normal_map.lastIndexOf("/")
+          )
+        : textureUri;
     if (mapUri) {
       let startIndex = material.normal_map.lastIndexOf("/") + 1;
       if (startIndex < 0) {

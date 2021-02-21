@@ -165,7 +165,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.gizmo.add(displayAxes.translate);
 
   // Picker cylinder
-  geometry = this.mobile ? new THREE.CylinderGeometry(0.5, 0.01, 1.4, 10, 1, false) : new THREE.CylinderGeometry(0.2, 0.1, 0.8, 4, 1, false);
+  geometry = this.mobile
+    ? new THREE.CylinderGeometry(0.5, 0.01, 1.4, 10, 1, false)
+    : new THREE.CylinderGeometry(0.2, 0.1, 0.8, 4, 1, false);
 
   mesh = new THREE.Mesh(
     geometry,
@@ -403,7 +405,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   // RX, RY, RZ
 
   // Picker torus
-  geometry = this.mobile ? new THREE.TorusGeometry(1, 0.3, 4, 36, 2 * Math.PI) : new THREE.TorusGeometry(1, 0.15, 4, 6, Math.PI);
+  geometry = this.mobile
+    ? new THREE.TorusGeometry(1, 0.3, 4, 36, 2 * Math.PI)
+    : new THREE.TorusGeometry(1, 0.15, 4, 6, Math.PI);
 
   mesh = new THREE.Mesh(
     geometry,
@@ -1165,7 +1169,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
    * @returns {bool}
    */
   function isSelected(name) {
-    return scope.selected.search(name) !== -1 ? true : false;
+    return scope.selected.search(name) !== -1;
   }
 
   /**

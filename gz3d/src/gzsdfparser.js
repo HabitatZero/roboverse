@@ -403,10 +403,13 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
   // normal map
   if (material.normal_map) {
     let mapUri;
-    mapUri = material.normal_map.indexOf("://") > 0 ? material.normal_map.substring(
-        material.normal_map.indexOf("://") + 3,
-        material.normal_map.lastIndexOf("/")
-      ) : textureUri;
+    mapUri =
+      material.normal_map.indexOf("://") > 0
+        ? material.normal_map.substring(
+            material.normal_map.indexOf("://") + 3,
+            material.normal_map.lastIndexOf("/")
+          )
+        : textureUri;
     if (mapUri) {
       let startIndex = material.normal_map.lastIndexOf("/") + 1;
       if (startIndex < 0) {
@@ -786,7 +789,10 @@ GZ3D.SdfParser.prototype.loadSDF = function (sdfName) {
   }
   // In case it is just the model/world name, look for it on the default URL
   else {
-    filename = lowerCaseName.endsWith(".world") || lowerCaseName.endsWith(".sdf") ? this.MATERIAL_ROOT + "/worlds/" + sdfName : this.MATERIAL_ROOT + "/" + sdfName + "/model.sdf";
+    filename =
+      lowerCaseName.endsWith(".world") || lowerCaseName.endsWith(".sdf")
+        ? this.MATERIAL_ROOT + "/worlds/" + sdfName
+        : this.MATERIAL_ROOT + "/" + sdfName + "/model.sdf";
   }
 
   if (!filename) {
