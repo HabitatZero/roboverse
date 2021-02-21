@@ -20,7 +20,7 @@
     "coverage": "codecov"
   },
   "dependencies": {
-    "fs": "0.0.1-security",
+    "fs": "0.0.2",
     "http": "0.0.0",
     "node-gyp": "6.1.0",
     "path": "^0.12.7",
