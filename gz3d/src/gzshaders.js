@@ -17,6 +17,7 @@ GZ3D.Shaders.prototype.init = function () {
     "  vUv = uv;" +
     "  vPosition = position;" +
     "  vNormal = -normal;" +
+    // eslint-disable-next-line max-len
     "  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);" +
     "}";
 
