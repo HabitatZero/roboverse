@@ -1,15 +1,13 @@
-describe('Gzscene tests', function() {
-
-  const utilsPath = 'http://localhost:9876/base/gz3d/test/utils/';
+describe("Gzscene tests", function () {
+  const utilsPath = "http://localhost:9876/base/gz3d/test/utils/";
 
   // Returns a file from the utils directory as text
-  function fileAsText(_path)
-  {
-    var fullPath = utilsPath + _path;
+  function fileAsText(_path) {
+    const fullPath = utilsPath + _path;
 
-    var xhttp = new XMLHttpRequest();
-    xhttp.overrideMimeType('text/plain');
-    xhttp.open('GET', fullPath, false);
+    const xhttp = new XMLHttpRequest();
+    xhttp.overrideMimeType("text/plain");
+    xhttp.open("GET", fullPath, false);
     xhttp.send();
 
     return xhttp.responseText;
@@ -20,32 +18,43 @@ describe('Gzscene tests', function() {
   let gui;
   let sdfparser;
 
-  beforeAll(function(){
+  beforeAll(function () {
     shaders = new GZ3D.Shaders();
     scene = new GZ3D.Scene(shaders);
     gui = new GZ3D.Gui(scene);
     sdfparser = new GZ3D.SdfParser(scene, gui);
   });
 
-  describe('Test gzscene Initialize', function() {
-    it('Intial values should match', function() {
-
+  describe("Test gzscene Initialize", function () {
+    it("Intial values should match", function () {
       expect(scene.emitter).toEqual(globalEmitter);
 
-      var bbox, indices, positions, boxGeometry,
-      bbox_rotation, jointTypes, jointAxis, jointAxisMeshes,
-      jointMainAxisMeshes, mesh, rot, pos, mainAxisLen,
-      jointRotMeshes, jointTransMeshes, jointScrewMeshes;
-      var vec3 = new THREE.Vector3(0,0,0);
+      let bbox,
+        indices,
+        positions,
+        boxGeometry,
+        bbox_rotation,
+        jointTypes,
+        jointAxis,
+        jointAxisMeshes,
+        jointMainAxisMeshes,
+        mesh,
+        rot,
+        pos,
+        mainAxisLen,
+        jointRotMeshes,
+        jointTransMeshes,
+        jointScrewMeshes;
+      const vec3 = new THREE.Vector3(0, 0, 0);
       scene.init();
-      expect(scene.manipulationMode).toEqual('view');
-      expect(scene.name).toEqual('default');
+      expect(scene.manipulationMode).toEqual("view");
+      expect(scene.name).toEqual("default");
       expect(scene.renderer.domElement).toBeDefined();
 
       // Grid initialize
       expect(scene.grid.position.z).toEqual(0.05);
       expect(scene.grid.rotation.x).toEqual(Math.PI * 0.5);
-      expect(scene.grid.name).toEqual('grid');
+      expect(scene.grid.name).toEqual("grid");
       expect(scene.grid.material.transparent).toEqual(true);
       expect(scene.grid.material.opacity).toEqual(0.5);
       expect(scene.grid.visible).toEqual(false);
@@ -55,16 +64,40 @@ describe('Gzscene tests', function() {
       expect(scene.timeDown).toEqual(null);
 
       // Bounding Box
-      indices = new Uint16Array(
-        [ 0, 1, 1, 2, 2, 3, 3, 0,
-          4, 5, 5, 6, 6, 7, 7, 4,
-          0, 4, 1, 5, 2, 6, 3, 7 ] );
+      indices = new Uint16Array([
+        0,
+        1,
+        1,
+        2,
+        2,
+        3,
+        3,
+        0,
+        4,
+        5,
+        5,
+        6,
+        6,
+        7,
+        7,
+        4,
+        0,
+        4,
+        1,
+        5,
+        2,
+        6,
+        3,
+        7,
+      ]);
 
       positions = new Float32Array(8 * 3);
       boxGeometry = new THREE.BufferGeometry();
-      boxGeometry.setIndex(new THREE.BufferAttribute( indices, 1 ));
-      boxGeometry.addAttribute( 'position',
-            new THREE.BufferAttribute(positions, 3));
+      boxGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
+      boxGeometry.addAttribute(
+        "position",
+        new THREE.BufferAttribute(positions, 3)
+      );
 
       bbox = scene.boundingBox;
       bbox_rotation = bbox.rotation;
@@ -76,8 +109,7 @@ describe('Gzscene tests', function() {
       expect(bbox.visible).toEqual(false);
 
       // Joint visuals
-      jointTypes =
-      {
+      jointTypes = {
         REVOLUTE: 1,
         REVOLUTE2: 2,
         PRISMATIC: 3,
@@ -85,15 +117,15 @@ describe('Gzscene tests', function() {
         BALL: 5,
         SCREW: 6,
         GEARBOX: 7,
-        FIXED: 8
+        FIXED: 8,
       };
 
       jointAxis = scene.jointAxis;
       expect(scene.jointTypes).toEqual(jointTypes);
-      expect(jointAxis.name).toEqual('JOINT_VISUAL');
+      expect(jointAxis.name).toEqual("JOINT_VISUAL");
 
       // Joint Axes XYZ
-      jointAxisMeshes = jointAxis['XYZaxes'].children;
+      jointAxisMeshes = jointAxis.XYZaxes.children;
 
       mesh = jointAxisMeshes[0];
       pos = mesh.position;
@@ -101,12 +133,12 @@ describe('Gzscene tests', function() {
       vec3.x = 0.15;
       vec3.y = 0;
       vec3.z = 0;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xff0000));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
       expect(rot.y).toEqual(0);
-      expect(rot.z).toEqual(-Math.PI/2);
+      expect(rot.z).toEqual(-Math.PI / 2);
 
       mesh = jointAxisMeshes[1];
       pos = mesh.position;
@@ -114,7 +146,7 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0.15;
       vec3.z = 0;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0x00ff00));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
@@ -127,10 +159,10 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = 0.15;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0x0000ff));
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
@@ -140,20 +172,20 @@ describe('Gzscene tests', function() {
       vec3.x = 0.3;
       vec3.y = 0;
       vec3.z = 0;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xff0000));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
       expect(rot.y).toEqual(0);
-      expect(rot.z).toEqual(-Math.PI/2);
+      expect(rot.z).toEqual(-Math.PI / 2);
 
       mesh = jointAxisMeshes[4];
       pos = mesh.position;
       rot = mesh.rotation;
-      vec3.x = 0.;
+      vec3.x = 0.0;
       vec3.y = 0.3;
       vec3.z = 0;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0x00ff00));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
@@ -166,15 +198,15 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = 0.3;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0x0000ff));
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
       // Joint MainAxis
-      jointMainAxisMeshes = jointAxis['mainAxis'].children;
+      jointMainAxisMeshes = jointAxis.mainAxis.children;
       mainAxisLen = 0.3;
 
       mesh = jointMainAxisMeshes[0];
@@ -183,10 +215,10 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = mainAxisLen * 0.5;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
@@ -196,15 +228,15 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = mainAxisLen;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
       // Joint RotAxis
-      jointRotMeshes = jointAxis['rotAxis'].children;
+      jointRotMeshes = jointAxis.rotAxis.children;
 
       mesh = jointRotMeshes[0];
       pos = mesh.position;
@@ -212,7 +244,7 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = mainAxisLen;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
@@ -225,15 +257,15 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = -0.04;
       vec3.z = mainAxisLen;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
       expect(rot.y).toEqual(0);
-      expect(rot.z).toEqual(Math.PI/2);
+      expect(rot.z).toEqual(Math.PI / 2);
 
       // Joint TransAxis
-      jointTransMeshes = jointAxis['transAxis'].children;
+      jointTransMeshes = jointAxis.transAxis.children;
 
       mesh = jointTransMeshes[0];
       pos = mesh.position;
@@ -241,9 +273,9 @@ describe('Gzscene tests', function() {
       vec3.x = 0.03;
       vec3.y = 0.03;
       vec3.z = mainAxisLen * 0.5;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
@@ -253,9 +285,9 @@ describe('Gzscene tests', function() {
       vec3.x = 0.03;
       vec3.y = 0.03;
       vec3.z = mainAxisLen * 0.5 + 0.05;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(-Math.PI/2);
+      expect(rot.x).toEqual(-Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
@@ -265,14 +297,14 @@ describe('Gzscene tests', function() {
       vec3.x = 0.03;
       vec3.y = 0.03;
       vec3.z = mainAxisLen * 0.5 - 0.05;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(Math.PI/2);
+      expect(rot.x).toEqual(Math.PI / 2);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
 
       // Joint ScrewAxis
-      jointScrewMeshes = jointAxis['screwAxis'].children;
+      jointScrewMeshes = jointAxis.screwAxis.children;
 
       mesh = jointScrewMeshes[0];
       pos = mesh.position;
@@ -280,12 +312,12 @@ describe('Gzscene tests', function() {
       vec3.x = -0.04;
       vec3.y = 0;
       vec3.z = mainAxisLen - 0.11;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
-      expect(rot.x).toEqual(-Math.PI/10);
+      expect(rot.x).toEqual(-Math.PI / 10);
       expect(rot.y).toEqual(0);
-      expect(rot.z).toEqual(-Math.PI/4);
+      expect(rot.z).toEqual(-Math.PI / 4);
 
       mesh = jointScrewMeshes[1];
       pos = mesh.position;
@@ -293,22 +325,20 @@ describe('Gzscene tests', function() {
       vec3.x = 0;
       vec3.y = 0;
       vec3.z = mainAxisLen - 0.23;
-      expect(mesh.name).toEqual('JOINT_VISUAL');
+      expect(mesh.name).toEqual("JOINT_VISUAL");
       expect(mesh.material.color).toEqual(new THREE.Color(0xffff00));
       expect(pos).toEqual(vec3);
       expect(rot.x).toEqual(0);
       expect(rot.y).toEqual(0);
       expect(rot.z).toEqual(0);
-
     });
   });
 
-  describe('Test gzscene Set Pose', function() {
-    it('Position and orientation of the model should match', function() {
-
-      var model, pos, ori, quaternion;
-      pos = new THREE.Vector3(-1,0.5,3);
-      ori = new THREE.Quaternion(0.1,-0.3,2,0);
+  describe("Test gzscene Set Pose", function () {
+    it("Position and orientation of the model should match", function () {
+      let model, pos, ori, quaternion;
+      pos = new THREE.Vector3(-1, 0.5, 3);
+      ori = new THREE.Quaternion(0.1, -0.3, 2, 0);
       model = new THREE.Object3D();
       scene.setPose(model, pos, ori);
       expect(model.position).toEqual(pos);
@@ -321,78 +351,73 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Test gzscene Set SDFParser', function() {
-    it('Should return the scene SdfParser ', function() {
-
+  describe("Test gzscene Set SDFParser", function () {
+    it("Should return the scene SdfParser ", function () {
       scene.setSDFParser(sdfparser);
       expect(scene.spawnModel.sdfParser).toEqual(sdfparser);
     });
   });
 
   // Test manipulation_mode
-  describe('Test manipulation mode', function() {
-    it('Should change manipulation mode to translate', function() {
-
-      globalEmitter.emit('manipulation_mode', 'translate');
-      expect(scene.manipulationMode).not.toEqual('view');
-      expect(scene.manipulationMode).toEqual('translate');
+  describe("Test manipulation mode", function () {
+    it("Should change manipulation mode to translate", function () {
+      globalEmitter.emit("manipulation_mode", "translate");
+      expect(scene.manipulationMode).not.toEqual("view");
+      expect(scene.manipulationMode).toEqual("translate");
     });
   });
 
-  describe('Spawn a model', function() {
-    it('should add a model to the scene and then removes it', function() {
-
-      var sdf = fileAsText('beer/model.sdf');
+  describe("Spawn a model", function () {
+    it("should add a model to the scene and then removes it", function () {
+      const sdf = fileAsText("beer/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var model = sdfparser.spawnFromSDF(sdf);
+      let model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
-      model = scene.getByName('beer');
+      model = scene.getByName("beer");
       expect(model).not.toEqual(undefined);
 
       scene.remove(model);
-      model = scene.getByName('beer');
+      model = scene.getByName("beer");
       expect(model).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model with an obj mesh using sdfparser.spawnFromSDF',
-    function() {
-    it('should add a model to the scene and then remove it', function() {
-
+  describe("Spawn a model with an obj mesh using sdfparser.spawnFromSDF", function () {
+    it("should add a model to the scene and then remove it", function () {
       // Get files
-      var sdf = fileAsText('walkway_metal_straight/model.sdf');
+      const sdf = fileAsText("walkway_metal_straight/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var obj = fileAsText('walkway_metal_straight/meshes/mesh.obj');
+      const obj = fileAsText("walkway_metal_straight/meshes/mesh.obj");
       expect(obj).not.toEqual(null);
 
-      var mtl = fileAsText('walkway_metal_straight/meshes/mesh.mtl');
+      const mtl = fileAsText("walkway_metal_straight/meshes/mesh.mtl");
       expect(mtl).not.toEqual(null);
 
       // Add to parser
-      sdfparser.meshes['mesh.obj'] = obj;
-      sdfparser.mtls['mesh.mtl'] = mtl;
+      sdfparser.meshes["mesh.obj"] = obj;
+      sdfparser.mtls["mesh.mtl"] = mtl;
 
       // Check model doesn't exist yet
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
       // Create model
       var model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).not.toEqual(undefined);
 
-      var mesh = scene.getByName('Walkway_Straight');
+      const mesh = scene.getByName("Walkway_Straight");
       expect(mesh).not.toEqual(undefined);
 
       // Remove model
       scene.remove(model);
 
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
       // Clean up
@@ -401,79 +426,76 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Spawn a model with a collada mesh', function() {
-    it('should add a model to the scene and then removes it', function() {
-      var sdf = fileAsText('house_2/model.sdf');
+  describe("Spawn a model with a collada mesh", function () {
+    it("should add a model to the scene and then removes it", function () {
+      const sdf = fileAsText("house_2/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var model = sdfparser.spawnFromSDF(sdf);
+      let model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
-      model = scene.getByName('House 2');
+      model = scene.getByName("House 2");
       expect(model).not.toEqual(undefined);
 
       scene.remove(model);
-      model = scene.getByName('House 2');
+      model = scene.getByName("House 2");
       expect(model).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model with no mesh using the file api', function() {
-    it('should add a model to the scene using its files and then remove it',
-    function() {
-      var sdf = fileAsText('beer/model.sdf');
+  describe("Spawn a model with no mesh using the file api", function () {
+    it("should add a model to the scene using its files and then remove it", function () {
+      const sdf = fileAsText("beer/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var model = scene.getByName('beer');
+      let model = scene.getByName("beer");
       expect(model).toEqual(undefined);
 
-      var obj = scene.createFromSdf(sdf);
+      const obj = scene.createFromSdf(sdf);
       scene.add(obj);
-      model = scene.getByName('beer');
+      model = scene.getByName("beer");
 
       expect(model).not.toEqual(undefined);
       scene.remove(model);
-      model = scene.getByName('beer');
+      model = scene.getByName("beer");
       expect(model).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model with obj mesh using scene.createFromSdf', function() {
-    it('should add a model to the scene using its files and then remove it',
-      function() {
-
+  describe("Spawn a model with obj mesh using scene.createFromSdf", function () {
+    it("should add a model to the scene using its files and then remove it", function () {
       // Get files
-      var sdf = fileAsText('walkway_metal_straight/model.sdf');
+      const sdf = fileAsText("walkway_metal_straight/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var obj = fileAsText('walkway_metal_straight/meshes/mesh.obj');
+      var obj = fileAsText("walkway_metal_straight/meshes/mesh.obj");
       expect(obj).not.toEqual(null);
 
-      var mtl = fileAsText('walkway_metal_straight/meshes/mesh.mtl');
+      const mtl = fileAsText("walkway_metal_straight/meshes/mesh.mtl");
       expect(mtl).not.toEqual(null);
 
       // Add to parser
-      sdfparser.meshes['mesh.obj'] = obj;
-      sdfparser.mtls['mesh.mtl'] = mtl;
+      sdfparser.meshes["mesh.obj"] = obj;
+      sdfparser.mtls["mesh.mtl"] = mtl;
 
       // Check model doesn't exist yet
-      var model = scene.getByName('walkway_metal_straight');
+      let model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
       // Create model
       var obj = scene.createFromSdf(sdf);
       scene.add(obj);
 
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).not.toEqual(undefined);
 
-      var mesh = scene.getByName('Walkway_Straight');
+      const mesh = scene.getByName("Walkway_Straight");
       expect(mesh).not.toEqual(undefined);
 
       // Remove model
       scene.remove(model);
 
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
       // Clean up
@@ -482,111 +504,105 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Spawn a model where the mesh files are undefined', function() {
-    it('should add a model to the scene using its files and then remove it',
-      function() {
-
-      var sdf = fileAsText('walkway_metal_straight/model.sdf');
+  describe("Spawn a model where the mesh files are undefined", function () {
+    it("should add a model to the scene using its files and then remove it", function () {
+      const sdf = fileAsText("walkway_metal_straight/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      sdfparser.meshes['mesh.obj'] = undefined;
-      sdfparser.mtls['mesh.mtl'] = undefined;
+      sdfparser.meshes["mesh.obj"] = undefined;
+      sdfparser.mtls["mesh.mtl"] = undefined;
 
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
       obj = scene.createFromSdf(sdf);
       scene.add(obj);
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
 
       expect(model).not.toEqual(undefined);
       scene.remove(model);
-      model = scene.getByName('walkway_metal_straight');
+      model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model where all the files are undefined', function() {
-    it('shouldnt add amodel to the scene', function() {
+  describe("Spawn a model where all the files are undefined", function () {
+    it("shouldnt add amodel to the scene", function () {
+      sdfparser.meshes["mesh.obj"] = undefined;
 
-      sdfparser.meshes['mesh.obj'] = undefined;
+      sdfparser.meshes["mesh.mtl"] = undefined;
 
-      sdfparser.meshes['mesh.mtl'] = undefined;
-
-      var model = scene.getByName('walkway_metal_straight');
+      const model = scene.getByName("walkway_metal_straight");
       expect(model).toEqual(undefined);
 
-      var obj = scene.createFromSdf(undefined);
+      const obj = scene.createFromSdf(undefined);
 
       expect(obj).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model with a collada mesh', function() {
-    it('should add a model to the scene and then removes it', function() {
-
-      var sdf = fileAsText('house_2/model.sdf');
+  describe("Spawn a model with a collada mesh", function () {
+    it("should add a model to the scene and then removes it", function () {
+      const sdf = fileAsText("house_2/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var model = sdfparser.spawnFromSDF(sdf);
+      let model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
-      model = scene.getByName('House 2');
+      model = scene.getByName("House 2");
       expect(model).not.toEqual(undefined);
 
       scene.remove(model);
-      model = scene.getByName('House 2');
+      model = scene.getByName("House 2");
       expect(model).toEqual(undefined);
     });
   });
 
   // Test inertia visualizations
-  describe('Test inertia visuals', function() {
-    it('Should toggle inertia visualizations', function() {
-
-      var sdf = fileAsText('beer/model.sdf');
+  describe("Test inertia visuals", function () {
+    it("Should toggle inertia visualizations", function () {
+      const sdf = fileAsText("beer/model.sdf");
       expect(sdf).not.toEqual(null);
 
-      var model = sdfparser.spawnFromSDF(sdf);
+      const model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
       // no visuals intially
-      var visual = model.getObjectByName('INERTIA_VISUAL');
+      let visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       // if there was no selected entity it shouldn't break
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       // select a model and then view the visuals
       scene.selectedEntity = model;
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       // hide the visuals
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       // test to view the visuals when they already exist
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       // hide the visuals
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
     });
   });
 
   // Test gzscene.setFromObject
-  describe('Test gzscene setFromObject', function() {
-    it('Should set the correct box vertices', function() {
-
-      var mesh, v1, v2, box, obj;
+  describe("Test gzscene setFromObject", function () {
+    it("Should set the correct box vertices", function () {
+      let mesh, v1, v2, box, obj;
       // add a box at (0,0,0)
       mesh = scene.createBox(1, 1, 1);
       v1 = new THREE.Vector3(-0.5, -0.5, -0.5);
@@ -600,20 +616,20 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Test setFromObject on inertia visuals', function() {
-    it('Should return same bounding box before and after adding', function() {
-      var sdf, object, visual, model, xhttp;
-      var box, v1, v2;
+  describe("Test setFromObject on inertia visuals", function () {
+    it("Should return same bounding box before and after adding", function () {
+      let sdf, object, visual, model, xhttp;
+      let box, v1, v2;
       xhttp = new XMLHttpRequest();
-      xhttp.overrideMimeType('text/xml');
-      xhttp.open('GET', utilsPath + 'beer/model.sdf', false);
+      xhttp.overrideMimeType("text/xml");
+      xhttp.open("GET", utilsPath + "beer/model.sdf", false);
       xhttp.send();
       sdf = xhttp.responseXML;
       model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
       // no visuals intially
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       box = new THREE.Box3();
@@ -622,14 +638,14 @@ describe('Gzscene tests', function() {
       v2 = box.max;
 
       // if there was no selected entity it shouldn't break
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       // select a model and then view the visuals
       scene.selectedEntity = model;
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       scene.setFromObject(box, model);
@@ -637,105 +653,103 @@ describe('Gzscene tests', function() {
       expect(box.max).toEqual(v2);
 
       // hide the visuals
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
 
       // test to view the visuals when they already exist
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       // hide the visuals
-      globalEmitter.emit('view_inertia');
-      visual = model.getObjectByName('INERTIA_VISUAL');
+      globalEmitter.emit("view_inertia");
+      visual = model.getObjectByName("INERTIA_VISUAL");
       expect(visual).toEqual(undefined);
     });
   });
 
   // Test center of mass visualizations
-  describe('Test center of mass visual', function() {
-    it('spawn a model and toggle center of mass visuals', function() {
-      var sdf, object, visual, model, xhttp;
+  describe("Test center of mass visual", function () {
+    it("spawn a model and toggle center of mass visuals", function () {
+      let sdf, object, visual, model, xhttp;
 
       xhttp = new XMLHttpRequest();
-      xhttp.overrideMimeType('text/xml');
-      xhttp.open('GET', utilsPath + 'beer/model.sdf', false);
+      xhttp.overrideMimeType("text/xml");
+      xhttp.open("GET", utilsPath + "beer/model.sdf", false);
       xhttp.send();
       sdf = xhttp.responseXML;
       model = sdfparser.spawnFromSDF(sdf);
       scene.add(model);
 
       // no visuals intially
-      visual = model.getObjectByName('COM_VISUAL');
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).toEqual(undefined);
 
       // if there was no selected entity it shouldn't break
-      globalEmitter.emit('view_com');
-      visual = model.getObjectByName('COM_VISUAL');
+      globalEmitter.emit("view_com");
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).toEqual(undefined);
 
       // select a model and then view the visuals
       scene.selectedEntity = model;
-      globalEmitter.emit('view_com');
-      visual = model.getObjectByName('COM_VISUAL');
+      globalEmitter.emit("view_com");
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       // Verify the position of the visual
       expect(visual.position).toEqual(model.position);
 
       // hide the visuals
-      globalEmitter.emit('view_com');
-      visual = model.getObjectByName('COM_VISUAL');
+      globalEmitter.emit("view_com");
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).toEqual(undefined);
 
       // test to view the visuals when they already exist
-      globalEmitter.emit('view_com');
-      visual = model.getObjectByName('COM_VISUAL');
+      globalEmitter.emit("view_com");
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).not.toEqual(undefined);
 
       // hide the visuals
-      globalEmitter.emit('view_com');
-      visual = model.getObjectByName('COM_VISUAL');
+      globalEmitter.emit("view_com");
+      visual = model.getObjectByName("COM_VISUAL");
       expect(visual).toEqual(undefined);
     });
   });
 
-  describe('Spawn a model with stl mesh, without adding the mesh',
-    function() {
-      it('should add a model to the scene and make sure there is no mesh\
-        attached to it, then removes it', function() {
-          var sdf, model;
-          var xhttp = new XMLHttpRequest();
-          xhttp.overrideMimeType('text/xml');
-          xhttp.open('GET', utilsPath + 'husky/model.sdf', false);
-          xhttp.send();
-          sdf = xhttp.responseXML;
+  describe("Spawn a model with stl mesh, without adding the mesh", function () {
+    it("should add a model to the scene and make sure there is no mesh\
+        attached to it, then removes it", function () {
+      let sdf, model;
+      const xhttp = new XMLHttpRequest();
+      xhttp.overrideMimeType("text/xml");
+      xhttp.open("GET", utilsPath + "husky/model.sdf", false);
+      xhttp.send();
+      sdf = xhttp.responseXML;
 
-          model = scene.getByName('husky');
-          expect(model).toEqual(undefined);
+      model = scene.getByName("husky");
+      expect(model).toEqual(undefined);
 
-          model = sdfparser.spawnFromSDF(sdf);
-          scene.add(model);
+      model = sdfparser.spawnFromSDF(sdf);
+      scene.add(model);
 
-          model = scene.getByName('husky');
-          expect(model).not.toEqual(undefined);
+      model = scene.getByName("husky");
+      expect(model).not.toEqual(undefined);
 
-          // no mesh should be added to the model because stl loader.
-          // this test was deduced through debuging, not sure if it will work
-          // with other models.
-          expect(model.children[0].children[0].children.length).toEqual(0);
-          expect(model.children[1].children[0].children.length).toEqual(0);
+      // no mesh should be added to the model because stl loader.
+      // this test was deduced through debuging, not sure if it will work
+      // with other models.
+      expect(model.children[0].children[0].children.length).toEqual(0);
+      expect(model.children[1].children[0].children.length).toEqual(0);
 
-          scene.remove(model);
-          model = scene.getByName('husky');
-          expect(model).toEqual(undefined);
+      scene.remove(model);
+      model = scene.getByName("husky");
+      expect(model).toEqual(undefined);
     });
   });
 
-  describe('Load a heightmap', function() {
-    it('should fail to create a heightmap without a parent', function() {
-
+  describe("Load a heightmap", function () {
+    it("should fail to create a heightmap without a parent", function () {
       // Check there is no heightmap
       expect(scene.heightmap).toEqual(null);
 
@@ -745,9 +759,8 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Load a heightmap', function() {
-    it('should use a default material when texture not provided', function() {
-
+  describe("Load a heightmap", function () {
+    it("should use a default material when texture not provided", function () {
       // Check there is no heightmap
       expect(scene.heightmap).toEqual(null);
 
@@ -763,8 +776,17 @@ describe('Gzscene tests', function() {
       const visualObj = new THREE.Object3D();
 
       // Load heightmap
-      scene.loadHeightmap(heights, segmentWidth, segmentHeight, width, height,
-          origin, textures, blends, visualObj);
+      scene.loadHeightmap(
+        heights,
+        segmentWidth,
+        segmentHeight,
+        width,
+        height,
+        origin,
+        textures,
+        blends,
+        visualObj
+      );
 
       expect(scene.heightmap).toEqual(visualObj);
       expect(scene.heightmap.children.length).toEqual(1);
@@ -773,8 +795,17 @@ describe('Gzscene tests', function() {
 
       // Fail to load a second heightmap
       const visualObj2 = new THREE.Object3D();
-      scene.loadHeightmap(heights, segmentWidth, segmentHeight, width, height,
-          origin, textures, blends, visualObj2);
+      scene.loadHeightmap(
+        heights,
+        segmentWidth,
+        segmentHeight,
+        width,
+        height,
+        origin,
+        textures,
+        blends,
+        visualObj2
+      );
 
       expect(scene.heightmap).toEqual(visualObj);
 
@@ -783,9 +814,8 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Load a heightmap', function() {
-    it('should load texture', function() {
-
+  describe("Load a heightmap", function () {
+    it("should load texture", function () {
       // Check there is no heightmap
       expect(scene.heightmap).toEqual(null);
 
@@ -797,25 +827,40 @@ describe('Gzscene tests', function() {
       const segmentHeight = 257;
       const origin = new THREE.Vector3(0, 0, 0);
       const textures = [
-        {diffuse: "assets/media/materials/textures/dirt_diffusespecular.png",
-         normal: "assets/media/materials/textures/flat_normal.png",
-         size: 1},
-        {diffuse: "assets/media/materials/textures/grass_diffusespecular.png",
-         normal: "assets/media/materials/textures/flat_normal.png",
-         size: 1},
-        {diffuse: "assets/media/materials/textures/fungus_diffusespecular.png",
-         normal: "assets/media/materials/textures/flat_normal.png",
-         size: 1}
+        {
+          diffuse: "assets/media/materials/textures/dirt_diffusespecular.png",
+          normal: "assets/media/materials/textures/flat_normal.png",
+          size: 1,
+        },
+        {
+          diffuse: "assets/media/materials/textures/grass_diffusespecular.png",
+          normal: "assets/media/materials/textures/flat_normal.png",
+          size: 1,
+        },
+        {
+          diffuse: "assets/media/materials/textures/fungus_diffusespecular.png",
+          normal: "assets/media/materials/textures/flat_normal.png",
+          size: 1,
+        },
       ];
       const blends = [
-           {fade_dist: 5, min_height: 2},
-           {fade_dist: 5, min_height: 4},
+        { fade_dist: 5, min_height: 2 },
+        { fade_dist: 5, min_height: 4 },
       ];
       const visualObj = new THREE.Object3D();
 
       // Load heightmap
-      scene.loadHeightmap(heights, segmentWidth, segmentHeight, width, height,
-          origin, textures, blends, visualObj);
+      scene.loadHeightmap(
+        heights,
+        segmentWidth,
+        segmentHeight,
+        width,
+        height,
+        origin,
+        textures,
+        blends,
+        visualObj
+      );
 
       expect(scene.heightmap).toEqual(visualObj);
       expect(scene.heightmap.children.length).toEqual(1);
@@ -824,43 +869,42 @@ describe('Gzscene tests', function() {
     });
   });
 
-  describe('Set scene size', function() {
-    it('should update all related objects', function() {
+  describe("Set scene size", function () {
+    it("should update all related objects", function () {
+      // Check there is a non-zero dom element by default
+      expect(scene.renderer.domElement).toBeDefined();
+      expect(scene.renderer.domElement).toEqual(scene.getDomElement());
 
-       // Check there is a non-zero dom element by default
-       expect(scene.renderer.domElement).toBeDefined();
-       expect(scene.renderer.domElement).toEqual(scene.getDomElement());
+      let domWidth = scene.getDomElement().width;
+      let domHeight = scene.getDomElement().height;
+      expect(domHeight).toBeGreaterThan(0);
 
-       let domWidth = scene.getDomElement().width;
-       let domHeight = scene.getDomElement().height;
-       expect(domHeight).toBeGreaterThan(0);
+      // Check properties
+      expect(scene.camera.aspect).toEqual(domWidth / domHeight);
 
-       // Check properties
-       expect(scene.camera.aspect).toEqual(domWidth / domHeight);
+      expect(scene.cameraOrtho.left).toEqual(-domWidth * 0.5);
+      expect(scene.cameraOrtho.right).toEqual(domWidth * 0.5);
+      expect(scene.cameraOrtho.top).toEqual(domHeight * 0.5);
+      expect(scene.cameraOrtho.bottom).toEqual(-domHeight * 0.5);
 
-       expect(scene.cameraOrtho.left).toEqual(-domWidth * 0.5);
-       expect(scene.cameraOrtho.right).toEqual(domWidth * 0.5);
-       expect(scene.cameraOrtho.top).toEqual(domHeight * 0.5);
-       expect(scene.cameraOrtho.bottom).toEqual(-domHeight * 0.5);
+      expect(scene.renderer.getSize().width).toEqual(domWidth);
+      expect(scene.renderer.getSize().height).toEqual(domHeight);
 
-       expect(scene.renderer.getSize().width).toEqual(domWidth);
-       expect(scene.renderer.getSize().height).toEqual(domHeight);
+      // Resize
+      domWidth = 100;
+      domHeight = 50;
+      scene.setSize(domWidth, domHeight);
 
-       // Resize
-       domWidth = 100;
-       domHeight = 50;
-       scene.setSize(domWidth, domHeight);
+      // Check properties
+      expect(scene.camera.aspect).toEqual(domWidth / domHeight);
 
-       // Check properties
-       expect(scene.camera.aspect).toEqual(domWidth / domHeight);
+      expect(scene.cameraOrtho.left).toEqual(-domWidth * 0.5);
+      expect(scene.cameraOrtho.right).toEqual(domWidth * 0.5);
+      expect(scene.cameraOrtho.top).toEqual(domHeight * 0.5);
+      expect(scene.cameraOrtho.bottom).toEqual(-domHeight * 0.5);
 
-       expect(scene.cameraOrtho.left).toEqual(-domWidth * 0.5);
-       expect(scene.cameraOrtho.right).toEqual(domWidth * 0.5);
-       expect(scene.cameraOrtho.top).toEqual(domHeight * 0.5);
-       expect(scene.cameraOrtho.bottom).toEqual(-domHeight * 0.5);
-
-       expect(scene.renderer.getSize().width).toEqual(domWidth);
-       expect(scene.renderer.getSize().height).toEqual(domHeight);
+      expect(scene.renderer.getSize().width).toEqual(domWidth);
+      expect(scene.renderer.getSize().height).toEqual(domHeight);
     });
   });
 });
