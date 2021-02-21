@@ -91,7 +91,7 @@ GZ3D.OBJLoader.prototype.applyMaterial = function (_mtlCreator) {
 
   for (let j = 0; j < allChildren.length; ++j) {
     const child = allChildren[j];
-    if (child && child.material) {
+    if (child?.material) {
       if (child.material.name) {
         child.material = _mtlCreator.create(child.material.name);
       } else if (Array.isArray(child.material)) {
