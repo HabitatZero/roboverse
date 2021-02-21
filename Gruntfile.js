@@ -73,11 +73,7 @@ module.exports = function (grunt) {
         options: {
           interrupt: true,
         },
-        files: [
-          "Gruntfile.js",
-          "gz3d/src/*.js",
-          "gz3d/src/**/*.js",
-        ],
+        files: ["Gruntfile.js", "gz3d/src/*.js", "gz3d/src/**/*.js"],
         tasks: ["build"],
       },
     },
