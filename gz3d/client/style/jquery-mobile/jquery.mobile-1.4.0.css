@@ -3612,7 +3612,7 @@ fieldset.ui-controlgroup {
 /**
  * For each side, the arrow is twice the desired size and its corner is aligned
  * with the edge of the container:
- *                                           
+ *
  *           /\         /\                +----+	     /\
  *          /  \       /  \ 					    | /\ |top   /  \
  *      +----+  \     /  +----+       +-->|/  \|     /    \
