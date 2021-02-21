@@ -96,7 +96,7 @@ GZ3D.OBJLoader.prototype.applyMaterial = function(_mtlCreator)
   for (var j =0; j < allChildren.length; ++j)
   {
     var child = allChildren[j];
-    if (child && child.material)
+    if (child?.material)
     {
       if (child.material.name)
       {
@@ -266,4 +266,3 @@ GZ3D.OBJLoader.prototype.onObjLoaded = function(_container)
     this.loadMTL(this.files[1]);
   }
 };
-
