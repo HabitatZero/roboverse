@@ -13,9 +13,14 @@
  * to be parsed by the loaders, if provided the uri will not be used just
  * as a url, no XMLHttpRequest will be made.
  */
-GZ3D.OBJLoader = function(_scene, _uri, _submesh, _centerSubmesh, _callback,
-    _files)
-{
+GZ3D.OBJLoader = function (
+  _scene,
+  _uri,
+  _submesh,
+  _centerSubmesh,
+  _callback,
+  _files
+) {
   // Keep parameters
   this.scene = _scene;
   this.submesh = _submesh;
@@ -25,21 +30,18 @@ GZ3D.OBJLoader = function(_scene, _uri, _submesh, _centerSubmesh, _callback,
   this.files = _files;
 
   // True if raw files were provided
-  this.usingRawFiles = (this.files &&
-                        this.files.length === 2 &&
-                        this.files[0] &&
-                        this.files[1]);
+  this.usingRawFiles =
+    this.files && this.files.length === 2 && this.files[0] && this.files[1];
 
   // Loaders
   this.objLoader = new THREE.OBJLoader();
 
   this.mtlLoader = new THREE.MTLLoader();
-  this.mtlLoader.setCrossOrigin('');
+  this.mtlLoader.setCrossOrigin("");
 
   // Assume .mtl is in the same path as .obj
-  if (!this.usingRawFiles)
-  {
-    var baseUrl = this.uri.substr(0, this.uri.lastIndexOf('/') + 1);
+  if (!this.usingRawFiles) {
+    const baseUrl = this.uri.substr(0, this.uri.lastIndexOf("/") + 1);
     this.mtlLoader.setPath(baseUrl);
   }
 
@@ -50,22 +52,18 @@ GZ3D.OBJLoader = function(_scene, _uri, _submesh, _centerSubmesh, _callback,
 /**
  * Load Obj file
  */
-GZ3D.OBJLoader.prototype.loadOBJ = function()
-{
-  var that = this;
+GZ3D.OBJLoader.prototype.loadOBJ = function () {
+  const that = this;
 
   // If no raw files are provided, make HTTP request
-  if (!this.usingRawFiles)
-  {
-    this.objLoader.load(this.uri, function(_container)
-    {
+  if (!this.usingRawFiles) {
+    this.objLoader.load(this.uri, function (_container) {
       that.onObjLoaded(_container);
     });
   }
   // Otherwise load from raw file
-  else
-  {
-    var container = this.objLoader.parse(this.files[0]);
+  else {
+    const container = this.objLoader.parse(this.files[0]);
     this.onObjLoaded(container);
   }
 };
@@ -73,9 +71,8 @@ GZ3D.OBJLoader.prototype.loadOBJ = function()
 /**
  * Callback when loading is successfully completed
  */
-GZ3D.OBJLoader.prototype.loadComplete = function()
-{
-  var obj = this.container;
+GZ3D.OBJLoader.prototype.loadComplete = function () {
+  let obj = this.container;
   this.scene.meshes[this.uri] = obj;
   obj = obj.clone();
   this.scene.useSubMesh(obj, this.submesh, this.centerSubmesh);
@@ -88,24 +85,17 @@ GZ3D.OBJLoader.prototype.loadComplete = function()
  * Callback when loading is successfully completed
  * @param {MTLLoaderMaterialCreator} _mtlCreator - Returned by MTLLoader.parse
  */
-GZ3D.OBJLoader.prototype.applyMaterial = function(_mtlCreator)
-{
-  var allChildren = [];
+GZ3D.OBJLoader.prototype.applyMaterial = function (_mtlCreator) {
+  const allChildren = [];
   this.container.getDescendants(allChildren);
 
-  for (var j =0; j < allChildren.length; ++j)
-  {
-    var child = allChildren[j];
-    if (child && child.material)
-    {
-      if (child.material.name)
-      {
+  for (let j = 0; j < allChildren.length; ++j) {
+    const child = allChildren[j];
+    if (child && child.material) {
+      if (child.material.name) {
         child.material = _mtlCreator.create(child.material.name);
-      }
-      else if (Array.isArray(child.material))
-      {
-        for (var k = 0; k < child.material.length; ++k)
-        {
+      } else if (Array.isArray(child.material)) {
+        for (let k = 0; k < child.material.length; ++k) {
           child.material[k] = _mtlCreator.create(child.material[k].name);
         }
       }
@@ -131,38 +121,32 @@ GZ3D.OBJLoader.prototype.applyMaterial = function(_mtlCreator)
  * 2. Just the image filename without a path
  * @param {string} _text - MTL file as string
  */
-GZ3D.OBJLoader.prototype.loadMTL = function(_text)
-{
-  if (!_text)
-  {
+GZ3D.OBJLoader.prototype.loadMTL = function (_text) {
+  if (!_text) {
     return;
   }
 
   // Handle model:// URI
-  if (_text.indexOf('model://') > 0)
-  {
+  if (_text.indexOf("model://") > 0) {
     // If there's no path, remove model://
-    if (!this.mtlLoader.path || this.mtlLoader.path.length === 0)
-    {
-      _text = _text.replace(/model:\/\//g, '');
-    }
-    else if (this.mtlLoader.path.indexOf('/meshes/') < 0)
-    {
-      console.error('Failed to resolve texture URI. MTL file directory [' +
+    if (!this.mtlLoader.path || this.mtlLoader.path.length === 0) {
+      _text = _text.replace(/model:\/\//g, "");
+    } else if (this.mtlLoader.path.indexOf("/meshes/") < 0) {
+      console.error(
+        "Failed to resolve texture URI. MTL file directory [" +
           this.mtlLoader.path +
-          '] not supported, it should be in a /meshes directory');
+          "] not supported, it should be in a /meshes directory"
+      );
       console.error(_text);
       return;
-    }
-    else
-    {
+    } else {
       // Get models path from .mtl file path
       // This assumes the referenced model is in the same path as the model
       // being loaded. So this may fail if there are models being loaded
       // from various paths
-      var path = this.mtlLoader.path;
-      path = path.substr(0, path.lastIndexOf('/meshes'));
-      path = path.substr(0, path.lastIndexOf('/') + 1);
+      let path = this.mtlLoader.path;
+      path = path.substr(0, path.lastIndexOf("/meshes"));
+      path = path.substr(0, path.lastIndexOf("/") + 1);
 
       // Search and replace
       _text = _text.replace(/model:\/\//g, path);
@@ -171,54 +155,48 @@ GZ3D.OBJLoader.prototype.loadMTL = function(_text)
 
   // Handle case in which the image filename is given without a path
   // We expect the texture to be under /materials/textures
-  var lines = _text.split('\n');
+  const lines = _text.split("\n");
 
-  if (lines.length === 0)
-  {
-    console.error('Empty or no MTL file');
+  if (lines.length === 0) {
+    console.error("Empty or no MTL file");
     return;
   }
 
-  var newText;
-  for (var i in lines)
-  {
-    var line = lines[i];
+  let newText;
+  for (const i in lines) {
+    let line = lines[i];
 
-    if (line === undefined)
-    {
+    if (line === undefined) {
       continue;
     }
 
     // Skip lines without texture filenames
-    if (line.indexOf('map_Ka') < 0 && line.indexOf('map_Kd') < 0)
-    {
-      newText += line += '\n';
+    if (line.indexOf("map_Ka") < 0 && line.indexOf("map_Kd") < 0) {
+      newText += line += "\n";
       continue;
     }
 
     // Skip lines which already have /materials/textures
-    if (line.indexOf('/materials/textures') > 0 && !this.usingRawFiles)
-    {
-      newText += line += '\n';
+    if (line.indexOf("/materials/textures") > 0 && !this.usingRawFiles) {
+      newText += line += "\n";
       continue;
     }
 
     // Remove ../ from raw files
-    if (line.indexOf('../materials/textures') > 0 && this.usingRawFiles)
-    {
-      line = line.replace('../', '');
-      newText += line += '\n';
+    if (line.indexOf("../materials/textures") > 0 && this.usingRawFiles) {
+      line = line.replace("../", "");
+      newText += line += "\n";
       continue;
     }
 
     // Add path to filename
-    var p = this.mtlLoader.path || '';
-    p = p.substr(0, p.lastIndexOf('meshes'));
+    let p = this.mtlLoader.path || "";
+    p = p.substr(0, p.lastIndexOf("meshes"));
 
-    line = line.replace('map_Ka ', 'map_Ka ' + p + 'materials/textures/');
-    line = line.replace('map_Kd ', 'map_Kd ' + p + 'materials/textures/');
+    line = line.replace("map_Ka ", "map_Ka " + p + "materials/textures/");
+    line = line.replace("map_Kd ", "map_Kd " + p + "materials/textures/");
 
-    newText += line += '\n';
+    newText += line += "\n";
   }
 
   this.applyMaterial(this.mtlLoader.parse(newText));
@@ -228,42 +206,35 @@ GZ3D.OBJLoader.prototype.loadMTL = function(_text)
  * Callback when OBJ file has been loaded, proceeds to load MTL.
  * @param {obj} _container - Loaded OBJ.
  */
-GZ3D.OBJLoader.prototype.onObjLoaded = function(_container)
-{
+GZ3D.OBJLoader.prototype.onObjLoaded = function (_container) {
   this.container = _container;
 
   // Callback when MTL has been loaded
   // Linter doesn't like `that` being used inside a loop, so we move it outside
-  var that = this;
-  var onMtlLoaded = function(_text)
-    {
-      that.loadMTL(_text);
-    };
+  const that = this;
+  const onMtlLoaded = function (_text) {
+    that.loadMTL(_text);
+  };
 
-  if (this.container.materialLibraries.length === 0)
-  {
+  if (this.container.materialLibraries.length === 0) {
     // return if there are no materials to be applied
     this.loadComplete();
     return;
   }
 
   // Load all MTL files
-  if (!this.usingRawFiles)
-  {
-    for (var i=0; i < this.container.materialLibraries.length; ++i)
-    {
+  if (!this.usingRawFiles) {
+    for (let i = 0; i < this.container.materialLibraries.length; ++i) {
       // Load raw .mtl file
-      var mtlPath = this.container.materialLibraries[i];
+      const mtlPath = this.container.materialLibraries[i];
 
-      var fileLoader = new THREE.FileLoader(this.mtlLoader.manager);
+      const fileLoader = new THREE.FileLoader(this.mtlLoader.manager);
       fileLoader.setPath(this.mtlLoader.path);
       fileLoader.load(mtlPath, onMtlLoaded);
     }
   }
   // Use provided MTL file
-  else
-  {
+  else {
     this.loadMTL(this.files[1]);
   }
 };
-
