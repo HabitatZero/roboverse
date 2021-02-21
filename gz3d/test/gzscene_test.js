@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 describe("Gzscene tests", function () {
   const utilsPath = "http://localhost:9876/base/gz3d/test/utils/";
 
