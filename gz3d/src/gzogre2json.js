@@ -26,7 +26,6 @@ GZ3D.Ogre2Json.prototype.LoadFromUrl = function(_url)
   var xhr = fileLoader.load(_url, function(){});
 
 // TODO: remove this when whole code has been migrated to ES6
-/* jshint ignore:start */
   return new Promise((resolve, reject) =>
     {
         xhr.onload = () =>
@@ -41,7 +40,6 @@ GZ3D.Ogre2Json.prototype.LoadFromUrl = function(_url)
           }
         };
     });
-/* jshint ignore:end */
 };
 
 /**

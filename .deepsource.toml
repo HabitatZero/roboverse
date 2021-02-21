@@ -1,6 +1,6 @@
 version = 1
 
-exclude_patterns = ["js/include/*"]
+exclude_patterns = ["**/js/include/*"]
 
 [[analyzers]]
 name = "python"
