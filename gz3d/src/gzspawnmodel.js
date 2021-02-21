@@ -175,11 +175,7 @@ GZ3D.SpawnModel.prototype.onTouchMove = function (event, originalEvent) {
 
   let e;
 
-  if (originalEvent) {
-    e = event;
-  } else {
-    e = event.originalEvent;
-  }
+  e = originalEvent ? event : event.originalEvent;
   e.preventDefault();
 
   if (e.touches.length === 1) {

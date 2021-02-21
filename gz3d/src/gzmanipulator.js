@@ -165,11 +165,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.gizmo.add(displayAxes.translate);
 
   // Picker cylinder
-  if (this.mobile) {
-    geometry = new THREE.CylinderGeometry(0.5, 0.01, 1.4, 10, 1, false);
-  } else {
-    geometry = new THREE.CylinderGeometry(0.2, 0.1, 0.8, 4, 1, false);
-  }
+  geometry = this.mobile ? new THREE.CylinderGeometry(0.5, 0.01, 1.4, 10, 1, false) : new THREE.CylinderGeometry(0.2, 0.1, 0.8, 4, 1, false);
 
   mesh = new THREE.Mesh(
     geometry,
@@ -407,11 +403,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   // RX, RY, RZ
 
   // Picker torus
-  if (this.mobile) {
-    geometry = new THREE.TorusGeometry(1, 0.3, 4, 36, 2 * Math.PI);
-  } else {
-    geometry = new THREE.TorusGeometry(1, 0.15, 4, 6, Math.PI);
-  }
+  geometry = this.mobile ? new THREE.TorusGeometry(1, 0.3, 4, 36, 2 * Math.PI) : new THREE.TorusGeometry(1, 0.15, 4, 6, Math.PI);
 
   mesh = new THREE.Mesh(
     geometry,
@@ -734,23 +726,11 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     } else if (isSelected("RZ") || isSelected("TXY")) {
       currentPlane = "XY";
     } else if (isSelected("X")) {
-      if (Math.abs(eye.y) > Math.abs(eye.z)) {
-        currentPlane = "XZ";
-      } else {
-        currentPlane = "XY";
-      }
+      currentPlane = Math.abs(eye.y) > Math.abs(eye.z) ? "XZ" : "XY";
     } else if (isSelected("Y")) {
-      if (Math.abs(eye.x) > Math.abs(eye.z)) {
-        currentPlane = "YZ";
-      } else {
-        currentPlane = "XY";
-      }
+      currentPlane = Math.abs(eye.x) > Math.abs(eye.z) ? "YZ" : "XY";
     } else if (isSelected("Z")) {
-      if (Math.abs(eye.x) > Math.abs(eye.y)) {
-        currentPlane = "YZ";
-      } else {
-        currentPlane = "XZ";
-      }
+      currentPlane = Math.abs(eye.x) > Math.abs(eye.y) ? "YZ" : "XZ";
     }
   };
 
@@ -1185,11 +1165,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
    * @returns {bool}
    */
   function isSelected(name) {
-    if (scope.selected.search(name) !== -1) {
-      return true;
-    } else {
-      return false;
-    }
+    return scope.selected.search(name) !== -1 ? true : false;
   }
 
   /**

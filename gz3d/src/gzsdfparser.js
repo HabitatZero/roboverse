@@ -403,14 +403,10 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
   // normal map
   if (material.normal_map) {
     let mapUri;
-    if (material.normal_map.indexOf("://") > 0) {
-      mapUri = material.normal_map.substring(
+    mapUri = material.normal_map.indexOf("://") > 0 ? material.normal_map.substring(
         material.normal_map.indexOf("://") + 3,
         material.normal_map.lastIndexOf("/")
-      );
-    } else {
-      mapUri = textureUri;
-    }
+      ) : textureUri;
     if (mapUri) {
       let startIndex = material.normal_map.lastIndexOf("/") + 1;
       if (startIndex < 0) {
@@ -746,11 +742,7 @@ GZ3D.SdfParser.prototype.createVisual = function (visual) {
 GZ3D.SdfParser.prototype.spawnFromSDF = function (sdf) {
   // Parse sdfXML
   let sdfXML;
-  if (typeof sdf === "string") {
-    sdfXML = this.parseXML(sdf);
-  } else {
-    sdfXML = sdf;
-  }
+  sdfXML = typeof sdf === "string" ? this.parseXML(sdf) : sdf;
 
   // Convert SDF XML to Json string and parse JSON string to object
   // TODO: we need better xml 2 json object convertor
@@ -794,11 +786,7 @@ GZ3D.SdfParser.prototype.loadSDF = function (sdfName) {
   }
   // In case it is just the model/world name, look for it on the default URL
   else {
-    if (lowerCaseName.endsWith(".world") || lowerCaseName.endsWith(".sdf")) {
-      filename = this.MATERIAL_ROOT + "/worlds/" + sdfName;
-    } else {
-      filename = this.MATERIAL_ROOT + "/" + sdfName + "/model.sdf";
-    }
+    filename = lowerCaseName.endsWith(".world") || lowerCaseName.endsWith(".sdf") ? this.MATERIAL_ROOT + "/worlds/" + sdfName : this.MATERIAL_ROOT + "/" + sdfName + "/model.sdf";
   }
 
   if (!filename) {

@@ -1337,11 +1337,7 @@ GZ3D.Gui = function (scene) {
 
   this.emitter.on("setPoseStats", function (modelName, linkName) {
     let object;
-    if (linkName === undefined) {
-      object = that.scene.getByName(modelName);
-    } else {
-      object = that.scene.getByName(linkName);
-    }
+    object = linkName === undefined ? that.scene.getByName(modelName) : that.scene.getByName(linkName);
 
     const stats = {};
     stats.name = object.name;
@@ -2055,12 +2051,7 @@ GZ3D.Gui.prototype.formatStats = function (stats) {
  */
 GZ3D.Gui.prototype.round = function (stats, isColor, decimals) {
   let result = stats;
-  if (typeof result === "number") {
-    result = this.roundNumber(result, isColor, decimals);
-  } // array of numbers
-  else {
-    result = this.roundArray(result, isColor, decimals);
-  }
+  result = typeof result === "number" ? this.roundNumber(result, isColor, decimals) : this.roundArray(result, isColor, decimals);
   return result;
 };
 
@@ -2075,11 +2066,7 @@ GZ3D.Gui.prototype.roundNumber = function (stats, isColor, decimals) {
   if (isColor) {
     result = Math.round(result * 255);
   } else {
-    if (decimals === null) {
-      result = Math.round(result * 1000) / 1000;
-    } else {
-      result = result.toFixed(decimals);
-    }
+    result = decimals === null ? Math.round(result * 1000) / 1000 : result.toFixed(decimals);
   }
   return result;
 };
@@ -2181,11 +2168,7 @@ GZ3D.Gui.prototype.setLogPlayStats = function (simTime, startTime, endTime) {
  * @param {} reverse convert id to name
  */
 var convertNameId = function (name, reverse) {
-  if (reverse) {
-    return name.replace(new RegExp("_gzspace_", "g"), " ");
-  } else {
-    return name.replace(new RegExp(" ", "g"), "_gzspace_");
-  }
+  return reverse ? name.replace(new RegExp("_gzspace_", "g"), " ") : name.replace(new RegExp(" ", "g"), "_gzspace_");
 };
 
 /**
