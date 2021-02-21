@@ -3,10 +3,10 @@
  */
 
 var ROSLIB = ROSLIB || {
-  REVISION : '6'
+  REVISION: "6",
 };
 
-//URDF types
+// URDF types
 ROSLIB.URDF_SPHERE = 0;
 ROSLIB.URDF_BOX = 1;
 ROSLIB.URDF_CYLINDER = 2;
@@ -32,8 +32,8 @@ ROSLIB.URDF_MESH = 3;
  *   * actionName - the action message name, like 'actionlib_tutorials/FibonacciAction'
  *   * timeout - the timeout length when connecting to the action server
  */
-ROSLIB.ActionClient = function(options) {
-  var that = this;
+ROSLIB.ActionClient = function (options) {
+  const that = this;
   options = options || {};
   this.ros = options.ros;
   this.serverName = options.serverName;
@@ -42,37 +42,37 @@ ROSLIB.ActionClient = function(options) {
   this.goals = {};
 
   // flag to check if a status has been received
-  var receivedStatus = false;
+  let receivedStatus = false;
 
   // create the topics associated with actionlib
-  var feedbackListener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : this.serverName + '/feedback',
-    messageType : this.actionName + 'Feedback'
+  const feedbackListener = new ROSLIB.Topic({
+    ros: this.ros,
+    name: this.serverName + "/feedback",
+    messageType: this.actionName + "Feedback",
   });
 
-  var statusListener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : this.serverName + '/status',
-    messageType : 'actionlib_msgs/GoalStatusArray'
+  const statusListener = new ROSLIB.Topic({
+    ros: this.ros,
+    name: this.serverName + "/status",
+    messageType: "actionlib_msgs/GoalStatusArray",
   });
 
-  var resultListener = new ROSLIB.Topic({
-    ros : this.ros,
-    name : this.serverName + '/result',
-    messageType : this.actionName + 'Result'
+  const resultListener = new ROSLIB.Topic({
+    ros: this.ros,
+    name: this.serverName + "/result",
+    messageType: this.actionName + "Result",
   });
 
   this.goalTopic = new ROSLIB.Topic({
-    ros : this.ros,
-    name : this.serverName + '/goal',
-    messageType : this.actionName + 'Goal'
+    ros: this.ros,
+    name: this.serverName + "/goal",
+    messageType: this.actionName + "Goal",
   });
 
   this.cancelTopic = new ROSLIB.Topic({
-    ros : this.ros,
-    name : this.serverName + '/cancel',
-    messageType : 'actionlib_msgs/GoalID'
+    ros: this.ros,
+    name: this.serverName + "/cancel",
+    messageType: "actionlib_msgs/GoalID",
   });
 
   // advertise the goal and cancel topics
@@ -80,40 +80,40 @@ ROSLIB.ActionClient = function(options) {
   this.cancelTopic.advertise();
 
   // subscribe to the status topic
-  statusListener.subscribe(function(statusMessage) {
+  statusListener.subscribe(function (statusMessage) {
     receivedStatus = true;
-    statusMessage.status_list.forEach(function(status) {
-      var goal = that.goals[status.goal_id.id];
+    statusMessage.status_list.forEach(function (status) {
+      const goal = that.goals[status.goal_id.id];
       if (goal) {
-        goal.emit('status', status);
+        goal.emit("status", status);
       }
     });
   });
 
   // subscribe the the feedback topic
-  feedbackListener.subscribe(function(feedbackMessage) {
-    var goal = that.goals[feedbackMessage.status.goal_id.id];
+  feedbackListener.subscribe(function (feedbackMessage) {
+    const goal = that.goals[feedbackMessage.status.goal_id.id];
     if (goal) {
-      goal.emit('status', feedbackMessage.status);
-      goal.emit('feedback', feedbackMessage.feedback);
+      goal.emit("status", feedbackMessage.status);
+      goal.emit("feedback", feedbackMessage.feedback);
     }
   });
 
   // subscribe to the result topic
-  resultListener.subscribe(function(resultMessage) {
-    var goal = that.goals[resultMessage.status.goal_id.id];
+  resultListener.subscribe(function (resultMessage) {
+    const goal = that.goals[resultMessage.status.goal_id.id];
 
     if (goal) {
-      goal.emit('status', resultMessage.status);
-      goal.emit('result', resultMessage.result);
+      goal.emit("status", resultMessage.status);
+      goal.emit("result", resultMessage.result);
     }
   });
 
   // If timeout specified, emit a 'timeout' event if the action server does not respond
   if (this.timeout) {
-    setTimeout(function() {
+    setTimeout(function () {
       if (!receivedStatus) {
-        that.emit('timeout');
+        that.emit("timeout");
       }
     }, this.timeout);
   }
@@ -123,11 +123,10 @@ ROSLIB.ActionClient.prototype.__proto__ = EventEmitter2.prototype;
 /**
  * Cancel all goals associated with this ActionClient.
  */
-ROSLIB.ActionClient.prototype.cancel = function() {
-  var cancelMessage = new ROSLIB.Message();
+ROSLIB.ActionClient.prototype.cancel = function () {
+  const cancelMessage = new ROSLIB.Message();
   this.cancelTopic.publish(cancelMessage);
 };
-
 
 /**
  * @author Russell Toris - rctoris@wpi.edu
@@ -144,39 +143,39 @@ ROSLIB.ActionClient.prototype.cancel = function() {
  *   * actionClient - the ROSLIB.ActionClient to use with this goal
  *   * goalMessage - The JSON object containing the goal for the action server
  */
-ROSLIB.Goal = function(options) {
-  var that = this;
+ROSLIB.Goal = function (options) {
+  const that = this;
   this.actionClient = options.actionClient;
   this.goalMessage = options.goalMessage;
   this.isFinished = false;
 
   // Used to create random IDs
-  var date = new Date();
+  const date = new Date();
 
   // Create a random ID
-  this.goalID = 'goal_' + Math.random() + '_' + date.getTime();
+  this.goalID = "goal_" + Math.random() + "_" + date.getTime();
   // Fill in the goal message
   this.goalMessage = new ROSLIB.Message({
-    goal_id : {
-      stamp : {
-        secs : 0,
-        nsecs : 0
+    goal_id: {
+      stamp: {
+        secs: 0,
+        nsecs: 0,
       },
-      id : this.goalID
+      id: this.goalID,
     },
-    goal : this.goalMessage
+    goal: this.goalMessage,
   });
 
-  this.on('status', function(status) {
+  this.on("status", function (status) {
     that.status = status;
   });
 
-  this.on('result', function(result) {
+  this.on("result", function (result) {
     that.isFinished = true;
     that.result = result;
   });
 
-  this.on('feedback', function(feedback) {
+  this.on("feedback", function (feedback) {
     that.feedback = feedback;
   });
 
@@ -190,13 +189,13 @@ ROSLIB.Goal.prototype.__proto__ = EventEmitter2.prototype;
  *
  * @param timeout (optional) - a timeout length for the goal's result
  */
-ROSLIB.Goal.prototype.send = function(timeout) {
-  var that = this;
+ROSLIB.Goal.prototype.send = function (timeout) {
+  const that = this;
   that.actionClient.goalTopic.publish(that.goalMessage);
   if (timeout) {
-    setTimeout(function() {
+    setTimeout(function () {
       if (!that.isFinished) {
-        that.emit('timeout');
+        that.emit("timeout");
       }
     }, timeout);
   }
@@ -205,9 +204,9 @@ ROSLIB.Goal.prototype.send = function(timeout) {
 /**
  * Cancel the current goal.
  */
-ROSLIB.Goal.prototype.cancel = function() {
-  var cancelMessage = new ROSLIB.Message({
-    id : this.goalID
+ROSLIB.Goal.prototype.cancel = function () {
+  const cancelMessage = new ROSLIB.Message({
+    id: this.goalID,
   });
   this.actionClient.cancelTopic.publish(cancelMessage);
 };
@@ -222,11 +221,11 @@ ROSLIB.Goal.prototype.cancel = function() {
  * @constructor
  * @param values - object matching the fields defined in the .msg definition file
  */
-ROSLIB.Message = function(values) {
-  var that = this;
+ROSLIB.Message = function (values) {
+  const that = this;
   values = values || {};
 
-  Object.keys(values).forEach(function(name) {
+  Object.keys(values).forEach(function (name) {
     that[name] = values[name];
   });
 };
@@ -243,7 +242,7 @@ ROSLIB.Message = function(values) {
  *   * ros - the ROSLIB.Ros connection handle
  *   * name - the param name, like max_vel_x
  */
-ROSLIB.Param = function(options) {
+ROSLIB.Param = function (options) {
   options = options || {};
   this.ros = options.ros;
   this.name = options.name;
@@ -255,20 +254,20 @@ ROSLIB.Param = function(options) {
  * @param callback - function with the following params:
  *  * value - the value of the param from ROS.
  */
-ROSLIB.Param.prototype.get = function(callback) {
-  var paramClient = new ROSLIB.Service({
-    ros : this.ros,
-    name : '/rosapi/get_param',
-    serviceType : 'rosapi/GetParam'
+ROSLIB.Param.prototype.get = function (callback) {
+  const paramClient = new ROSLIB.Service({
+    ros: this.ros,
+    name: "/rosapi/get_param",
+    serviceType: "rosapi/GetParam",
   });
 
-  var request = new ROSLIB.ServiceRequest({
-    name : this.name,
-    value : JSON.stringify('')
+  const request = new ROSLIB.ServiceRequest({
+    name: this.name,
+    value: JSON.stringify(""),
   });
 
-  paramClient.callService(request, function(result) {
-    var value = JSON.parse(result.value);
+  paramClient.callService(request, function (result) {
+    const value = JSON.parse(result.value);
     callback(value);
   });
 };
@@ -278,20 +277,19 @@ ROSLIB.Param.prototype.get = function(callback) {
  *
  * @param value - value to set param to.
  */
-ROSLIB.Param.prototype.set = function(value) {
-  var paramClient = new ROSLIB.Service({
-    ros : this.ros,
-    name : '/rosapi/set_param',
-    serviceType : 'rosapi/SetParam'
+ROSLIB.Param.prototype.set = function (value) {
+  const paramClient = new ROSLIB.Service({
+    ros: this.ros,
+    name: "/rosapi/set_param",
+    serviceType: "rosapi/SetParam",
   });
 
-  var request = new ROSLIB.ServiceRequest({
-    name : this.name,
-    value : JSON.stringify(value)
+  const request = new ROSLIB.ServiceRequest({
+    name: this.name,
+    value: JSON.stringify(value),
   });
 
-  paramClient.callService(request, function() {
-  });
+  paramClient.callService(request, function () {});
 };
 
 /**
@@ -312,9 +310,9 @@ ROSLIB.Param.prototype.set = function(value) {
  * @param options - possible keys include:
  *   * url (optional) - the WebSocket URL for rosbridge (can be specified later with `connect`)
  */
-ROSLIB.Ros = function(options) {
+ROSLIB.Ros = function (options) {
   options = options || {};
-  var url = options.url;
+  const url = options.url;
   this.socket = null;
   this.idCounter = 0;
 
@@ -333,8 +331,8 @@ ROSLIB.Ros.prototype.__proto__ = EventEmitter2.prototype;
  *
  * @param url - WebSocket URL for Rosbridge
  */
-ROSLIB.Ros.prototype.connect = function(url) {
-  var that = this;
+ROSLIB.Ros.prototype.connect = function (url) {
+  const that = this;
 
   /**
    * Emits a 'connection' event on WebSocket connection.
@@ -342,7 +340,7 @@ ROSLIB.Ros.prototype.connect = function(url) {
    * @param event - the argument to emit with the event.
    */
   function onOpen(event) {
-    that.emit('connection', event);
+    that.emit("connection", event);
   }
 
   /**
@@ -351,7 +349,7 @@ ROSLIB.Ros.prototype.connect = function(url) {
    * @param event - the argument to emit with the event.
    */
   function onClose(event) {
-    that.emit('close', event);
+    that.emit("close", event);
   }
 
   /**
@@ -360,7 +358,7 @@ ROSLIB.Ros.prototype.connect = function(url) {
    * @param event - the argument to emit with the event.
    */
   function onError(event) {
-    that.emit('error', event);
+    that.emit("error", event);
   }
 
   /**
@@ -374,12 +372,12 @@ ROSLIB.Ros.prototype.connect = function(url) {
    */
   function decompressPng(data, callback) {
     // Uncompresses the data before sending it through (use image/canvas to do so).
-    var image = new Image();
+    const image = new Image();
     // When the image loads, extracts the raw data (JSON message).
-    image.onload = function() {
+    image.onload = function () {
       // Creates a local canvas to draw on.
-      var canvas = document.createElement('canvas');
-      var context = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
 
       // Sets width and height.
       canvas.width = image.width;
@@ -388,19 +386,24 @@ ROSLIB.Ros.prototype.connect = function(url) {
       // Puts the data into the image.
       context.drawImage(image, 0, 0);
       // Grabs the raw, uncompressed data.
-      var imageData = context.getImageData(0, 0, image.width, image.height).data;
+      const imageData = context.getImageData(0, 0, image.width, image.height)
+        .data;
 
       // Constructs the JSON.
-      var jsonData = '';
-      for ( var i = 0; i < imageData.length; i += 4) {
+      let jsonData = "";
+      for (let i = 0; i < imageData.length; i += 4) {
         // RGB
-        jsonData += String.fromCharCode(imageData[i], imageData[i + 1], imageData[i + 2]);
+        jsonData += String.fromCharCode(
+          imageData[i],
+          imageData[i + 1],
+          imageData[i + 2]
+        );
       }
-      var decompressedData = JSON.parse(jsonData);
+      const decompressedData = JSON.parse(jsonData);
       callback(decompressedData);
     };
     // Sends the image data to load.
-    image.src = 'data:image/png;base64,' + data.data;
+    image.src = "data:image/png;base64," + data.data;
   }
 
   /**
@@ -411,16 +414,16 @@ ROSLIB.Ros.prototype.connect = function(url) {
    */
   function onMessage(message) {
     function handleMessage(message) {
-      if (message.op === 'publish') {
+      if (message.op === "publish") {
         that.emit(message.topic, message.msg);
-      } else if (message.op === 'service_response') {
+      } else if (message.op === "service_response") {
         that.emit(message.id, message.values);
       }
     }
 
-    var data = JSON.parse(message.data);
-    if (data.op === 'png') {
-      decompressPng(data, function(decompressedData) {
+    const data = JSON.parse(message.data);
+    if (data.op === "png") {
+      decompressPng(data, function (decompressedData) {
         handleMessage(decompressedData);
       });
     } else {
@@ -438,7 +441,7 @@ ROSLIB.Ros.prototype.connect = function(url) {
 /**
  * Disconnect from the WebSocket server.
  */
-ROSLIB.Ros.prototype.close = function() {
+ROSLIB.Ros.prototype.close = function () {
   if (this.socket) {
     this.socket.close();
   }
@@ -455,17 +458,25 @@ ROSLIB.Ros.prototype.close = function() {
  * @param level - User level as a string given by the client.
  * @param end - End time of the client's session.
  */
-ROSLIB.Ros.prototype.authenticate = function(mac, client, dest, rand, t, level, end) {
+ROSLIB.Ros.prototype.authenticate = function (
+  mac,
+  client,
+  dest,
+  rand,
+  t,
+  level,
+  end
+) {
   // create the request
-  var auth = {
-    op : 'auth',
-    mac : mac,
-    client : client,
-    dest : dest,
-    rand : rand,
-    t : t,
-    level : level,
-    end : end
+  const auth = {
+    op: "auth",
+    mac: mac,
+    client: client,
+    dest: dest,
+    rand: rand,
+    t: t,
+    level: level,
+    end: end,
   };
   // send the request
   this.callOnConnection(auth);
@@ -475,12 +486,12 @@ ROSLIB.Ros.prototype.authenticate = function(mac, client, dest, rand, t, level, 
  * Sends the message over the WebSocket, but queues the message up if not yet
  * connected.
  */
-ROSLIB.Ros.prototype.callOnConnection = function(message) {
-  var that = this;
-  var messageJson = JSON.stringify(message);
+ROSLIB.Ros.prototype.callOnConnection = function (message) {
+  const that = this;
+  const messageJson = JSON.stringify(message);
 
   if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-    that.once('connection', function() {
+    that.once("connection", function () {
       that.socket.send(messageJson);
     });
   } else {
@@ -494,16 +505,16 @@ ROSLIB.Ros.prototype.callOnConnection = function(message) {
  * @param callback function with params:
  *   * topics - Array of topic names
  */
-ROSLIB.Ros.prototype.getTopics = function(callback) {
-  var topicsClient = new ROSLIB.Service({
-    ros : this,
-    name : '/rosapi/topics',
-    serviceType : 'rosapi/Topics'
+ROSLIB.Ros.prototype.getTopics = function (callback) {
+  const topicsClient = new ROSLIB.Service({
+    ros: this,
+    name: "/rosapi/topics",
+    serviceType: "rosapi/Topics",
   });
 
-  var request = new ROSLIB.ServiceRequest();
+  const request = new ROSLIB.ServiceRequest();
 
-  topicsClient.callService(request, function(result) {
+  topicsClient.callService(request, function (result) {
     callback(result.topics);
   });
 };
@@ -514,16 +525,16 @@ ROSLIB.Ros.prototype.getTopics = function(callback) {
  * @param callback - function with the following params:
  *   * services - array of service names
  */
-ROSLIB.Ros.prototype.getServices = function(callback) {
-  var servicesClient = new ROSLIB.Service({
-    ros : this,
-    name : '/rosapi/services',
-    serviceType : 'rosapi/Services'
+ROSLIB.Ros.prototype.getServices = function (callback) {
+  const servicesClient = new ROSLIB.Service({
+    ros: this,
+    name: "/rosapi/services",
+    serviceType: "rosapi/Services",
   });
 
-  var request = new ROSLIB.ServiceRequest();
+  const request = new ROSLIB.ServiceRequest();
 
-  servicesClient.callService(request, function(result) {
+  servicesClient.callService(request, function (result) {
     callback(result.services);
   });
 };
@@ -534,15 +545,15 @@ ROSLIB.Ros.prototype.getServices = function(callback) {
  * @param callback function with params:
  *  * params - array of param names.
  */
-ROSLIB.Ros.prototype.getParams = function(callback) {
-  var paramsClient = new ROSLIB.Service({
-    ros : this,
-    name : '/rosapi/get_param_names',
-    serviceType : 'rosapi/GetParamNames'
+ROSLIB.Ros.prototype.getParams = function (callback) {
+  const paramsClient = new ROSLIB.Service({
+    ros: this,
+    name: "/rosapi/get_param_names",
+    serviceType: "rosapi/GetParamNames",
   });
 
-  var request = new ROSLIB.ServiceRequest();
-  paramsClient.callService(request, function(result) {
+  const request = new ROSLIB.ServiceRequest();
+  paramsClient.callService(request, function (result) {
     callback(result.names);
   });
 };
@@ -560,7 +571,7 @@ ROSLIB.Ros.prototype.getParams = function(callback) {
  *   * name - the service name, like /add_two_ints
  *   * serviceType - the service type, like 'rospy_tutorials/AddTwoInts'
  */
-ROSLIB.Service = function(options) {
+ROSLIB.Service = function (options) {
   options = options || {};
   this.ros = options.ros;
   this.name = options.name;
@@ -574,25 +585,25 @@ ROSLIB.Service = function(options) {
  * @param callback - function with params:
  *   * response - the response from the service request
  */
-ROSLIB.Service.prototype.callService = function(request, callback) {
+ROSLIB.Service.prototype.callService = function (request, callback) {
   this.ros.idCounter++;
-  var serviceCallId = 'call_service:' + this.name + ':' + this.ros.idCounter;
+  const serviceCallId = "call_service:" + this.name + ":" + this.ros.idCounter;
 
-  this.ros.once(serviceCallId, function(data) {
-    var response = new ROSLIB.ServiceResponse(data);
+  this.ros.once(serviceCallId, function (data) {
+    const response = new ROSLIB.ServiceResponse(data);
     callback(response);
   });
 
-  var requestValues = [];
-  Object.keys(request).forEach(function(name) {
+  const requestValues = [];
+  Object.keys(request).forEach(function (name) {
     requestValues.push(request[name]);
   });
 
-  var call = {
-    op : 'call_service',
-    id : serviceCallId,
-    service : this.name,
-    args : requestValues
+  const call = {
+    op: "call_service",
+    id: serviceCallId,
+    service: this.name,
+    args: requestValues,
   };
   this.ros.callOnConnection(call);
 };
@@ -607,11 +618,11 @@ ROSLIB.Service.prototype.callService = function(request, callback) {
  * @constructor
  * @param values - object matching the fields defined in the .srv definition file
  */
-ROSLIB.ServiceRequest = function(values) {
-  var that = this;
+ROSLIB.ServiceRequest = function (values) {
+  const that = this;
   values = values || {};
 
-  Object.keys(values).forEach(function(name) {
+  Object.keys(values).forEach(function (name) {
     that[name] = values[name];
   });
 };
@@ -626,11 +637,11 @@ ROSLIB.ServiceRequest = function(values) {
  * @constructor
  * @param values - object matching the fields defined in the .srv definition file
  */
-ROSLIB.ServiceResponse = function(values) {
-  var that = this;
+ROSLIB.ServiceResponse = function (values) {
+  const that = this;
   values = values || {};
 
-  Object.keys(values).forEach(function(name) {
+  Object.keys(values).forEach(function (name) {
     that[name] = values[name];
   });
 };
@@ -654,24 +665,31 @@ ROSLIB.ServiceResponse = function(values) {
  *   * compression - the type of compression to use, like 'png'
  *   * throttle_rate - the rate at which to throttle the topics
  */
-ROSLIB.Topic = function(options) {
+ROSLIB.Topic = function (options) {
   options = options || {};
   this.ros = options.ros;
   this.name = options.name;
   this.messageType = options.messageType;
   this.isAdvertised = false;
-  this.compression = options.compression || 'none';
+  this.compression = options.compression || "none";
   this.throttle_rate = options.throttle_rate || 0;
 
   // Check for valid compression types
-  if (this.compression && this.compression !== 'png' && this.compression !== 'none') {
-    this.emit('warning', this.compression +
-      ' compression is not supported. No compression will be used.');
+  if (
+    this.compression &&
+    this.compression !== "png" &&
+    this.compression !== "none"
+  ) {
+    this.emit(
+      "warning",
+      this.compression +
+        " compression is not supported. No compression will be used."
+    );
   }
 
   // Check if throttle rate is negative
   if (this.throttle_rate < 0) {
-    this.emit('warning', this.throttle_rate + ' is not allowed. Set to 0');
+    this.emit("warning", this.throttle_rate + " is not allowed. Set to 0");
     this.throttle_rate = 0;
   }
 };
@@ -684,27 +702,27 @@ ROSLIB.Topic.prototype.__proto__ = EventEmitter2.prototype;
  * @param callback - function with the following params:
  *   * message - the published message
  */
-ROSLIB.Topic.prototype.subscribe = function(callback) {
-  var that = this;
+ROSLIB.Topic.prototype.subscribe = function (callback) {
+  const that = this;
 
-  this.on('message', function(message) {
+  this.on("message", function (message) {
     callback(message);
   });
 
-  this.ros.on(this.name, function(data) {
-    var message = new ROSLIB.Message(data);
-    that.emit('message', message);
+  this.ros.on(this.name, function (data) {
+    const message = new ROSLIB.Message(data);
+    that.emit("message", message);
   });
 
   this.ros.idCounter++;
-  var subscribeId = 'subscribe:' + this.name + ':' + this.ros.idCounter;
-  var call = {
-    op : 'subscribe',
-    id : subscribeId,
-    type : this.messageType,
-    topic : this.name,
-    compression : this.compression,
-    throttle_rate : this.throttle_rate
+  const subscribeId = "subscribe:" + this.name + ":" + this.ros.idCounter;
+  const call = {
+    op: "subscribe",
+    id: subscribeId,
+    type: this.messageType,
+    topic: this.name,
+    compression: this.compression,
+    throttle_rate: this.throttle_rate,
   };
 
   this.ros.callOnConnection(call);
@@ -714,14 +732,14 @@ ROSLIB.Topic.prototype.subscribe = function(callback) {
  * Unregisters as a subscriber for the topic. Unsubscribing will remove
  * all subscribe callbacks.
  */
-ROSLIB.Topic.prototype.unsubscribe = function() {
-  this.ros.removeAllListeners([ this.name ]);
+ROSLIB.Topic.prototype.unsubscribe = function () {
+  this.ros.removeAllListeners([this.name]);
   this.ros.idCounter++;
-  var unsubscribeId = 'unsubscribe:' + this.name + ':' + this.ros.idCounter;
-  var call = {
-    op : 'unsubscribe',
-    id : unsubscribeId,
-    topic : this.name
+  const unsubscribeId = "unsubscribe:" + this.name + ":" + this.ros.idCounter;
+  const call = {
+    op: "unsubscribe",
+    id: unsubscribeId,
+    topic: this.name,
   };
   this.ros.callOnConnection(call);
 };
@@ -729,14 +747,14 @@ ROSLIB.Topic.prototype.unsubscribe = function() {
 /**
  * Registers as a publisher for the topic.
  */
-ROSLIB.Topic.prototype.advertise = function() {
+ROSLIB.Topic.prototype.advertise = function () {
   this.ros.idCounter++;
-  var advertiseId = 'advertise:' + this.name + ':' + this.ros.idCounter;
-  var call = {
-    op : 'advertise',
-    id : advertiseId,
-    type : this.messageType,
-    topic : this.name
+  const advertiseId = "advertise:" + this.name + ":" + this.ros.idCounter;
+  const call = {
+    op: "advertise",
+    id: advertiseId,
+    type: this.messageType,
+    topic: this.name,
   };
   this.ros.callOnConnection(call);
   this.isAdvertised = true;
@@ -745,13 +763,13 @@ ROSLIB.Topic.prototype.advertise = function() {
 /**
  * Unregisters as a publisher for the topic.
  */
-ROSLIB.Topic.prototype.unadvertise = function() {
+ROSLIB.Topic.prototype.unadvertise = function () {
   this.ros.idCounter++;
-  var unadvertiseId = 'unadvertise:' + this.name + ':' + this.ros.idCounter;
-  var call = {
-    op : 'unadvertise',
-    id : unadvertiseId,
-    topic : this.name
+  const unadvertiseId = "unadvertise:" + this.name + ":" + this.ros.idCounter;
+  const call = {
+    op: "unadvertise",
+    id: unadvertiseId,
+    topic: this.name,
   };
   this.ros.callOnConnection(call);
   this.isAdvertised = false;
@@ -762,18 +780,18 @@ ROSLIB.Topic.prototype.unadvertise = function() {
  *
  * @param message - A ROSLIB.Message object.
  */
-ROSLIB.Topic.prototype.publish = function(message) {
+ROSLIB.Topic.prototype.publish = function (message) {
   if (!this.isAdvertised) {
     this.advertise();
   }
 
   this.ros.idCounter++;
-  var publishId = 'publish:' + this.name + ':' + this.ros.idCounter;
-  var call = {
-    op : 'publish',
-    id : publishId,
-    topic : this.name,
-    msg : message
+  const publishId = "publish:" + this.name + ":" + this.ros.idCounter;
+  const call = {
+    op: "publish",
+    id: publishId,
+    topic: this.name,
+    msg: message,
   };
   this.ros.callOnConnection(call);
 };
@@ -790,7 +808,7 @@ ROSLIB.Topic.prototype.publish = function(message) {
  *   * position - the Vector3 describing the position
  *   * orientation - the ROSLIB.Quaternion describing the orientation
  */
-ROSLIB.Pose = function(options) {
+ROSLIB.Pose = function (options) {
   options = options || {};
   // copy the values into this object if they exist
   this.position = new ROSLIB.Vector3(options.position);
@@ -802,10 +820,10 @@ ROSLIB.Pose = function(options) {
  *
  * @param tf the transform
  */
-ROSLIB.Pose.prototype.applyTransform = function(tf) {
+ROSLIB.Pose.prototype.applyTransform = function (tf) {
   this.position.multiplyQuaternion(tf.rotation);
   this.position.add(tf.translation);
-  var tmp = tf.rotation.clone();
+  const tmp = tf.rotation.clone();
   tmp.multiply(this.orientation);
   this.orientation = tmp;
 };
@@ -815,7 +833,7 @@ ROSLIB.Pose.prototype.applyTransform = function(tf) {
  *
  * @returns the cloned pose
  */
-ROSLIB.Pose.prototype.clone = function() {
+ROSLIB.Pose.prototype.clone = function () {
   return new ROSLIB.Pose(this);
 };
 
@@ -833,7 +851,7 @@ ROSLIB.Pose.prototype.clone = function() {
  *   * z - the z value
  *   * w - the w value
  */
-ROSLIB.Quaternion = function(options) {
+ROSLIB.Quaternion = function (options) {
   options = options || {};
   this.x = options.x || 0;
   this.y = options.y || 0;
@@ -844,7 +862,7 @@ ROSLIB.Quaternion = function(options) {
 /**
  * Perform a conjugation on this quaternion.
  */
-ROSLIB.Quaternion.prototype.conjugate = function() {
+ROSLIB.Quaternion.prototype.conjugate = function () {
   this.x *= -1;
   this.y *= -1;
   this.z *= -1;
@@ -853,8 +871,10 @@ ROSLIB.Quaternion.prototype.conjugate = function() {
 /**
  * Perform a normalization on this quaternion.
  */
-ROSLIB.Quaternion.prototype.normalize = function() {
-  var l = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+ROSLIB.Quaternion.prototype.normalize = function () {
+  let l = Math.sqrt(
+    this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w
+  );
   if (l === 0) {
     this.x = 0;
     this.y = 0;
@@ -872,7 +892,7 @@ ROSLIB.Quaternion.prototype.normalize = function() {
 /**
  * Convert this quaternion into its inverse.
  */
-ROSLIB.Quaternion.prototype.invert = function() {
+ROSLIB.Quaternion.prototype.invert = function () {
   this.conjugate();
   this.normalize();
 };
@@ -882,11 +902,11 @@ ROSLIB.Quaternion.prototype.invert = function() {
  *
  * @param q the quaternion to multiply with
  */
-ROSLIB.Quaternion.prototype.multiply = function(q) {
-  var newX = this.x * q.w + this.y * q.z - this.z * q.y + this.w * q.x;
-  var newY = -this.x * q.z + this.y * q.w + this.z * q.x + this.w * q.y;
-  var newZ = this.x * q.y - this.y * q.x + this.z * q.w + this.w * q.z;
-  var newW = -this.x * q.x - this.y * q.y - this.z * q.z + this.w * q.w;
+ROSLIB.Quaternion.prototype.multiply = function (q) {
+  const newX = this.x * q.w + this.y * q.z - this.z * q.y + this.w * q.x;
+  const newY = -this.x * q.z + this.y * q.w + this.z * q.x + this.w * q.y;
+  const newZ = this.x * q.y - this.y * q.x + this.z * q.w + this.w * q.z;
+  const newW = -this.x * q.x - this.y * q.y - this.z * q.z + this.w * q.w;
   this.x = newX;
   this.y = newY;
   this.z = newZ;
@@ -898,10 +918,9 @@ ROSLIB.Quaternion.prototype.multiply = function(q) {
  *
  * @returns the cloned quaternion
  */
-ROSLIB.Quaternion.prototype.clone = function() {
+ROSLIB.Quaternion.prototype.clone = function () {
   return new ROSLIB.Quaternion(this);
 };
-
 
 /**
  * @author David Gossow - dgossow@willowgarage.com
@@ -915,7 +934,7 @@ ROSLIB.Quaternion.prototype.clone = function() {
  *   * translation - the Vector3 describing the translation
  *   * rotation - the ROSLIB.Quaternion describing the rotation
  */
-ROSLIB.Transform = function(options) {
+ROSLIB.Transform = function (options) {
   options = options || {};
   // Copy the values into this object if they exist
   this.translation = new ROSLIB.Vector3(options.translation);
@@ -927,7 +946,7 @@ ROSLIB.Transform = function(options) {
  *
  * @returns the cloned transform
  */
-ROSLIB.Transform.prototype.clone = function() {
+ROSLIB.Transform.prototype.clone = function () {
   return new ROSLIB.Transform(this);
 };
 
@@ -944,7 +963,7 @@ ROSLIB.Transform.prototype.clone = function() {
  *   * y - the y value
  *   * z - the z value
  */
-ROSLIB.Vector3 = function(options) {
+ROSLIB.Vector3 = function (options) {
   options = options || {};
   this.x = options.x || 0;
   this.y = options.y || 0;
@@ -956,7 +975,7 @@ ROSLIB.Vector3 = function(options) {
  *
  * @param v the vector to add with
  */
-ROSLIB.Vector3.prototype.add = function(v) {
+ROSLIB.Vector3.prototype.add = function (v) {
   this.x += v.x;
   this.y += v.y;
   this.z += v.z;
@@ -967,7 +986,7 @@ ROSLIB.Vector3.prototype.add = function(v) {
  *
  * @param v the vector to subtract with
  */
-ROSLIB.Vector3.prototype.subtract = function(v) {
+ROSLIB.Vector3.prototype.subtract = function (v) {
   this.x -= v.x;
   this.y -= v.y;
   this.z -= v.z;
@@ -978,11 +997,11 @@ ROSLIB.Vector3.prototype.subtract = function(v) {
  *
  * @param q - the quaternion to multiply with
  */
-ROSLIB.Vector3.prototype.multiplyQuaternion = function(q) {
-  var ix = q.w * this.x + q.y * this.z - q.z * this.y;
-  var iy = q.w * this.y + q.z * this.x - q.x * this.z;
-  var iz = q.w * this.z + q.x * this.y - q.y * this.x;
-  var iw = -q.x * this.x - q.y * this.y - q.z * this.z;
+ROSLIB.Vector3.prototype.multiplyQuaternion = function (q) {
+  const ix = q.w * this.x + q.y * this.z - q.z * this.y;
+  const iy = q.w * this.y + q.z * this.x - q.x * this.z;
+  const iz = q.w * this.z + q.x * this.y - q.y * this.x;
+  const iw = -q.x * this.x - q.y * this.y - q.z * this.z;
   this.x = ix * q.w + iw * -q.x + iy * -q.z - iz * -q.y;
   this.y = iy * q.w + iw * -q.y + iz * -q.x - ix * -q.z;
   this.z = iz * q.w + iw * -q.z + ix * -q.y - iy * -q.x;
@@ -993,7 +1012,7 @@ ROSLIB.Vector3.prototype.multiplyQuaternion = function(q) {
  *
  * @returns the cloned vector
  */
-ROSLIB.Vector3.prototype.clone = function() {
+ROSLIB.Vector3.prototype.clone = function () {
   return new ROSLIB.Vector3(this);
 };
 
@@ -1013,10 +1032,10 @@ ROSLIB.Vector3.prototype.clone = function() {
  *   * rate - the rate for the TF republisher
  *   * goalUpdateDelay - the goal update delay for the TF republisher
  */
-ROSLIB.TFClient = function(options) {
+ROSLIB.TFClient = function (options) {
   options = options || {};
   this.ros = options.ros;
-  this.fixedFrame = options.fixedFrame || '/base_link';
+  this.fixedFrame = options.fixedFrame || "/base_link";
   this.angularThres = options.angularThres || 2.0;
   this.transThres = options.transThres || 0.01;
   this.rate = options.rate || 10.0;
@@ -1028,9 +1047,9 @@ ROSLIB.TFClient = function(options) {
 
   // Create an ActionClient
   this.actionClient = new ROSLIB.ActionClient({
-    ros : this.ros,
-    serverName : '/tf2_web_republisher',
-    actionName : 'tf2_web_republisher/TFSubscriptionAction'
+    ros: this.ros,
+    serverName: "/tf2_web_republisher",
+    actionName: "tf2_web_republisher/TFSubscriptionAction",
   });
 };
 
@@ -1040,17 +1059,17 @@ ROSLIB.TFClient = function(options) {
  *
  * @param tf - the TF message from the server
  */
-ROSLIB.TFClient.prototype.processFeedback = function(tf) {
-  var that = this;
-  tf.transforms.forEach(function(transform) {
-    var frameID = transform.child_frame_id;
-    var info = that.frameInfos[frameID];
+ROSLIB.TFClient.prototype.processFeedback = function (tf) {
+  const that = this;
+  tf.transforms.forEach(function (transform) {
+    const frameID = transform.child_frame_id;
+    const info = that.frameInfos[frameID];
     if (info !== undefined) {
       info.transform = new ROSLIB.Transform({
-        translation : transform.transform.translation,
-        rotation : transform.transform.rotation
+        translation: transform.transform.translation,
+        rotation: transform.transform.rotation,
       });
-      info.cbs.forEach(function(cb) {
+      info.cbs.forEach(function (cb) {
         cb(info.transform);
       });
     }
@@ -1061,29 +1080,29 @@ ROSLIB.TFClient.prototype.processFeedback = function(tf) {
  * Create and send a new goal to the tf2_web_republisher based on the current
  * list of TFs.
  */
-ROSLIB.TFClient.prototype.updateGoal = function() {
+ROSLIB.TFClient.prototype.updateGoal = function () {
   // Anytime the list of frames changes, we will need to send a new goal.
   if (this.currentGoal) {
     this.currentGoal.cancel();
   }
 
-  var goalMessage = {
-    source_frames : [],
-    target_frame : this.fixedFrame,
-    angular_thres : this.angularThres,
-    trans_thres : this.transThres,
-    rate : this.rate
+  const goalMessage = {
+    source_frames: [],
+    target_frame: this.fixedFrame,
+    angular_thres: this.angularThres,
+    trans_thres: this.transThres,
+    rate: this.rate,
   };
 
-  for (var frame in this.frameInfos) {
+  for (const frame in this.frameInfos) {
     goalMessage.source_frames.push(frame);
   }
 
   this.currentGoal = new ROSLIB.Goal({
-    actionClient : this.actionClient,
-    goalMessage : goalMessage
+    actionClient: this.actionClient,
+    goalMessage: goalMessage,
   });
-  this.currentGoal.on('feedback', this.processFeedback.bind(this));
+  this.currentGoal.on("feedback", this.processFeedback.bind(this));
   this.currentGoal.send();
   this.goalUpdateRequested = false;
 };
@@ -1095,15 +1114,15 @@ ROSLIB.TFClient.prototype.updateGoal = function() {
  * @param callback - function with params:
  *   * transform - the transform data
  */
-ROSLIB.TFClient.prototype.subscribe = function(frameID, callback) {
+ROSLIB.TFClient.prototype.subscribe = function (frameID, callback) {
   // make sure the frame id is relative
-  if (frameID[0] === '/') {
+  if (frameID[0] === "/") {
     frameID = frameID.substring(1);
   }
   // if there is no callback registered for the given frame, create emtpy callback list
   if (this.frameInfos[frameID] === undefined) {
     this.frameInfos[frameID] = {
-      cbs : []
+      cbs: [],
     };
     if (!this.goalUpdateRequested) {
       setTimeout(this.updateGoal.bind(this), this.goalUpdateDelay);
@@ -1124,10 +1143,10 @@ ROSLIB.TFClient.prototype.subscribe = function(frameID, callback) {
  * @param frameID - the TF frame to unsubscribe from
  * @param callback - the callback function to remove
  */
-ROSLIB.TFClient.prototype.unsubscribe = function(frameID, callback) {
-  var info = this.frameInfos[frameID];
+ROSLIB.TFClient.prototype.unsubscribe = function (frameID, callback) {
+  const info = this.frameInfos[frameID];
   if (info !== undefined) {
-    var cbIndex = info.cbs.indexOf(callback);
+    const cbIndex = info.cbs.indexOf(callback);
     if (cbIndex >= 0) {
       info.cbs.splice(cbIndex, 1);
       if (info.cbs.length === 0) {
@@ -1137,7 +1156,6 @@ ROSLIB.TFClient.prototype.unsubscribe = function(frameID, callback) {
     }
   }
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1151,10 +1169,10 @@ ROSLIB.TFClient.prototype.unsubscribe = function(frameID, callback) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfBox = function(options) {
+ROSLIB.UrdfBox = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.dimension = null;
   this.type = null;
 
@@ -1163,15 +1181,15 @@ ROSLIB.UrdfBox = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     this.type = ROSLIB.URDF_BOX;
 
     // Parse the string
-    var xyz = xml.getAttribute('size').split(' ');
+    const xyz = xml.getAttribute("size").split(" ");
     that.dimension = new ROSLIB.Vector3({
-      x : parseFloat(xyz[0]),
-      y : parseFloat(xyz[1]),
-      z : parseFloat(xyz[2])
+      x: parseFloat(xyz[0]),
+      y: parseFloat(xyz[1]),
+      z: parseFloat(xyz[2]),
     });
   };
 
@@ -1191,10 +1209,10 @@ ROSLIB.UrdfBox = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfColor = function(options) {
+ROSLIB.UrdfColor = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.r = null;
   this.g = null;
   this.b = null;
@@ -1205,9 +1223,9 @@ ROSLIB.UrdfColor = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     // Parse the string
-    var rgba = xml.getAttribute('rgba').split(' ');
+    const rgba = xml.getAttribute("rgba").split(" ");
     that.r = parseFloat(rgba[0]);
     that.g = parseFloat(rgba[1]);
     that.b = parseFloat(rgba[2]);
@@ -1231,10 +1249,10 @@ ROSLIB.UrdfColor = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfCylinder = function(options) {
+ROSLIB.UrdfCylinder = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.type = null;
   this.length = null;
   this.radius = null;
@@ -1244,16 +1262,15 @@ ROSLIB.UrdfCylinder = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     that.type = ROSLIB.URDF_CYLINDER;
-    that.length = parseFloat(xml.getAttribute('length'));
-    that.radius = parseFloat(xml.getAttribute('radius'));
+    that.length = parseFloat(xml.getAttribute("length"));
+    that.radius = parseFloat(xml.getAttribute("radius"));
   };
 
   // Pass it to the XML parser
   initXml(xml);
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1267,10 +1284,10 @@ ROSLIB.UrdfCylinder = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfLink = function(options) {
+ROSLIB.UrdfLink = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.name = null;
   this.visual = null;
 
@@ -1279,12 +1296,12 @@ ROSLIB.UrdfLink = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
-    that.name = xml.getAttribute('name');
-    var visuals = xml.getElementsByTagName('visual');
+  const initXml = function (xml) {
+    that.name = xml.getAttribute("name");
+    const visuals = xml.getElementsByTagName("visual");
     if (visuals.length > 0) {
       that.visual = new ROSLIB.UrdfVisual({
-        xml : visuals[0]
+        xml: visuals[0],
       });
     }
   };
@@ -1292,7 +1309,6 @@ ROSLIB.UrdfLink = function(options) {
   // Pass it to the XML parser
   initXml(xml);
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1306,10 +1322,10 @@ ROSLIB.UrdfLink = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfMaterial = function(options) {
+ROSLIB.UrdfMaterial = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.name = null;
   this.textureFilename = null;
   this.color = null;
@@ -1319,21 +1335,21 @@ ROSLIB.UrdfMaterial = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
-    that.name = xml.getAttribute('name');
+  const initXml = function (xml) {
+    that.name = xml.getAttribute("name");
 
     // Texture
-    var textures = xml.getElementsByTagName('texture');
+    const textures = xml.getElementsByTagName("texture");
     if (textures.length > 0) {
-      that.textureFilename = textures[0].getAttribute('filename');
+      that.textureFilename = textures[0].getAttribute("filename");
     }
 
     // Color
-    var colors = xml.getElementsByTagName('color');
+    const colors = xml.getElementsByTagName("color");
     if (colors.length > 0) {
       // Parse the RBGA string
       that.color = new ROSLIB.UrdfColor({
-        xml : colors[0]
+        xml: colors[0],
       });
     }
   };
@@ -1354,10 +1370,10 @@ ROSLIB.UrdfMaterial = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfMesh = function(options) {
+ROSLIB.UrdfMesh = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.filename = null;
   this.scale = null;
   this.type = null;
@@ -1367,19 +1383,19 @@ ROSLIB.UrdfMesh = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     that.type = ROSLIB.URDF_MESH;
-    that.filename = xml.getAttribute('filename');
+    that.filename = xml.getAttribute("filename");
 
     // Check for a scale
-    var scale = xml.getAttribute('scale');
+    const scale = xml.getAttribute("scale");
     if (scale) {
       // Get the XYZ
-      var xyz = scale.split(' ');
+      const xyz = scale.split(" ");
       that.scale = new ROSLIB.Vector3({
-        x : parseFloat(xyz[0]),
-        y : parseFloat(xyz[1]),
-        z : parseFloat(xyz[2])
+        x: parseFloat(xyz[0]),
+        y: parseFloat(xyz[1]),
+        z: parseFloat(xyz[2]),
       });
     }
   };
@@ -1387,7 +1403,6 @@ ROSLIB.UrdfMesh = function(options) {
   // Pass it to the XML parser
   initXml(xml);
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1402,11 +1417,11 @@ ROSLIB.UrdfMesh = function(options) {
  *  * xml - the XML element to parse
  *  * string - the XML element to parse as a string
  */
-ROSLIB.UrdfModel = function(options) {
+ROSLIB.UrdfModel = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
-  var string = options.string;
+  const that = this;
+  let xml = options.xml;
+  const string = options.string;
   this.materials = [];
   this.links = [];
 
@@ -1415,33 +1430,39 @@ ROSLIB.UrdfModel = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     // Get the robot tag
-    var robotXml = xml.evaluate('//robot', xml, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    const robotXml = xml.evaluate(
+      "//robot",
+      xml,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue;
 
     // Get the robot name
-    that.name = robotXml.getAttribute('name');
+    that.name = robotXml.getAttribute("name");
 
     // Parse all the visual elements we need
-    for (var n in robotXml.childNodes) {
-      var node = robotXml.childNodes[n];
-      if (node.tagName === 'material') {
-        var material = new ROSLIB.UrdfMaterial({
-          xml : node
+    for (const n in robotXml.childNodes) {
+      const node = robotXml.childNodes[n];
+      if (node.tagName === "material") {
+        const material = new ROSLIB.UrdfMaterial({
+          xml: node,
         });
         // Make sure this is unique
         if (that.materials[material.name]) {
-          console.warn('Material ' + material.name + 'is not unique.');
+          console.warn("Material " + material.name + "is not unique.");
         } else {
           that.materials[material.name] = material;
         }
-      } else if (node.tagName === 'link') {
-        var link = new ROSLIB.UrdfLink({
-          xml : node
+      } else if (node.tagName === "link") {
+        const link = new ROSLIB.UrdfLink({
+          xml: node,
         });
         // Make sure this is unique
         if (that.links[link.name]) {
-          console.warn('Link ' + link.name + ' is not unique.');
+          console.warn("Link " + link.name + " is not unique.");
         } else {
           // Check for a material
           if (link.visual && link.visual.material) {
@@ -1462,13 +1483,12 @@ ROSLIB.UrdfModel = function(options) {
   // Check if we are using a string or an XML element
   if (string) {
     // Parse the string
-    var parser = new DOMParser();
-    xml = parser.parseFromString(string, 'text/xml');
+    const parser = new DOMParser();
+    xml = parser.parseFromString(string, "text/xml");
   }
   // Pass it to the XML parser
   initXml(xml);
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1482,10 +1502,10 @@ ROSLIB.UrdfModel = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfSphere = function(options) {
+ROSLIB.UrdfSphere = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.radius = null;
   this.type = null;
 
@@ -1494,15 +1514,14 @@ ROSLIB.UrdfSphere = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     that.type = ROSLIB.URDF_SPHERE;
-    that.radius = parseFloat(xml.getAttribute('radius'));
+    that.radius = parseFloat(xml.getAttribute("radius"));
   };
 
   // pass it to the XML parser
   initXml(xml);
 };
-
 
 /**
  * @author Benjamin Pitzer - ben.pitzer@gmail.com
@@ -1516,10 +1535,10 @@ ROSLIB.UrdfSphere = function(options) {
  * @param options - object with following keys:
  *  * xml - the XML element to parse
  */
-ROSLIB.UrdfVisual = function(options) {
+ROSLIB.UrdfVisual = function (options) {
   options = options || {};
-  var that = this;
-  var xml = options.xml;
+  const that = this;
+  const xml = options.xml;
   this.origin = null;
   this.geometry = null;
   this.material = null;
@@ -1529,100 +1548,104 @@ ROSLIB.UrdfVisual = function(options) {
    *
    * @param xml - the XML element to parse
    */
-  var initXml = function(xml) {
+  const initXml = function (xml) {
     // Origin
-    var origins = xml.getElementsByTagName('origin');
+    const origins = xml.getElementsByTagName("origin");
     if (origins.length === 0) {
       // use the identity as the default
       that.origin = new ROSLIB.Pose();
     } else {
       // Check the XYZ
-      var xyz = origins[0].getAttribute('xyz');
-      var position = new ROSLIB.Vector3();
+      let xyz = origins[0].getAttribute("xyz");
+      let position = new ROSLIB.Vector3();
       if (xyz) {
-        xyz = xyz.split(' ');
+        xyz = xyz.split(" ");
         position = new ROSLIB.Vector3({
-          x : parseFloat(xyz[0]),
-          y : parseFloat(xyz[1]),
-          z : parseFloat(xyz[2])
+          x: parseFloat(xyz[0]),
+          y: parseFloat(xyz[1]),
+          z: parseFloat(xyz[2]),
         });
       }
 
       // Check the RPY
-      var rpy = origins[0].getAttribute('rpy');
-      var orientation = new ROSLIB.Quaternion();
+      let rpy = origins[0].getAttribute("rpy");
+      let orientation = new ROSLIB.Quaternion();
       if (rpy) {
-        rpy = rpy.split(' ');
+        rpy = rpy.split(" ");
         // Convert from RPY
-        var roll = parseFloat(rpy[0]);
-        var pitch = parseFloat(rpy[1]);
-        var yaw = parseFloat(rpy[2]);
-        var phi = roll / 2.0;
-        var the = pitch / 2.0;
-        var psi = yaw / 2.0;
-        var x = Math.sin(phi) * Math.cos(the) * Math.cos(psi) - Math.cos(phi) * Math.sin(the)
-            * Math.sin(psi);
-        var y = Math.cos(phi) * Math.sin(the) * Math.cos(psi) + Math.sin(phi) * Math.cos(the)
-            * Math.sin(psi);
-        var z = Math.cos(phi) * Math.cos(the) * Math.sin(psi) - Math.sin(phi) * Math.sin(the)
-            * Math.cos(psi);
-        var w = Math.cos(phi) * Math.cos(the) * Math.cos(psi) + Math.sin(phi) * Math.sin(the)
-            * Math.sin(psi);
+        const roll = parseFloat(rpy[0]);
+        const pitch = parseFloat(rpy[1]);
+        const yaw = parseFloat(rpy[2]);
+        const phi = roll / 2.0;
+        const the = pitch / 2.0;
+        const psi = yaw / 2.0;
+        const x =
+          Math.sin(phi) * Math.cos(the) * Math.cos(psi) -
+          Math.cos(phi) * Math.sin(the) * Math.sin(psi);
+        const y =
+          Math.cos(phi) * Math.sin(the) * Math.cos(psi) +
+          Math.sin(phi) * Math.cos(the) * Math.sin(psi);
+        const z =
+          Math.cos(phi) * Math.cos(the) * Math.sin(psi) -
+          Math.sin(phi) * Math.sin(the) * Math.cos(psi);
+        const w =
+          Math.cos(phi) * Math.cos(the) * Math.cos(psi) +
+          Math.sin(phi) * Math.sin(the) * Math.sin(psi);
 
         orientation = new ROSLIB.Quaternion({
-          x : x,
-          y : y,
-          z : z,
-          w : w
+          x: x,
+          y: y,
+          z: z,
+          w: w,
         });
         orientation.normalize();
       }
       that.origin = new ROSLIB.Pose({
-        position : position,
-        orientation : orientation
+        position: position,
+        orientation: orientation,
       });
     }
 
     // Geometry
-    var geoms = xml.getElementsByTagName('geometry');
+    const geoms = xml.getElementsByTagName("geometry");
     if (geoms.length > 0) {
-      var shape = null;
+      let shape = null;
       // Check for the shape
-      for (var n in geoms[0].childNodes) {
-        var node = geoms[0].childNodes[n];
+      for (const n in geoms[0].childNodes) {
+        const node = geoms[0].childNodes[n];
         if (node.nodeType === 1) {
           shape = node;
           break;
         }
       }
       // Check the type
-      var type = shape.nodeName;
-      if (type === 'sphere') {
+      const type = shape.nodeName;
+      if (type === "sphere") {
         that.geometry = new ROSLIB.UrdfSphere({
-          xml : shape
+          xml: shape,
         });
-      } else if (type === 'box') {
+      } else if (type === "box") {
         that.geometry = new ROSLIB.UrdfBox({
-          xml : shape
+          xml: shape,
         });
-      } else if (type === 'cylinder') {
+      } else if (type === "cylinder") {
         that.geometry = new ROSLIB.UrdfCylinder({
-          xml : shape
+          xml: shape,
         });
-      } else if (type === 'mesh') {
+      } else if (type === "mesh") {
         that.geometry = new ROSLIB.UrdfMesh({
-          xml : shape
+          xml: shape,
         });
       } else {
-        console.warn('Unknown geometry type ' + type);
+        console.warn("Unknown geometry type " + type);
       }
     }
 
     // Material
-    var materials = xml.getElementsByTagName('material');
+    const materials = xml.getElementsByTagName("material");
     if (materials.length > 0) {
       that.material = new ROSLIB.UrdfMaterial({
-        xml : materials[0]
+        xml: materials[0],
       });
     }
   };
