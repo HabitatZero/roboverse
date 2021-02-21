@@ -13,14 +13,8 @@
  * to be parsed by the loaders, if provided the uri will not be used just
  * as a url, no XMLHttpRequest will be made.
  */
-GZ3D.OBJLoader = function (
-  _scene,
-  _uri,
-  _submesh,
-  _centerSubmesh,
-  _callback,
-  _files
-) {
+GZ3D.OBJLoader = function(_scene, _uri, _submesh, _centerSubmesh, _callback,
+                          _files) {
   // Keep parameters
   this.scene = _scene;
   this.submesh = _submesh;
@@ -31,7 +25,7 @@ GZ3D.OBJLoader = function (
 
   // True if raw files were provided
   this.usingRawFiles =
-    this.files && this.files.length === 2 && this.files[0] && this.files[1];
+      this.files && this.files.length === 2 && this.files[0] && this.files[1];
 
   // Loaders
   this.objLoader = new THREE.OBJLoader();
@@ -52,14 +46,13 @@ GZ3D.OBJLoader = function (
 /**
  * Load Obj file
  */
-GZ3D.OBJLoader.prototype.loadOBJ = function () {
+GZ3D.OBJLoader.prototype.loadOBJ = function() {
   const that = this;
 
   // If no raw files are provided, make HTTP request
   if (!this.usingRawFiles) {
-    this.objLoader.load(this.uri, function (_container) {
-      that.onObjLoaded(_container);
-    });
+    this.objLoader.load(this.uri,
+                        function(_container) { that.onObjLoaded(_container); });
   }
   // Otherwise load from raw file
   else {
@@ -71,7 +64,7 @@ GZ3D.OBJLoader.prototype.loadOBJ = function () {
 /**
  * Callback when loading is successfully completed
  */
-GZ3D.OBJLoader.prototype.loadComplete = function () {
+GZ3D.OBJLoader.prototype.loadComplete = function() {
   let obj = this.container;
   this.scene.meshes[this.uri] = obj;
   obj = obj.clone();
@@ -85,7 +78,7 @@ GZ3D.OBJLoader.prototype.loadComplete = function () {
  * Callback when loading is successfully completed
  * @param {MTLLoaderMaterialCreator} _mtlCreator - Returned by MTLLoader.parse
  */
-GZ3D.OBJLoader.prototype.applyMaterial = function (_mtlCreator) {
+GZ3D.OBJLoader.prototype.applyMaterial = function(_mtlCreator) {
   const allChildren = [];
   this.container.getDescendants(allChildren);
 
@@ -121,7 +114,7 @@ GZ3D.OBJLoader.prototype.applyMaterial = function (_mtlCreator) {
  * 2. Just the image filename without a path
  * @param {string} _text - MTL file as string
  */
-GZ3D.OBJLoader.prototype.loadMTL = function (_text) {
+GZ3D.OBJLoader.prototype.loadMTL = function(_text) {
   if (!_text) {
     return;
   }
@@ -132,11 +125,9 @@ GZ3D.OBJLoader.prototype.loadMTL = function (_text) {
     if (!this.mtlLoader.path || this.mtlLoader.path.length === 0) {
       _text = _text.replace(/model:\/\//g, "");
     } else if (this.mtlLoader.path.indexOf("/meshes/") < 0) {
-      console.error(
-        "Failed to resolve texture URI. MTL file directory [" +
-          this.mtlLoader.path +
-          "] not supported, it should be in a /meshes directory"
-      );
+      console.error("Failed to resolve texture URI. MTL file directory [" +
+                    this.mtlLoader.path +
+                    "] not supported, it should be in a /meshes directory");
       console.error(_text);
       return;
     } else {
@@ -206,15 +197,13 @@ GZ3D.OBJLoader.prototype.loadMTL = function (_text) {
  * Callback when OBJ file has been loaded, proceeds to load MTL.
  * @param {obj} _container - Loaded OBJ.
  */
-GZ3D.OBJLoader.prototype.onObjLoaded = function (_container) {
+GZ3D.OBJLoader.prototype.onObjLoaded = function(_container) {
   this.container = _container;
 
   // Callback when MTL has been loaded
   // Linter doesn't like `that` being used inside a loop, so we move it outside
   const that = this;
-  const onMtlLoaded = function (_text) {
-    that.loadMTL(_text);
-  };
+  const onMtlLoaded = function(_text) { that.loadMTL(_text); };
 
   if (this.container.materialLibraries.length === 0) {
     // return if there are no materials to be applied

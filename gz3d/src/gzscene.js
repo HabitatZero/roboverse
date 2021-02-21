@@ -8,9 +8,8 @@
  *                not be set.
  * @constructor
  */
-GZ3D.Scene = function (shaders) {
-  this.emitter =
-    globalEmitter || new EventEmitter2({ verboseMemoryLeak: true });
+GZ3D.Scene = function(shaders) {
+  this.emitter = globalEmitter || new EventEmitter2({verboseMemoryLeak : true});
   this.shaders = shaders;
   this.init();
 };
@@ -18,7 +17,7 @@ GZ3D.Scene = function (shaders) {
 /**
  * Initialize scene
  */
-GZ3D.Scene.prototype.init = function () {
+GZ3D.Scene.prototype.init = function() {
   this.name = "default";
   this.scene = new THREE.Scene();
   // this.scene.name = this.name;
@@ -38,7 +37,7 @@ GZ3D.Scene.prototype.init = function () {
   this.colladaLoader = new THREE.ColladaLoader();
   this.stlLoader = new THREE.STLLoader();
 
-  this.renderer = new THREE.WebGLRenderer({ antialias: true });
+  this.renderer = new THREE.WebGLRenderer({antialias : true});
   this.renderer.setPixelRatio(window.devicePixelRatio);
   this.renderer.setClearColor(0xb2b2b2, 1);
   this.renderer.autoClear = false;
@@ -60,13 +59,7 @@ GZ3D.Scene.prototype.init = function () {
   // Currently only used for the radial menu
   if (typeof GZ3D.RadialMenu === "function") {
     this.cameraOrtho = new THREE.OrthographicCamera(
-      -width * 0.5,
-      width * 0.5,
-      height * 0.5,
-      -height * 0.5,
-      1,
-      10
-    );
+        -width * 0.5, width * 0.5, height * 0.5, -height * 0.5, 1, 10);
     this.cameraOrtho.position.z = 10;
     this.sceneOrtho = new THREE.Scene();
 
@@ -91,67 +84,35 @@ GZ3D.Scene.prototype.init = function () {
   this.spawnModel = new GZ3D.SpawnModel(this, this.getDomElement());
 
   this.simpleShapesMaterial = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    shading: THREE.SmoothShading,
+    color : 0xffffff,
+    shading : THREE.SmoothShading,
   });
 
   const that = this;
 
   // Only capture events inside the webgl div element.
   this.getDomElement().addEventListener(
-    "mouseup",
-    function (event) {
-      that.onPointerUp(event);
-    },
-    false
-  );
+      "mouseup", function(event) { that.onPointerUp(event); }, false);
 
   this.getDomElement().addEventListener(
-    "mousedown",
-    function (event) {
-      that.onPointerDown(event);
-    },
-    false
-  );
+      "mousedown", function(event) { that.onPointerDown(event); }, false);
 
   this.getDomElement().addEventListener(
-    "DOMMouseScroll",
-    function (event) {
-      that.onMouseScroll(event);
-    },
-    false
-  ); // firefox
+      "DOMMouseScroll", function(event) { that.onMouseScroll(event); },
+      false); // firefox
 
   this.getDomElement().addEventListener(
-    "mousewheel",
-    function (event) {
-      that.onMouseScroll(event);
-    },
-    false
-  );
+      "mousewheel", function(event) { that.onMouseScroll(event); }, false);
 
   this.getDomElement().addEventListener(
-    "touchstart",
-    function (event) {
-      that.onPointerDown(event);
-    },
-    false
-  );
+      "touchstart", function(event) { that.onPointerDown(event); }, false);
 
   this.getDomElement().addEventListener(
-    "touchend",
-    function (event) {
-      that.onPointerUp(event);
-    },
-    false
-  );
+      "touchend", function(event) { that.onPointerUp(event); }, false);
 
   // Handles for translating and rotating objects
-  this.modelManipulator = new GZ3D.Manipulator(
-    this.camera,
-    isTouchDevice,
-    this.getDomElement()
-  );
+  this.modelManipulator =
+      new GZ3D.Manipulator(this.camera, isTouchDevice, this.getDomElement());
 
   this.timeDown = null;
 
@@ -160,52 +121,27 @@ GZ3D.Scene.prototype.init = function () {
 
   // Bounding Box
   const indices = new Uint16Array([
-    0,
-    1,
-    1,
-    2,
-    2,
-    3,
-    3,
-    0,
-    4,
-    5,
-    5,
-    6,
-    6,
-    7,
-    7,
-    4,
-    0,
-    4,
-    1,
-    5,
-    2,
-    6,
-    3,
-    7,
+    0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7,
   ]);
   const positions = new Float32Array(8 * 3);
   const boxGeometry = new THREE.BufferGeometry();
   boxGeometry.setIndex(new THREE.BufferAttribute(indices, 1));
   boxGeometry.addAttribute("position", new THREE.BufferAttribute(positions, 3));
   this.boundingBox = new THREE.LineSegments(
-    boxGeometry,
-    new THREE.LineBasicMaterial({ color: 0xffffff })
-  );
+      boxGeometry, new THREE.LineBasicMaterial({color : 0xffffff}));
 
   this.boundingBox.visible = false;
 
   // Joint visuals
   this.jointTypes = {
-    REVOLUTE: 1,
-    REVOLUTE2: 2,
-    PRISMATIC: 3,
-    UNIVERSAL: 4,
-    BALL: 5,
-    SCREW: 6,
-    GEARBOX: 7,
-    FIXED: 8,
+    REVOLUTE : 1,
+    REVOLUTE2 : 2,
+    PRISMATIC : 3,
+    UNIVERSAL : 4,
+    BALL : 5,
+    SCREW : 6,
+    GEARBOX : 7,
+    FIXED : 8,
   };
   this.jointAxis = new THREE.Object3D();
   this.jointAxis.name = "JOINT_VISUAL";
@@ -216,20 +152,20 @@ GZ3D.Scene.prototype.init = function () {
 
   geometry = new THREE.CylinderGeometry(0.01, 0.01, 0.3, 10, 1, false);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0xff0000)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.x = 0.15;
   mesh.rotation.z = -Math.PI / 2;
   mesh.name = "JOINT_VISUAL";
   XYZaxes.add(mesh);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0x00ff00)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.y = 0.15;
   mesh.name = "JOINT_VISUAL";
   XYZaxes.add(mesh);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x0000ff) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0x0000ff)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.z = 0.15;
   mesh.rotation.x = Math.PI / 2;
@@ -238,20 +174,20 @@ GZ3D.Scene.prototype.init = function () {
 
   geometry = new THREE.CylinderGeometry(0, 0.03, 0.1, 10, 1, true);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff0000) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0xff0000)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.x = 0.3;
   mesh.rotation.z = -Math.PI / 2;
   mesh.name = "JOINT_VISUAL";
   XYZaxes.add(mesh);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x00ff00) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0x00ff00)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.y = 0.3;
   mesh.name = "JOINT_VISUAL";
   XYZaxes.add(mesh);
 
-  material = new THREE.MeshBasicMaterial({ color: new THREE.Color(0x0000ff) });
+  material = new THREE.MeshBasicMaterial({color : new THREE.Color(0x0000ff)});
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.z = 0.3;
   mesh.rotation.x = Math.PI / 2;
@@ -266,14 +202,8 @@ GZ3D.Scene.prototype.init = function () {
   material.color = new THREE.Color(0xffff00);
 
   const mainAxisLen = 0.3;
-  geometry = new THREE.CylinderGeometry(
-    0.015,
-    0.015,
-    mainAxisLen,
-    36,
-    1,
-    false
-  );
+  geometry =
+      new THREE.CylinderGeometry(0.015, 0.015, mainAxisLen, 36, 1, false);
 
   mesh = new THREE.Mesh(geometry, material);
   mesh.position.z = mainAxisLen * 0.5;
@@ -391,44 +321,35 @@ GZ3D.Scene.prototype.init = function () {
 
   mesh = new THREE.Mesh(geometry);
   this.setMaterial(mesh, {
-    ambient: [0.5, 0.5, 0.5, 1.0],
-    texture: "assets/media/materials/textures/com.png",
+    ambient : [ 0.5, 0.5, 0.5, 1.0 ],
+    texture : "assets/media/materials/textures/com.png",
   });
   mesh.name = "COM_VISUAL";
   mesh.rotation.z = -Math.PI / 2;
   this.COMvisual.add(mesh);
 };
 
-GZ3D.Scene.prototype.initScene = function () {
+GZ3D.Scene.prototype.initScene = function() {
   this.emitter.emit("show_grid", "show");
 
   // create a sun light
-  const obj = this.createLight(
-    3,
-    new THREE.Color(0.8, 0.8, 0.8),
-    0.9,
-    {
-      position: { x: 0, y: 0, z: 10 },
-      orientation: { x: 0, y: 0, z: 0, w: 1 },
-    },
-    null,
-    true,
-    "sun",
-    { x: 0.5, y: 0.1, z: -0.9 }
-  );
+  const obj = this.createLight(3, new THREE.Color(0.8, 0.8, 0.8), 0.9, {
+    position : {x : 0, y : 0, z : 10},
+    orientation : {x : 0, y : 0, z : 0, w : 1},
+  },
+                               null, true, "sun", {x : 0.5, y : 0.1, z : -0.9});
 
   this.add(obj);
 };
 
-GZ3D.Scene.prototype.setSDFParser = function (sdfParser) {
-  this.spawnModel.sdfParser = sdfParser;
-};
+GZ3D.Scene.prototype.setSDFParser = function(
+    sdfParser) { this.spawnModel.sdfParser = sdfParser; };
 
 /**
  * Window event callback
  * @param {} event - mousedown or touchdown events
  */
-GZ3D.Scene.prototype.onPointerDown = function (event) {
+GZ3D.Scene.prototype.onPointerDown = function(event) {
   event.preventDefault();
 
   if (this.spawnModel.active) {
@@ -439,15 +360,12 @@ GZ3D.Scene.prototype.onPointerDown = function (event) {
   let pos;
   if (event.touches) {
     if (event.touches.length === 1) {
-      pos = new THREE.Vector2(
-        event.touches[0].clientX,
-        event.touches[0].clientY
-      );
+      pos =
+          new THREE.Vector2(event.touches[0].clientX, event.touches[0].clientY);
     } else if (event.touches.length === 2) {
       pos = new THREE.Vector2(
-        (event.touches[0].clientX + event.touches[1].clientX) / 2,
-        (event.touches[0].clientY + event.touches[1].clientY) / 2
-      );
+          (event.touches[0].clientX + event.touches[1].clientX) / 2,
+          (event.touches[0].clientY + event.touches[1].clientY) / 2);
     } else {
       return;
     }
@@ -505,7 +423,7 @@ GZ3D.Scene.prototype.onPointerDown = function (event) {
  * Window event callback
  * @param {} event - mouseup or touchend events
  */
-GZ3D.Scene.prototype.onPointerUp = function (event) {
+GZ3D.Scene.prototype.onPointerUp = function(event) {
   event.preventDefault();
 
   // Clicks (<150ms) outside any models trigger view mode
@@ -525,7 +443,7 @@ GZ3D.Scene.prototype.onPointerUp = function (event) {
  * Window event callback
  * @param {} event - mousescroll event
  */
-GZ3D.Scene.prototype.onMouseScroll = function (event) {
+GZ3D.Scene.prototype.onMouseScroll = function(event) {
   event.preventDefault();
 
   const pos = new THREE.Vector2(event.clientX, event.clientY);
@@ -542,14 +460,12 @@ GZ3D.Scene.prototype.onMouseScroll = function (event) {
  * Window event callback
  * @param {} event - keydown events
  */
-GZ3D.Scene.prototype.onKeyDown = function (event) {
+GZ3D.Scene.prototype.onKeyDown = function(event) {
   if (event.shiftKey) {
     // + and - for zooming
     if (event.keyCode === 187 || event.keyCode === 189) {
-      const pos = new THREE.Vector2(
-        this.getDomElement().width / 2.0,
-        this.getDomElement().height / 2.0
-      );
+      const pos = new THREE.Vector2(this.getDomElement().width / 2.0,
+                                    this.getDomElement().height / 2.0);
 
       const intersect = new THREE.Vector3();
       const model = this.getRayCastModel(pos, intersect);
@@ -606,21 +522,19 @@ GZ3D.Scene.prototype.onKeyDown = function (event) {
  * contains point of intersection in 3D world coordinates at output
  * @returns {THREE.Object3D} model - Intercepted model closest to the camera
  */
-GZ3D.Scene.prototype.getRayCastModel = function (pos, intersect) {
+GZ3D.Scene.prototype.getRayCastModel = function(pos, intersect) {
   const vector = new THREE.Vector3(
-    ((pos.x - this.getDomElement().offsetLeft) / this.getDomElement().width) *
-      2 -
-      1,
-    -((pos.y - this.getDomElement().offsetTop) / this.getDomElement().height) *
-      2 +
-      1,
-    1
-  );
+      ((pos.x - this.getDomElement().offsetLeft) / this.getDomElement().width) *
+              2 -
+          1,
+      -((pos.y - this.getDomElement().offsetTop) /
+        this.getDomElement().height) *
+              2 +
+          1,
+      1);
   vector.unproject(this.camera);
-  const ray = new THREE.Raycaster(
-    this.camera.position,
-    vector.sub(this.camera.position).normalize()
-  );
+  const ray = new THREE.Raycaster(this.camera.position,
+                                  vector.sub(this.camera.position).normalize());
 
   const allObjects = [];
   this.scene.getDescendants(allObjects);
@@ -642,13 +556,9 @@ GZ3D.Scene.prototype.getRayCastModel = function (pos, intersect) {
         break;
       }
 
-      if (
-        model.name === "grid" ||
-        model.name === "boundingBox" ||
-        model.name === "JOINT_VISUAL" ||
-        model.name === "INERTIA_VISUAL" ||
-        model.name === "COM_VISUAL"
-      ) {
+      if (model.name === "grid" || model.name === "boundingBox" ||
+          model.name === "JOINT_VISUAL" || model.name === "INERTIA_VISUAL" ||
+          model.name === "COM_VISUAL") {
         point = objects[i].point;
         model = null;
         continue;
@@ -656,13 +566,11 @@ GZ3D.Scene.prototype.getRayCastModel = function (pos, intersect) {
 
       while (model.parent !== this.scene) {
         // Select current mode's handle
-        if (
-          model.parent.parent === this.modelManipulator.gizmo &&
-          ((this.manipulationMode === "translate" &&
-            model.name.indexOf("T") >= 0) ||
-            (this.manipulationMode === "rotate" &&
-              model.name.indexOf("R") >= 0))
-        ) {
+        if (model.parent.parent === this.modelManipulator.gizmo &&
+            ((this.manipulationMode === "translate" &&
+              model.name.indexOf("T") >= 0) ||
+             (this.manipulationMode === "rotate" &&
+              model.name.indexOf("R") >= 0))) {
           break modelsloop;
         }
         model = model.parent;
@@ -699,25 +607,21 @@ GZ3D.Scene.prototype.getRayCastModel = function (pos, intersect) {
  * Get the renderer's DOM element
  * @returns {domElement}
  */
-GZ3D.Scene.prototype.getDomElement = function () {
-  return this.renderer.domElement;
-};
+GZ3D.Scene.prototype.getDomElement =
+    function() { return this.renderer.domElement; };
 
 /**
  * Render scene
  */
-GZ3D.Scene.prototype.render = function () {
+GZ3D.Scene.prototype.render = function() {
   // Kill camera control when:
   // -manipulating
   // -using radial menu
   // -pointer over menus
   // -spawning
-  if (
-    this.modelManipulator.hovered ||
-    (this.radialMenu && this.radialMenu.showing) ||
-    this.pointerOnMenu ||
-    this.spawnModel.active
-  ) {
+  if (this.modelManipulator.hovered ||
+      (this.radialMenu && this.radialMenu.showing) || this.pointerOnMenu ||
+      this.spawnModel.active) {
     this.controls.enabled = false;
     this.controls.update();
   } else {
@@ -744,7 +648,7 @@ GZ3D.Scene.prototype.render = function () {
  * @param {double} width
  * @param {double} height
  */
-GZ3D.Scene.prototype.setSize = function (width, height) {
+GZ3D.Scene.prototype.setSize = function(width, height) {
   this.camera.aspect = width / height;
   this.camera.updateProjectionMatrix();
 
@@ -764,7 +668,7 @@ GZ3D.Scene.prototype.setSize = function (width, height) {
  * Add object to the scene
  * @param {THREE.Object3D} model
  */
-GZ3D.Scene.prototype.add = function (model) {
+GZ3D.Scene.prototype.add = function(model) {
   model.viewAs = "normal";
   this.scene.add(model);
 };
@@ -773,18 +677,15 @@ GZ3D.Scene.prototype.add = function (model) {
  * Remove object from the scene
  * @param {THREE.Object3D} model
  */
-GZ3D.Scene.prototype.remove = function (model) {
-  this.scene.remove(model);
-};
+GZ3D.Scene.prototype.remove = function(model) { this.scene.remove(model); };
 
 /**
  * Returns the object which has the given name
  * @param {string} name
  * @returns {THREE.Object3D} model
  */
-GZ3D.Scene.prototype.getByName = function (name) {
-  return this.scene.getObjectByName(name);
-};
+GZ3D.Scene.prototype.getByName = function(
+    name) { return this.scene.getObjectByName(name); };
 
 /**
  * Update a model's pose
@@ -792,12 +693,9 @@ GZ3D.Scene.prototype.getByName = function (name) {
  * @param {} position
  * @param {} orientation
  */
-GZ3D.Scene.prototype.updatePose = function (model, position, orientation) {
-  if (
-    this.modelManipulator &&
-    this.modelManipulator.object &&
-    this.modelManipulator.hovered
-  ) {
+GZ3D.Scene.prototype.updatePose = function(model, position, orientation) {
+  if (this.modelManipulator && this.modelManipulator.object &&
+      this.modelManipulator.hovered) {
     return;
   }
 
@@ -810,7 +708,7 @@ GZ3D.Scene.prototype.updatePose = function (model, position, orientation) {
  * @param {} position
  * @param {} orientation
  */
-GZ3D.Scene.prototype.setPose = function (model, position, orientation) {
+GZ3D.Scene.prototype.setPose = function(model, position, orientation) {
   model.position.x = position.x;
   model.position.y = position.y;
   model.position.z = position.z;
@@ -820,7 +718,7 @@ GZ3D.Scene.prototype.setPose = function (model, position, orientation) {
   model.quaternion.z = orientation.z;
 };
 
-GZ3D.Scene.prototype.removeAll = function () {
+GZ3D.Scene.prototype.removeAll = function() {
   while (this.scene.children.length > 0) {
     this.scene.remove(this.scene.children[0]);
   }
@@ -835,13 +733,8 @@ GZ3D.Scene.prototype.removeAll = function () {
  * @param {double} height
  * @returns {THREE.Mesh}
  */
-GZ3D.Scene.prototype.createPlane = function (
-  normalX,
-  normalY,
-  normalZ,
-  width,
-  height
-) {
+GZ3D.Scene.prototype.createPlane = function(normalX, normalY, normalZ, width,
+                                            height) {
   const geometry = new THREE.PlaneGeometry(width, height, 1, 1);
   const material = new THREE.MeshPhongMaterial();
   const mesh = new THREE.Mesh(geometry, material);
@@ -858,7 +751,7 @@ GZ3D.Scene.prototype.createPlane = function (
  * @param {double} radius
  * @returns {THREE.Mesh}
  */
-GZ3D.Scene.prototype.createSphere = function (radius) {
+GZ3D.Scene.prototype.createSphere = function(radius) {
   const geometry = new THREE.SphereGeometry(radius, 32, 32);
   const mesh = new THREE.Mesh(geometry, this.simpleShapesMaterial);
   return mesh;
@@ -870,15 +763,9 @@ GZ3D.Scene.prototype.createSphere = function (radius) {
  * @param {double} length
  * @returns {THREE.Mesh}
  */
-GZ3D.Scene.prototype.createCylinder = function (radius, length) {
-  const geometry = new THREE.CylinderGeometry(
-    radius,
-    radius,
-    length,
-    32,
-    1,
-    false
-  );
+GZ3D.Scene.prototype.createCylinder = function(radius, length) {
+  const geometry =
+      new THREE.CylinderGeometry(radius, radius, length, 32, 1, false);
   const mesh = new THREE.Mesh(geometry, this.simpleShapesMaterial);
   mesh.rotation.x = Math.PI * 0.5;
   return mesh;
@@ -891,7 +778,7 @@ GZ3D.Scene.prototype.createCylinder = function (radius, length) {
  * @param {double} depth
  * @returns {THREE.Mesh}
  */
-GZ3D.Scene.prototype.createBox = function (width, height, depth) {
+GZ3D.Scene.prototype.createBox = function(width, height, depth) {
   const geometry = new THREE.BoxGeometry(width, height, depth, 1, 1, 1);
 
   // Fix UVs so textures are mapped in a way that is consistent to gazebo
@@ -899,8 +786,8 @@ GZ3D.Scene.prototype.createBox = function (width, height, depth) {
   // After updating to threejs rev 62, geometries changed from quads (6 faces)
   // to triangles (12 faces).
   geometry.dynamic = true;
-  const faceUVFixA = [1, 4, 5];
-  const faceUVFixB = [0];
+  const faceUVFixA = [ 1, 4, 5 ];
+  const faceUVFixB = [ 0 ];
   for (let i = 0; i < faceUVFixA.length; ++i) {
     const idx = faceUVFixA[i] * 2;
     const uva = geometry.faceVertexUvs[0][idx][0];
@@ -909,9 +796,9 @@ GZ3D.Scene.prototype.createBox = function (width, height, depth) {
     geometry.faceVertexUvs[0][idx][2] = uva;
 
     geometry.faceVertexUvs[0][idx + 1][0] =
-      geometry.faceVertexUvs[0][idx + 1][1];
+        geometry.faceVertexUvs[0][idx + 1][1];
     geometry.faceVertexUvs[0][idx + 1][1] =
-      geometry.faceVertexUvs[0][idx + 1][2];
+        geometry.faceVertexUvs[0][idx + 1][2];
     geometry.faceVertexUvs[0][idx + 1][2] = geometry.faceVertexUvs[0][idx][2];
   }
   for (let ii = 0; ii < faceUVFixB.length; ++ii) {
@@ -923,7 +810,7 @@ GZ3D.Scene.prototype.createBox = function (width, height, depth) {
 
     geometry.faceVertexUvs[0][idxB + 1][2] = geometry.faceVertexUvs[0][idxB][2];
     geometry.faceVertexUvs[0][idxB + 1][1] =
-      geometry.faceVertexUvs[0][idxB + 1][0];
+        geometry.faceVertexUvs[0][idxB + 1][0];
     geometry.faceVertexUvs[0][idxB + 1][0] = geometry.faceVertexUvs[0][idxB][1];
   }
   geometry.uvsNeedUpdate = true;
@@ -949,20 +836,9 @@ GZ3D.Scene.prototype.createBox = function (width, height, depth) {
  * @param {} attenuation_quadratic
  * @returns {THREE.Object3D}
  */
-GZ3D.Scene.prototype.createLight = function (
-  type,
-  diffuse,
-  intensity,
-  pose,
-  distance,
-  cast_shadows,
-  name,
-  direction,
-  specular,
-  attenuation_constant,
-  attenuation_linear,
-  attenuation_quadratic
-) {
+GZ3D.Scene.prototype.createLight = function(
+    type, diffuse, intensity, pose, distance, cast_shadows, name, direction,
+    specular, attenuation_constant, attenuation_linear, attenuation_quadratic) {
   const obj = new THREE.Object3D();
   const color = new THREE.Color();
 
@@ -987,28 +863,14 @@ GZ3D.Scene.prototype.createLight = function (
 
   let elements;
   if (type === 1) {
-    elements = this.createPointLight(
-      obj,
-      diffuse,
-      intensity,
-      distance,
-      cast_shadows
-    );
+    elements =
+        this.createPointLight(obj, diffuse, intensity, distance, cast_shadows);
   } else if (type === 2) {
-    elements = this.createSpotLight(
-      obj,
-      diffuse,
-      intensity,
-      distance,
-      cast_shadows
-    );
+    elements =
+        this.createSpotLight(obj, diffuse, intensity, distance, cast_shadows);
   } else if (type === 3) {
-    elements = this.createDirectionalLight(
-      obj,
-      diffuse,
-      intensity,
-      cast_shadows
-    );
+    elements =
+        this.createDirectionalLight(obj, diffuse, intensity, cast_shadows);
   }
 
   const lightObj = elements[0];
@@ -1056,13 +918,8 @@ GZ3D.Scene.prototype.createLight = function (
  * @param {} cast_shadows
  * @returns {Object.<THREE.Light, THREE.Mesh>}
  */
-GZ3D.Scene.prototype.createPointLight = function (
-  obj,
-  color,
-  intensity,
-  distance,
-  cast_shadows
-) {
+GZ3D.Scene.prototype.createPointLight = function(obj, color, intensity,
+                                                 distance, cast_shadows) {
   if (typeof intensity === "undefined") {
     intensity = 0.5;
   }
@@ -1079,12 +936,12 @@ GZ3D.Scene.prototype.createPointLight = function (
   const helperGeometry = new THREE.OctahedronGeometry(0.25, 0);
   helperGeometry.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
   const helperMaterial = new THREE.MeshBasicMaterial({
-    wireframe: true,
-    color: 0x00ff00,
+    wireframe : true,
+    color : 0x00ff00,
   });
   const helper = new THREE.Mesh(helperGeometry, helperMaterial);
 
-  return [lightObj, helper];
+  return [ lightObj, helper ];
 };
 
 /**
@@ -1096,13 +953,8 @@ GZ3D.Scene.prototype.createPointLight = function (
  * @param {} cast_shadows
  * @returns {Object.<THREE.Light, THREE.Mesh>}
  */
-GZ3D.Scene.prototype.createSpotLight = function (
-  obj,
-  color,
-  intensity,
-  distance,
-  cast_shadows
-) {
+GZ3D.Scene.prototype.createSpotLight = function(obj, color, intensity, distance,
+                                                cast_shadows) {
   if (typeof intensity === "undefined") {
     intensity = 1;
   }
@@ -1122,12 +974,12 @@ GZ3D.Scene.prototype.createSpotLight = function (
   helperGeometry.applyMatrix(new THREE.Matrix4().makeRotationX(Math.PI / 2));
   helperGeometry.applyMatrix(new THREE.Matrix4().makeRotationZ(Math.PI / 4));
   const helperMaterial = new THREE.MeshBasicMaterial({
-    wireframe: true,
-    color: 0x00ff00,
+    wireframe : true,
+    color : 0x00ff00,
   });
   const helper = new THREE.Mesh(helperGeometry, helperMaterial);
 
-  return [lightObj, helper];
+  return [ lightObj, helper ];
 };
 
 /**
@@ -1138,12 +990,8 @@ GZ3D.Scene.prototype.createSpotLight = function (
  * @param {} cast_shadows
  * @returns {Object.<THREE.Light, THREE.Mesh>}
  */
-GZ3D.Scene.prototype.createDirectionalLight = function (
-  obj,
-  color,
-  intensity,
-  cast_shadows
-) {
+GZ3D.Scene.prototype.createDirectionalLight = function(obj, color, intensity,
+                                                       cast_shadows) {
   if (typeof intensity === "undefined") {
     intensity = 1;
   }
@@ -1175,14 +1023,11 @@ GZ3D.Scene.prototype.createDirectionalLight = function (
   helperGeometry.vertices.push(new THREE.Vector3(-0.5, -0.5, 0));
   helperGeometry.vertices.push(new THREE.Vector3(0, 0, 0));
   helperGeometry.vertices.push(new THREE.Vector3(0, 0, -0.5));
-  const helperMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-  const helper = new THREE.Line(
-    helperGeometry,
-    helperMaterial,
-    THREE.LineSegments
-  );
+  const helperMaterial = new THREE.LineBasicMaterial({color : 0x00ff00});
+  const helper =
+      new THREE.Line(helperGeometry, helperMaterial, THREE.LineSegments);
 
-  return [lightObj, helper];
+  return [ lightObj, helper ];
 };
 
 /**
@@ -1192,7 +1037,7 @@ GZ3D.Scene.prototype.createDirectionalLight = function (
  * @param {} texture
  * @returns {THREE.Mesh}
  */
-GZ3D.Scene.prototype.createRoads = function (points, width, texture) {
+GZ3D.Scene.prototype.createRoads = function(points, width, texture) {
   const geometry = new THREE.Geometry();
   geometry.dynamic = true;
   let texCoord = 0.0;
@@ -1210,11 +1055,8 @@ GZ3D.Scene.prototype.createRoads = function (points, width, texture) {
     const pt0 = new THREE.Vector3(points[i].x, points[i].y, points[i].z);
     var pt1;
     if (i !== points.length - 1) {
-      pt1 = new THREE.Vector3(
-        points[i + 1].x,
-        points[i + 1].y,
-        points[i + 1].z
-      );
+      pt1 =
+          new THREE.Vector3(points[i + 1].x, points[i + 1].y, points[i + 1].z);
     }
     factor = 1.0;
     if (i > 0) {
@@ -1272,14 +1114,13 @@ GZ3D.Scene.prototype.createRoads = function (points, width, texture) {
     geometry.vertices.push(pA);
     geometry.vertices.push(pB);
 
-    texCoords.push([0, texCoord]);
-    texCoords.push([1, texCoord]);
+    texCoords.push([ 0, texCoord ]);
+    texCoords.push([ 1, texCoord ]);
 
     // draw triangle strips
     if (i > 0) {
       geometry.faces.push(
-        new THREE.Face3(j, j + 1, j + 2, new THREE.Vector3(0, 0, 1))
-      );
+          new THREE.Face3(j, j + 1, j + 2, new THREE.Vector3(0, 0, 1)));
       geometry.faceVertexUvs[0].push([
         new THREE.Vector2(texCoords[j][0], texCoords[j][1]),
         new THREE.Vector2(texCoords[j + 1][0], texCoords[j + 1][1]),
@@ -1288,8 +1129,7 @@ GZ3D.Scene.prototype.createRoads = function (points, width, texture) {
       j++;
 
       geometry.faces.push(
-        new THREE.Face3(j, j + 2, j + 1, new THREE.Vector3(0, 0, 1))
-      );
+          new THREE.Face3(j, j + 2, j + 1, new THREE.Vector3(0, 0, 1)));
       geometry.faceVertexUvs[0].push([
         new THREE.Vector2(texCoords[j][0], texCoords[j][1]),
         new THREE.Vector2(texCoords[j + 2][0], texCoords[j + 2][1]),
@@ -1351,17 +1191,9 @@ GZ3D.Scene.prototype.createRoads = function (points, width, texture) {
  * @param {} blends
  * @param {} parent
  */
-GZ3D.Scene.prototype.loadHeightmap = function (
-  heights,
-  width,
-  height,
-  segmentWidth,
-  segmentHeight,
-  origin,
-  textures,
-  blends,
-  parent
-) {
+GZ3D.Scene.prototype.loadHeightmap = function(
+    heights, width, height, segmentWidth, segmentHeight, origin, textures,
+    blends, parent) {
   if (this.heightmap) {
     console.log("Only one heightmap can be loaded at a time");
     return;
@@ -1383,11 +1215,7 @@ GZ3D.Scene.prototype.loadHeightmap = function (
   }
 
   const geometry = new THREE.PlaneGeometry(
-    width,
-    height,
-    (segmentWidth - 1) * scale,
-    (segmentHeight - 1) * scale
-  );
+      width, height, (segmentWidth - 1) * scale, (segmentHeight - 1) * scale);
   geometry.dynamic = true;
 
   // Mirror the vertices about the X axis
@@ -1395,7 +1223,7 @@ GZ3D.Scene.prototype.loadHeightmap = function (
   for (let h = segmentHeight - 1; h >= 0; --h) {
     for (let w = 0; w < segmentWidth; ++w) {
       vertices[(segmentHeight - h - 1) * segmentWidth + w] =
-        heights[h * segmentWidth + w];
+          heights[h * segmentWidth + w];
     }
   }
 
@@ -1455,20 +1283,20 @@ GZ3D.Scene.prototype.loadHeightmap = function (
     }
 
     const options = {
-      uniforms: {
-        texture0: { type: "t", value: textureLoaded[0] },
-        texture1: { type: "t", value: textureLoaded[1] },
-        texture2: { type: "t", value: textureLoaded[2] },
-        repeat0: { type: "f", value: repeats[0] },
-        repeat1: { type: "f", value: repeats[1] },
-        repeat2: { type: "f", value: repeats[2] },
-        minHeight1: { type: "f", value: blends[0].min_height },
-        fadeDist1: { type: "f", value: blends[0].fade_dist },
-        minHeight2: { type: "f", value: blends[1].min_height },
-        fadeDist2: { type: "f", value: blends[1].fade_dist },
-        ambient: { type: "c", value: this.ambient.color },
-        lightDiffuse: { type: "c", value: lightDiffuse },
-        lightDir: { type: "v3", value: lightDir },
+      uniforms : {
+        texture0 : {type : "t", value : textureLoaded[0]},
+        texture1 : {type : "t", value : textureLoaded[1]},
+        texture2 : {type : "t", value : textureLoaded[2]},
+        repeat0 : {type : "f", value : repeats[0]},
+        repeat1 : {type : "f", value : repeats[1]},
+        repeat2 : {type : "f", value : repeats[2]},
+        minHeight1 : {type : "f", value : blends[0].min_height},
+        fadeDist1 : {type : "f", value : blends[0].fade_dist},
+        minHeight2 : {type : "f", value : blends[1].min_height},
+        fadeDist2 : {type : "f", value : blends[1].fade_dist},
+        ambient : {type : "c", value : this.ambient.color},
+        lightDiffuse : {type : "c", value : lightDiffuse},
+        lightDir : {type : "v3", value : lightDir},
       },
     };
 
@@ -1481,7 +1309,7 @@ GZ3D.Scene.prototype.loadHeightmap = function (
 
     material = new THREE.ShaderMaterial(options);
   } else {
-    material = new THREE.MeshPhongMaterial({ color: 0x555555 });
+    material = new THREE.MeshPhongMaterial({color : 0x555555});
   }
 
   const mesh = new THREE.Mesh(geometry, material);
@@ -1500,7 +1328,8 @@ GZ3D.Scene.prototype.loadHeightmap = function (
  * @example
  * // loading using URI
  * // callback(mesh)
- * loadMeshFromUri('assets/house_1/meshes/house_1.dae', undefined, undefined, function(mesh)
+ * loadMeshFromUri('assets/house_1/meshes/house_1.dae', undefined, undefined,
+ function(mesh)
             {
               // use the mesh
             });
@@ -1510,12 +1339,8 @@ GZ3D.Scene.prototype.loadHeightmap = function (
  * @param {function} callback
  */
 /* eslint-enable */
-GZ3D.Scene.prototype.loadMeshFromUri = function (
-  uri,
-  submesh,
-  centerSubmesh,
-  callback
-) {
+GZ3D.Scene.prototype.loadMeshFromUri = function(uri, submesh, centerSubmesh,
+                                                callback) {
   const uriPath = uri.substring(0, uri.lastIndexOf("/"));
   const uriFile = uri.substring(uri.lastIndexOf("/") + 1);
 
@@ -1531,13 +1356,8 @@ GZ3D.Scene.prototype.loadMeshFromUri = function (
   if (uriFile.substr(-4).toLowerCase() === ".dae") {
     return this.loadCollada(uri, submesh, centerSubmesh, callback);
   } else if (uriFile.substr(-4).toLowerCase() === ".obj") {
-    const gzObjLoader = new GZ3D.OBJLoader(
-      this,
-      uri,
-      submesh,
-      centerSubmesh,
-      callback
-    );
+    const gzObjLoader =
+        new GZ3D.OBJLoader(this, uri, submesh, centerSubmesh, callback);
     return gzObjLoader.loadOBJ();
   } else if (uriFile.substr(-4).toLowerCase() === ".stl") {
     return this.loadSTL(uri, submesh, centerSubmesh, callback);
@@ -1586,14 +1406,13 @@ GZ3D.Scene.prototype.loadMeshFromUri = function (
  * @example
  * // loading using file string
  * // callback(mesh)
- * loadMeshFromString('assets/house_1/meshes/house_1.dae', undefined, undefined, function(mesh)
+ * loadMeshFromString('assets/house_1/meshes/house_1.dae', undefined, undefined,
+ function(mesh)
             {
               // use the mesh
             }, ['<?xml version="1.0" encoding="utf-8"?>
-    <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
-      <asset>
-        <contributor>
-          <author>Cole</author>
+    <COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema"
+ version="1.4.1"> <asset> <contributor> <author>Cole</author>
           <authoring_tool>OpenCOLLADA for 3ds Max;  Ver.....']);
  * @param {string} uri
  * @param {} submesh
@@ -1603,13 +1422,8 @@ GZ3D.Scene.prototype.loadMeshFromUri = function (
  * mesh, [obj, mtl] in case of object mesh, all as strings
  */
 /* eslint-enable */
-GZ3D.Scene.prototype.loadMeshFromString = function (
-  uri,
-  submesh,
-  centerSubmesh,
-  callback,
-  files
-) {
+GZ3D.Scene.prototype.loadMeshFromString = function(uri, submesh, centerSubmesh,
+                                                   callback, files) {
   const uriPath = uri.substring(0, uri.lastIndexOf("/"));
   const uriFile = uri.substring(uri.lastIndexOf("/") + 1);
 
@@ -1634,14 +1448,8 @@ GZ3D.Scene.prototype.loadMeshFromString = function (
       console.error("Missing either OBJ or MTL file");
       return;
     }
-    const gzObjLoader = new GZ3D.OBJLoader(
-      this,
-      uri,
-      submesh,
-      centerSubmesh,
-      callback,
-      files
-    );
+    const gzObjLoader =
+        new GZ3D.OBJLoader(this, uri, submesh, centerSubmesh, callback, files);
     return gzObjLoader.loadOBJ();
   }
 };
@@ -1657,13 +1465,8 @@ GZ3D.Scene.prototype.loadMeshFromString = function (
  * if provided the uri will not be used just as a url, no XMLHttpRequest will
  * be made.
  */
-GZ3D.Scene.prototype.loadCollada = function (
-  uri,
-  submesh,
-  centerSubmesh,
-  callback,
-  filestring
-) {
+GZ3D.Scene.prototype.loadCollada = function(uri, submesh, centerSubmesh,
+                                            callback, filestring) {
   let dae;
   const mesh = null;
   const that = this;
@@ -1681,17 +1484,10 @@ GZ3D.Scene.prototype.loadCollada = function (
   */
 
   if (!filestring) {
-    this.colladaLoader.load(uri, function (collada) {
-      meshReady(collada);
-    });
+    this.colladaLoader.load(uri, function(collada) { meshReady(collada); });
   } else {
     this.colladaLoader.parse(
-      filestring,
-      function (collada) {
-        meshReady(collada);
-      },
-      undefined
-    );
+        filestring, function(collada) { meshReady(collada); }, undefined);
   }
 
   function meshReady(collada) {
@@ -1718,7 +1514,7 @@ GZ3D.Scene.prototype.loadCollada = function (
  * Prepare collada by removing other non-mesh entities such as lights
  * @param {} dae
  */
-GZ3D.Scene.prototype.prepareColladaMesh = function (dae) {
+GZ3D.Scene.prototype.prepareColladaMesh = function(dae) {
   const allChildren = [];
   dae.getDescendants(allChildren);
   for (let i = 0; i < allChildren.length; ++i) {
@@ -1735,7 +1531,7 @@ GZ3D.Scene.prototype.prepareColladaMesh = function (dae) {
  * @param {} centerSubmesh
  * @returns {THREE.Mesh} mesh
  */
-GZ3D.Scene.prototype.useSubMesh = function (mesh, submesh, centerSubmesh) {
+GZ3D.Scene.prototype.useSubMesh = function(mesh, submesh, centerSubmesh) {
   if (!submesh) {
     return null;
   }
@@ -1745,10 +1541,8 @@ GZ3D.Scene.prototype.useSubMesh = function (mesh, submesh, centerSubmesh) {
   mesh.getDescendants(allChildren);
   for (let i = 0; i < allChildren.length; ++i) {
     if (allChildren[i] instanceof THREE.Mesh) {
-      if (
-        allChildren[i].name === submesh ||
-        allChildren[i].geometry.name === submesh
-      ) {
+      if (allChildren[i].name === submesh ||
+          allChildren[i].geometry.name === submesh) {
         if (centerSubmesh) {
           // obj
           if (allChildren[i].geometry instanceof THREE.BufferGeometry) {
@@ -1838,15 +1632,10 @@ GZ3D.Scene.prototype.useSubMesh = function (mesh, submesh, centerSubmesh) {
  * @param {} centerSubmesh
  * @param {function} callback
  */
-GZ3D.Scene.prototype.loadSTL = function (
-  uri,
-  submesh,
-  centerSubmesh,
-  callback
-) {
+GZ3D.Scene.prototype.loadSTL = function(uri, submesh, centerSubmesh, callback) {
   let mesh = null;
   const that = this;
-  this.stlLoader.load(uri, function (geometry) {
+  this.stlLoader.load(uri, function(geometry) {
     mesh = new THREE.Mesh(geometry);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
@@ -1865,7 +1654,7 @@ GZ3D.Scene.prototype.loadSTL = function (
  * @param {} obj
  * @param {} material
  */
-GZ3D.Scene.prototype.setMaterial = function (obj, material) {
+GZ3D.Scene.prototype.setMaterial = function(obj, material) {
   if (obj) {
     if (material) {
       obj.material = new THREE.MeshPhongMaterial();
@@ -1919,7 +1708,7 @@ GZ3D.Scene.prototype.setMaterial = function (obj, material) {
  * Set manipulation mode (view/translate/rotate)
  * @param {string} mode
  */
-GZ3D.Scene.prototype.setManipulationMode = function (mode) {
+GZ3D.Scene.prototype.setManipulationMode = function(mode) {
   this.manipulationMode = mode;
 
   if (mode === "view") {
@@ -1931,7 +1720,7 @@ GZ3D.Scene.prototype.setManipulationMode = function (mode) {
     // Toggle manipulaion space (world / local)
     if (this.modelManipulator.mode === this.manipulationMode) {
       this.modelManipulator.space =
-        this.modelManipulator.space === "world" ? "local" : "world";
+          this.modelManipulator.space === "world" ? "local" : "world";
     }
     this.modelManipulator.mode = this.manipulationMode;
     this.modelManipulator.setMode(this.modelManipulator.mode);
@@ -1946,7 +1735,7 @@ GZ3D.Scene.prototype.setManipulationMode = function (mode) {
  * Show collision visuals
  * @param {boolean} show
  */
-GZ3D.Scene.prototype.showCollision = function (show) {
+GZ3D.Scene.prototype.showCollision = function(show) {
   if (show === this.showCollisions) {
     return;
   }
@@ -1954,10 +1743,8 @@ GZ3D.Scene.prototype.showCollision = function (show) {
   const allObjects = [];
   this.scene.getDescendants(allObjects);
   for (let i = 0; i < allObjects.length; ++i) {
-    if (
-      allObjects[i] instanceof THREE.Object3D &&
-      allObjects[i].name.indexOf("COLLISION_VISUAL") >= 0
-    ) {
+    if (allObjects[i] instanceof THREE.Object3D &&
+        allObjects[i].name.indexOf("COLLISION_VISUAL") >= 0) {
       const allChildren = [];
       allObjects[i].getDescendants(allChildren);
       for (let j = 0; j < allChildren.length; ++j) {
@@ -1975,7 +1762,7 @@ GZ3D.Scene.prototype.showCollision = function (show) {
  * @param {THREE.Object3D} model
  * @param {string} mode (translate/rotate)
  */
-GZ3D.Scene.prototype.attachManipulator = function (model, mode) {
+GZ3D.Scene.prototype.attachManipulator = function(model, mode) {
   if (this.modelManipulator.object) {
     this.emitter.emit("entityChanged", this.modelManipulator.object);
   }
@@ -1991,7 +1778,7 @@ GZ3D.Scene.prototype.attachManipulator = function (model, mode) {
 /**
  * Reset view
  */
-GZ3D.Scene.prototype.resetView = function () {
+GZ3D.Scene.prototype.resetView = function() {
   this.camera.position.copy(this.defaultCameraPosition);
   this.camera.up = new THREE.Vector3(0, 0, 1);
   this.camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -2002,7 +1789,7 @@ GZ3D.Scene.prototype.resetView = function () {
  * Show radial menu
  * @param {} event
  */
-GZ3D.Scene.prototype.showRadialMenu = function (e) {
+GZ3D.Scene.prototype.showRadialMenu = function(e) {
   if (!this.radialMenu) {
     return;
   }
@@ -2015,12 +1802,8 @@ GZ3D.Scene.prototype.showRadialMenu = function (e) {
   const intersect = new THREE.Vector3();
   const model = this.getRayCastModel(pos, intersect);
 
-  if (
-    model &&
-    model.name !== "" &&
-    model.name !== "plane" &&
-    this.modelManipulator.pickerNames.indexOf(model.name) === -1
-  ) {
+  if (model && model.name !== "" && model.name !== "plane" &&
+      this.modelManipulator.pickerNames.indexOf(model.name) === -1) {
     this.radialMenu.show(event, model);
     this.selectEntity(model);
   }
@@ -2031,13 +1814,13 @@ GZ3D.Scene.prototype.showRadialMenu = function (e) {
  * @param {THREE.Box3} - box
  * @param {THREE.Object3D} - object
  */
-GZ3D.Scene.prototype.setFromObject = function (box, object) {
+GZ3D.Scene.prototype.setFromObject = function(box, object) {
   box.min.x = box.min.y = box.min.z = +Infinity;
   box.max.x = box.max.y = box.max.z = -Infinity;
   const v = new THREE.Vector3();
   object.updateMatrixWorld(true);
 
-  object.traverse(function (node) {
+  object.traverse(function(node) {
     let i, l;
     const geometry = node.geometry;
     if (geometry !== undefined) {
@@ -2056,9 +1839,8 @@ GZ3D.Scene.prototype.setFromObject = function (box, object) {
 
           if (attribute !== undefined) {
             for (i = 0, l = attribute.count; i < l; i++) {
-              v.fromBufferAttribute(attribute, i).applyMatrix4(
-                node.matrixWorld
-              );
+              v.fromBufferAttribute(attribute, i)
+                  .applyMatrix4(node.matrixWorld);
 
               expandByPoint(v);
             }
@@ -2078,7 +1860,7 @@ GZ3D.Scene.prototype.setFromObject = function (box, object) {
  * Show bounding box for a model. The box is aligned with the world.
  * @param {THREE.Object3D} model
  */
-GZ3D.Scene.prototype.showBoundingBox = function (model) {
+GZ3D.Scene.prototype.showBoundingBox = function(model) {
   if (typeof model === "string") {
     model = this.scene.getObjectByName(model);
   }
@@ -2146,7 +1928,7 @@ GZ3D.Scene.prototype.showBoundingBox = function (model) {
 /**
  * Hide bounding box
  */
-GZ3D.Scene.prototype.hideBoundingBox = function () {
+GZ3D.Scene.prototype.hideBoundingBox = function() {
   if (this.boundingBox.parent) {
     this.boundingBox.parent.remove(this.boundingBox);
   }
@@ -2158,16 +1940,12 @@ GZ3D.Scene.prototype.hideBoundingBox = function () {
  * @param {} event
  * @param {} callback - function to be executed to the clicked model
  */
-GZ3D.Scene.prototype.onRightClick = function (event, callback) {
+GZ3D.Scene.prototype.onRightClick = function(event, callback) {
   const pos = new THREE.Vector2(event.clientX, event.clientY);
   const model = this.getRayCastModel(pos, new THREE.Vector3());
 
-  if (
-    model &&
-    model.name !== "" &&
-    model.name !== "plane" &&
-    this.modelManipulator.pickerNames.indexOf(model.name) === -1
-  ) {
+  if (model && model.name !== "" && model.name !== "plane" &&
+      this.modelManipulator.pickerNames.indexOf(model.name) === -1) {
     callback(model);
   }
 };
@@ -2177,7 +1955,7 @@ GZ3D.Scene.prototype.onRightClick = function (event, callback) {
  * @param {} model
  * @param {} viewAs (normal/transparent/wireframe)
  */
-GZ3D.Scene.prototype.setViewAs = function (model, viewAs) {
+GZ3D.Scene.prototype.setViewAs = function(model, viewAs) {
   // Toggle
   if (model.viewAs === viewAs) {
     viewAs = "normal";
@@ -2196,9 +1974,8 @@ GZ3D.Scene.prototype.setViewAs = function (model, viewAs) {
         material.opacity = 0.25;
         material.transparent = true;
       } else {
-        material.opacity = material.originalOpacity
-          ? material.originalOpacity
-          : 1.0;
+        material.opacity =
+            material.originalOpacity ? material.originalOpacity : 1.0;
         if (material.opacity >= 1.0) {
           material.transparent = false;
         }
@@ -2213,16 +1990,14 @@ GZ3D.Scene.prototype.setViewAs = function (model, viewAs) {
   var materials = [];
   model.getDescendants(descendants);
   for (let i = 0; i < descendants.length; ++i) {
-    if (
-      descendants[i].material &&
-      descendants[i].name.indexOf("boundingBox") === -1 &&
-      descendants[i].name.indexOf("COLLISION_VISUAL") === -1 &&
-      !this.getParentByPartialName(descendants[i], "COLLISION_VISUAL") &&
-      descendants[i].name.indexOf("wireframe") === -1 &&
-      descendants[i].name.indexOf("JOINT_VISUAL") === -1 &&
-      descendants[i].name.indexOf("COM_VISUAL") === -1 &&
-      descendants[i].name.indexOf("INERTIA_VISUAL") === -1
-    ) {
+    if (descendants[i].material &&
+        descendants[i].name.indexOf("boundingBox") === -1 &&
+        descendants[i].name.indexOf("COLLISION_VISUAL") === -1 &&
+        !this.getParentByPartialName(descendants[i], "COLLISION_VISUAL") &&
+        descendants[i].name.indexOf("wireframe") === -1 &&
+        descendants[i].name.indexOf("JOINT_VISUAL") === -1 &&
+        descendants[i].name.indexOf("COM_VISUAL") === -1 &&
+        descendants[i].name.indexOf("INERTIA_VISUAL") === -1) {
       // Note: multi-material is being deprecated and will be removed soon
       if (descendants[i].material instanceof THREE.MultiMaterial) {
         for (let j = 0; j < descendants[i].material.materials.length; ++j) {
@@ -2245,7 +2020,7 @@ GZ3D.Scene.prototype.setViewAs = function (model, viewAs) {
  * @param {} object
  * @param {} name
  */
-GZ3D.Scene.prototype.getParentByPartialName = function (object, name) {
+GZ3D.Scene.prototype.getParentByPartialName = function(object, name) {
   let parent = object.parent;
   while (parent && parent !== this.scene) {
     if (parent.name.indexOf(name) !== -1) {
@@ -2261,7 +2036,7 @@ GZ3D.Scene.prototype.getParentByPartialName = function (object, name) {
  * Select entity
  * @param {} object
  */
-GZ3D.Scene.prototype.selectEntity = function (object) {
+GZ3D.Scene.prototype.selectEntity = function(object) {
   if (object) {
     if (object !== this.selectedEntity) {
       this.showBoundingBox(object);
@@ -2285,7 +2060,7 @@ GZ3D.Scene.prototype.selectEntity = function (object) {
  * Toggle: if there are joints, hide, otherwise, show.
  * @param {} model
  */
-GZ3D.Scene.prototype.viewJoints = function (model) {
+GZ3D.Scene.prototype.viewJoints = function(model) {
   if (model.joint === undefined || model.joint.length === 0) {
     return;
   }
@@ -2295,10 +2070,8 @@ GZ3D.Scene.prototype.viewJoints = function (model) {
   // Visuals already exist
   if (model.jointVisuals) {
     // Hide = remove from parent
-    if (
-      model.jointVisuals[0].parent !== undefined &&
-      model.jointVisuals[0].parent !== null
-    ) {
+    if (model.jointVisuals[0].parent !== undefined &&
+        model.jointVisuals[0].parent !== null) {
       for (let v = 0; v < model.jointVisuals.length; ++v) {
         model.jointVisuals[v].parent.remove(model.jointVisuals[v]);
       }
@@ -2332,39 +2105,28 @@ GZ3D.Scene.prototype.viewJoints = function (model) {
       model.jointVisuals.push(jointVisual);
       jointVisual.scale.set(0.7, 0.7, 0.7);
 
-      this.setPose(
-        jointVisual,
-        model.joint[j].pose.position,
-        model.joint[j].pose.orientation
-      );
+      this.setPose(jointVisual, model.joint[j].pose.position,
+                   model.joint[j].pose.orientation);
 
       let mainAxis = null;
-      if (
-        model.joint[j].type !== this.jointTypes.BALL &&
-        model.joint[j].type !== this.jointTypes.FIXED
-      ) {
+      if (model.joint[j].type !== this.jointTypes.BALL &&
+          model.joint[j].type !== this.jointTypes.FIXED) {
         mainAxis = this.jointAxis.mainAxis.clone();
         jointVisual.add(mainAxis);
       }
 
       let secondAxis = null;
-      if (
-        model.joint[j].type === this.jointTypes.REVOLUTE2 ||
-        model.joint[j].type === this.jointTypes.UNIVERSAL
-      ) {
+      if (model.joint[j].type === this.jointTypes.REVOLUTE2 ||
+          model.joint[j].type === this.jointTypes.UNIVERSAL) {
         secondAxis = this.jointAxis.mainAxis.clone();
         jointVisual.add(secondAxis);
       }
 
-      if (
-        model.joint[j].type === this.jointTypes.REVOLUTE ||
-        model.joint[j].type === this.jointTypes.GEARBOX
-      ) {
+      if (model.joint[j].type === this.jointTypes.REVOLUTE ||
+          model.joint[j].type === this.jointTypes.GEARBOX) {
         mainAxis.add(this.jointAxis.rotAxis.clone());
-      } else if (
-        model.joint[j].type === this.jointTypes.REVOLUTE2 ||
-        model.joint[j].type === this.jointTypes.UNIVERSAL
-      ) {
+      } else if (model.joint[j].type === this.jointTypes.REVOLUTE2 ||
+                 model.joint[j].type === this.jointTypes.UNIVERSAL) {
         mainAxis.add(this.jointAxis.rotAxis.clone());
         secondAxis.add(this.jointAxis.rotAxis.clone());
       } else if (model.joint[j].type === this.jointTypes.BALL) {
@@ -2379,22 +2141,16 @@ GZ3D.Scene.prototype.viewJoints = function (model) {
       if (mainAxis) {
         // main axis expressed w.r.t. parent model or joint frame
         if (!model.joint[j].axis1) {
-          console.log(
-            "no joint axis " +
-              model.joint[j].type +
-              "vs " +
-              this.jointTypes.FIXED
-          );
+          console.log("no joint axis " + model.joint[j].type + "vs " +
+                      this.jointTypes.FIXED);
         }
         if (model.joint[j].axis1.use_parent_model_frame === undefined) {
           model.joint[j].axis1.use_parent_model_frame = true;
         }
 
-        direction = new THREE.Vector3(
-          model.joint[j].axis1.xyz.x,
-          model.joint[j].axis1.xyz.y,
-          model.joint[j].axis1.xyz.z
-        );
+        direction = new THREE.Vector3(model.joint[j].axis1.xyz.x,
+                                      model.joint[j].axis1.xyz.y,
+                                      model.joint[j].axis1.xyz.z);
         direction.normalize();
 
         tempMatrix = new THREE.Matrix4();
@@ -2417,11 +2173,9 @@ GZ3D.Scene.prototype.viewJoints = function (model) {
           model.joint[j].axis2.use_parent_model_frame = true;
         }
 
-        direction = new THREE.Vector3(
-          model.joint[j].axis2.xyz.x,
-          model.joint[j].axis2.xyz.y,
-          model.joint[j].axis2.xyz.z
-        );
+        direction = new THREE.Vector3(model.joint[j].axis2.xyz.x,
+                                      model.joint[j].axis2.xyz.y,
+                                      model.joint[j].axis2.xyz.z);
         direction.normalize();
 
         tempMatrix = new THREE.Matrix4();
@@ -2448,7 +2202,7 @@ GZ3D.Scene.prototype.viewJoints = function (model) {
  * Toggle: if there are COM visuals, hide, otherwise, show.
  * @param {} model
  */
-GZ3D.Scene.prototype.viewCOM = function (model) {
+GZ3D.Scene.prototype.viewCOM = function(model) {
   if (model === undefined || model === null) {
     return;
   }
@@ -2461,10 +2215,8 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
   // Visuals already exist
   if (model.COMVisuals) {
     // Hide = remove from parent
-    if (
-      model.COMVisuals[0].parent !== undefined &&
-      model.COMVisuals[0].parent !== null
-    ) {
+    if (model.COMVisuals[0].parent !== undefined &&
+        model.COMVisuals[0].parent !== null) {
       for (let v = 0; v < model.COMVisuals.length; ++v) {
         for (let k = 0; k < 3; k++) {
           model.COMVisuals[v].parent.remove(model.COMVisuals[v].crossLines[k]);
@@ -2535,16 +2287,13 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
         quaternion.setFromEuler(euler);
 
         inertialPose = {
-          position: position,
-          orientation: quaternion,
+          position : position,
+          orientation : quaternion,
         };
 
         if (userdatapose !== undefined) {
-          this.setPose(
-            COMVisual,
-            userdatapose.position,
-            userdatapose.orientation
-          );
+          this.setPose(COMVisual, userdatapose.position,
+                       userdatapose.orientation);
           inertialPose = userdatapose;
         }
 
@@ -2556,8 +2305,7 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
 
         // Align link with world (reverse parent rotation w.r.t. the world)
         child.setRotationFromMatrix(
-          new THREE.Matrix4().getInverse(child.parent.matrixWorld)
-        );
+            new THREE.Matrix4().getInverse(child.parent.matrixWorld));
 
         // Get its bounding box
         box = new THREE.Box3();
@@ -2573,38 +2321,20 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
         box.applyMatrix4(worldToLocal);
 
         // X
-        points[0] = new THREE.Vector3(
-          box.min.x,
-          inertialPose.position.y,
-          inertialPose.position.z
-        );
-        points[1] = new THREE.Vector3(
-          box.max.x,
-          inertialPose.position.y,
-          inertialPose.position.z
-        );
+        points[0] = new THREE.Vector3(box.min.x, inertialPose.position.y,
+                                      inertialPose.position.z);
+        points[1] = new THREE.Vector3(box.max.x, inertialPose.position.y,
+                                      inertialPose.position.z);
         // Y
-        points[2] = new THREE.Vector3(
-          inertialPose.position.x,
-          box.min.y,
-          inertialPose.position.z
-        );
-        points[3] = new THREE.Vector3(
-          inertialPose.position.x,
-          box.max.y,
-          inertialPose.position.z
-        );
+        points[2] = new THREE.Vector3(inertialPose.position.x, box.min.y,
+                                      inertialPose.position.z);
+        points[3] = new THREE.Vector3(inertialPose.position.x, box.max.y,
+                                      inertialPose.position.z);
         // Z
-        points[4] = new THREE.Vector3(
-          inertialPose.position.x,
-          inertialPose.position.y,
-          box.min.z
-        );
-        points[5] = new THREE.Vector3(
-          inertialPose.position.x,
-          inertialPose.position.y,
-          box.max.z
-        );
+        points[4] = new THREE.Vector3(inertialPose.position.x,
+                                      inertialPose.position.y, box.min.z);
+        points[5] = new THREE.Vector3(inertialPose.position.x,
+                                      inertialPose.position.y, box.max.z);
 
         helperGeometry_1 = new THREE.Geometry();
         helperGeometry_1.vertices.push(points[0]);
@@ -2618,23 +2348,14 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
         helperGeometry_3.vertices.push(points[4]);
         helperGeometry_3.vertices.push(points[5]);
 
-        helperMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
+        helperMaterial = new THREE.LineBasicMaterial({color : 0x00ff00});
 
-        line_1 = new THREE.Line(
-          helperGeometry_1,
-          helperMaterial,
-          THREE.LineSegments
-        );
-        line_2 = new THREE.Line(
-          helperGeometry_2,
-          helperMaterial,
-          THREE.LineSegments
-        );
-        line_3 = new THREE.Line(
-          helperGeometry_3,
-          helperMaterial,
-          THREE.LineSegments
-        );
+        line_1 = new THREE.Line(helperGeometry_1, helperMaterial,
+                                THREE.LineSegments);
+        line_2 = new THREE.Line(helperGeometry_2, helperMaterial,
+                                THREE.LineSegments);
+        line_3 = new THREE.Line(helperGeometry_3, helperMaterial,
+                                THREE.LineSegments);
 
         line_1.name = "COM_VISUAL";
         line_2.name = "COM_VISUAL";
@@ -2658,7 +2379,7 @@ GZ3D.Scene.prototype.viewCOM = function (model) {
  * Toggle: if there are inertia visuals, hide, otherwise, show.
  * @param {} model
  */
-GZ3D.Scene.prototype.viewInertia = function (model) {
+GZ3D.Scene.prototype.viewInertia = function(model) {
   if (model === undefined || model === null) {
     return;
   }
@@ -2672,15 +2393,12 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
   // Visuals already exist
   if (model.inertiaVisuals) {
     // Hide = remove from parent
-    if (
-      model.inertiaVisuals[0].parent !== undefined &&
-      model.inertiaVisuals[0].parent !== null
-    ) {
+    if (model.inertiaVisuals[0].parent !== undefined &&
+        model.inertiaVisuals[0].parent !== null) {
       for (let v = 0; v < model.inertiaVisuals.length; ++v) {
         for (let k = 0; k < 3; k++) {
           model.inertiaVisuals[v].parent.remove(
-            model.inertiaVisuals[v].crossLines[k]
-          );
+              model.inertiaVisuals[v].crossLines[k]);
         }
         model.inertiaVisuals[v].parent.remove(model.inertiaVisuals[v]);
       }
@@ -2750,22 +2468,11 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
         Izz = inertia.izz;
         boxScale = new THREE.Vector3();
 
-        if (
-          mass < 0 ||
-          Ixx < 0 ||
-          Iyy < 0 ||
-          Izz < 0 ||
-          Ixx + Iyy < Izz ||
-          Iyy + Izz < Ixx ||
-          Izz + Ixx < Iyy
-        ) {
+        if (mass < 0 || Ixx < 0 || Iyy < 0 || Izz < 0 || Ixx + Iyy < Izz ||
+            Iyy + Izz < Ixx || Izz + Ixx < Iyy) {
           // Unrealistic inertia, load with default scale
-          console.log(
-            "The link " +
-              child.name +
-              " has unrealistic inertia, " +
-              "unable to visualize box of equivalent inertia."
-          );
+          console.log("The link " + child.name + " has unrealistic inertia, " +
+                      "unable to visualize box of equivalent inertia.");
         } else {
           // Compute dimensions of box with uniform density
           // and equivalent inertia.
@@ -2780,10 +2487,10 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
           mesh = this.createBox(1, 1, 1);
           mesh.name = "INERTIA_VISUAL";
           material = {
-            ambient: [1, 0.0, 1, 1],
-            diffuse: [1, 0.0, 1, 1],
-            depth_write: false,
-            opacity: 0.5,
+            ambient : [ 1, 0.0, 1, 1 ],
+            diffuse : [ 1, 0.0, 1, 1 ],
+            depth_write : false,
+            opacity : 0.5,
           };
           this.setMaterial(mesh, material);
           inertiabox.add(mesh);
@@ -2794,45 +2501,31 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
           inertiabox.scale.set(boxScale.x, boxScale.y, boxScale.z);
           inertiabox.crossLines = [];
 
-          this.setPose(
-            inertiabox,
-            inertialPose.position,
-            inertialPose.orientation
-          );
+          this.setPose(inertiabox, inertialPose.position,
+                       inertialPose.orientation);
           // show lines
           box = new THREE.Box3();
           // w.r.t. world
           box.setFromObject(child);
           points[0] = new THREE.Vector3(
-            inertialPose.position.x,
-            inertialPose.position.y,
-            -2 * boxScale.z + inertialPose.position.z
-          );
+              inertialPose.position.x, inertialPose.position.y,
+              -2 * boxScale.z + inertialPose.position.z);
           points[1] = new THREE.Vector3(
-            inertialPose.position.x,
-            inertialPose.position.y,
-            2 * boxScale.z + inertialPose.position.z
-          );
-          points[2] = new THREE.Vector3(
-            inertialPose.position.x,
-            -2 * boxScale.y + inertialPose.position.y,
-            inertialPose.position.z
-          );
+              inertialPose.position.x, inertialPose.position.y,
+              2 * boxScale.z + inertialPose.position.z);
+          points[2] =
+              new THREE.Vector3(inertialPose.position.x,
+                                -2 * boxScale.y + inertialPose.position.y,
+                                inertialPose.position.z);
           points[3] = new THREE.Vector3(
-            inertialPose.position.x,
-            2 * boxScale.y + inertialPose.position.y,
-            inertialPose.position.z
-          );
+              inertialPose.position.x, 2 * boxScale.y + inertialPose.position.y,
+              inertialPose.position.z);
           points[4] = new THREE.Vector3(
-            -2 * boxScale.x + inertialPose.position.x,
-            inertialPose.position.y,
-            inertialPose.position.z
-          );
+              -2 * boxScale.x + inertialPose.position.x,
+              inertialPose.position.y, inertialPose.position.z);
           points[5] = new THREE.Vector3(
-            2 * boxScale.x + inertialPose.position.x,
-            inertialPose.position.y,
-            inertialPose.position.z
-          );
+              2 * boxScale.x + inertialPose.position.x, inertialPose.position.y,
+              inertialPose.position.z);
 
           helperGeometry_1 = new THREE.Geometry();
           helperGeometry_1.vertices.push(points[0]);
@@ -2846,22 +2539,13 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
           helperGeometry_3.vertices.push(points[4]);
           helperGeometry_3.vertices.push(points[5]);
 
-          helperMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 });
-          line_1 = new THREE.Line(
-            helperGeometry_1,
-            helperMaterial,
-            THREE.LineSegments
-          );
-          line_2 = new THREE.Line(
-            helperGeometry_2,
-            helperMaterial,
-            THREE.LineSegments
-          );
-          line_3 = new THREE.Line(
-            helperGeometry_3,
-            helperMaterial,
-            THREE.LineSegments
-          );
+          helperMaterial = new THREE.LineBasicMaterial({color : 0x00ff00});
+          line_1 = new THREE.Line(helperGeometry_1, helperMaterial,
+                                  THREE.LineSegments);
+          line_2 = new THREE.Line(helperGeometry_2, helperMaterial,
+                                  THREE.LineSegments);
+          line_3 = new THREE.Line(helperGeometry_3, helperMaterial,
+                                  THREE.LineSegments);
 
           line_1.name = "INERTIA_VISUAL";
           line_2.name = "INERTIA_VISUAL";
@@ -2885,7 +2569,7 @@ GZ3D.Scene.prototype.viewInertia = function (model) {
  * @param {} entity
  * @param {} msg
  */
-GZ3D.Scene.prototype.updateLight = function (entity, msg) {
+GZ3D.Scene.prototype.updateLight = function(entity, msg) {
   // TODO: Generalize this and createLight
   const lightObj = entity.children[0];
   let dir;
@@ -2966,7 +2650,7 @@ GZ3D.Scene.prototype.updateLight = function (entity, msg) {
  * @param {object} sdf - It is either SDF XML string or SDF XML DOM object
  * @returns {THREE.Object3D}
  */
-GZ3D.Scene.prototype.createFromSdf = function (sdf) {
+GZ3D.Scene.prototype.createFromSdf = function(sdf) {
   if (sdf === undefined) {
     console.log(" No argument provided ");
     return;

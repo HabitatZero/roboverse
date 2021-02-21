@@ -2,7 +2,7 @@
  * Radial menu for an object
  * @constructor
  */
-GZ3D.RadialMenu = function (domElement) {
+GZ3D.RadialMenu = function(domElement) {
   this.domElement = domElement !== undefined ? domElement : document;
 
   this.init();
@@ -11,7 +11,7 @@ GZ3D.RadialMenu = function (domElement) {
 /**
  * Initialize radial menu
  */
-GZ3D.RadialMenu.prototype.init = function () {
+GZ3D.RadialMenu.prototype.init = function() {
   const scale = 1.2;
   // Distance from starting point
   this.radius = 70 * scale;
@@ -25,9 +25,9 @@ GZ3D.RadialMenu.prototype.init = function () {
   this.textureLoader = new THREE.TextureLoader();
   this.bgShape = this.textureLoader.load("style/images/icon_background.png");
   this.layers = {
-    ICON: 0,
-    BACKGROUND: 1,
-    HIGHLIGHT: 2,
+    ICON : 0,
+    BACKGROUND : 1,
+    HIGHLIGHT : 2,
   };
 
   // For the opening motion
@@ -71,24 +71,19 @@ GZ3D.RadialMenu.prototype.init = function () {
  * @param {} event - event which triggered hide
  * @param {function} callback
  */
-GZ3D.RadialMenu.prototype.hide = function (event, callback) {
+GZ3D.RadialMenu.prototype.hide = function(event, callback) {
   for (let i = 0; i < this.numberOfItems; i++) {
     const item = this.menu.children[i];
 
     item.children[this.layers.ICON].visible = false;
-    item.children[this.layers.ICON].scale.set(
-      this.bgSize * this.iconProportion,
-      this.bgSize * this.iconProportion,
-      1.0
-    );
+    item.children[this.layers.ICON].scale.set(this.bgSize * this.iconProportion,
+                                              this.bgSize * this.iconProportion,
+                                              1.0);
 
     item.children[this.layers.BACKGROUND].visible = false;
     item.children[this.layers.BACKGROUND].material.color = this.plainColor;
-    item.children[this.layers.BACKGROUND].scale.set(
-      this.bgSize,
-      this.bgSize,
-      1.0
-    );
+    item.children[this.layers.BACKGROUND].scale.set(this.bgSize, this.bgSize,
+                                                    1.0);
 
     item.children[this.layers.HIGHLIGHT].visible = false;
   }
@@ -111,7 +106,7 @@ GZ3D.RadialMenu.prototype.hide = function (event, callback) {
  * @param {} event - event which triggered show
  * @param {THREE.Object3D} model - model to which the menu will be attached
  */
-GZ3D.RadialMenu.prototype.show = function (event, model) {
+GZ3D.RadialMenu.prototype.show = function(event, model) {
   if (this.showing) {
     return;
   }
@@ -166,7 +161,7 @@ GZ3D.RadialMenu.prototype.show = function (event, model) {
 /**
  * Update radial menu
  */
-GZ3D.RadialMenu.prototype.update = function () {
+GZ3D.RadialMenu.prototype.update = function() {
   if (!this.moving) {
     return;
   }
@@ -176,17 +171,17 @@ GZ3D.RadialMenu.prototype.update = function () {
     const item = this.menu.children[i];
 
     let xdelta =
-      item.children[this.layers.ICON].position.x - this.startPosition.x;
+        item.children[this.layers.ICON].position.x - this.startPosition.x;
     let ydelta =
-      item.children[this.layers.ICON].position.y - this.startPosition.y;
+        item.children[this.layers.ICON].position.y - this.startPosition.y;
 
     const d = Math.sqrt(Math.pow(xdelta, 2) + Math.pow(ydelta, 2));
 
     if (d < this.radius) {
       xdelta =
-        xdelta - this.speed * Math.sin(((this.offset - i) * Math.PI) / 4);
+          xdelta - this.speed * Math.sin(((this.offset - i) * Math.PI) / 4);
       ydelta =
-        ydelta + this.speed * Math.cos(((this.offset - i) * Math.PI) / 4);
+          ydelta + this.speed * Math.cos(((this.offset - i) * Math.PI) / 4);
     } else {
       this.moving = false;
     }
@@ -208,7 +203,7 @@ GZ3D.RadialMenu.prototype.update = function () {
  * Get pointer (mouse or touch) coordinates inside the canvas
  * @param {} event
  */
-GZ3D.RadialMenu.prototype.getPointer = function (event) {
+GZ3D.RadialMenu.prototype.getPointer = function(event) {
   if (event.originalEvent) {
     event = event.originalEvent;
   }
@@ -220,14 +215,14 @@ GZ3D.RadialMenu.prototype.getPointer = function (event) {
   posX = posX - rect.width * 0.5;
   posY = -(posY - rect.height * 0.5);
 
-  return { x: posX, y: posY };
+  return {x : posX, y : posY};
 };
 
 /**
  * Movement after long press to select items on menu
  * @param {} event
  */
-GZ3D.RadialMenu.prototype.onLongPressMove = function (event) {
+GZ3D.RadialMenu.prototype.onLongPressMove = function(event) {
   const pointer = this.getPointer(event);
   const pointerX = pointer.x - this.startPosition.x;
   const pointerY = pointer.y - this.startPosition.y;
@@ -241,10 +236,8 @@ GZ3D.RadialMenu.prototype.onLongPressMove = function (event) {
     region = 1;
   }
   // left
-  else if (
-    (angle > (-8 * Math.PI) / 8 && angle < (-7 * Math.PI) / 8) ||
-    (angle > (7 * Math.PI) / 8 && angle < (8 * Math.PI) / 8)
-  ) {
+  else if ((angle > (-8 * Math.PI) / 8 && angle < (-7 * Math.PI) / 8) ||
+           (angle > (7 * Math.PI) / 8 && angle < (8 * Math.PI) / 8)) {
     region = 2;
   }
   // top-left
@@ -286,34 +279,23 @@ GZ3D.RadialMenu.prototype.onLongPressMove = function (event) {
 
     if (counter === Selected) {
       item.children[this.layers.ICON].scale.set(
-        this.bgSizeSelected * this.iconProportion,
-        this.bgSizeSelected * this.iconProportion,
-        1.0
-      );
+          this.bgSizeSelected * this.iconProportion,
+          this.bgSizeSelected * this.iconProportion, 1.0);
       this.selected = item.children[this.layers.ICON].name;
 
       if (!item.isDisabled) {
-        item.children[
-          this.layers.BACKGROUND
-        ].material.color = this.selectedColor;
+        item.children[this.layers.BACKGROUND].material.color =
+            this.selectedColor;
       }
-      item.children[this.layers.BACKGROUND].scale.set(
-        this.bgSizeSelected,
-        this.bgSizeSelected,
-        1.0
-      );
+      item.children[this.layers.BACKGROUND].scale.set(this.bgSizeSelected,
+                                                      this.bgSizeSelected, 1.0);
     } else {
       item.children[this.layers.ICON].scale.set(
-        this.bgSize * this.iconProportion,
-        this.bgSize * this.iconProportion,
-        1.0
-      );
+          this.bgSize * this.iconProportion, this.bgSize * this.iconProportion,
+          1.0);
 
-      item.children[this.layers.BACKGROUND].scale.set(
-        this.bgSize,
-        this.bgSize,
-        1.0
-      );
+      item.children[this.layers.BACKGROUND].scale.set(this.bgSize, this.bgSize,
+                                                      1.0);
       if (!item.isDisabled) {
         item.children[this.layers.BACKGROUND].material.color = this.plainColor;
       }
@@ -328,27 +310,24 @@ GZ3D.RadialMenu.prototype.onLongPressMove = function (event) {
  * @param {string} type - delete/translate/rotate/transparent/wireframe/joints
  * @param {string} iconTexture - icon's uri
  */
-GZ3D.RadialMenu.prototype.addItem = function (type, iconTexture) {
+GZ3D.RadialMenu.prototype.addItem = function(type, iconTexture) {
   // Icon
   iconTexture = this.textureLoader.load(iconTexture);
 
   const iconMaterial = new THREE.SpriteMaterial({
-    map: iconTexture,
+    map : iconTexture,
   });
 
   const icon = new THREE.Sprite(iconMaterial);
-  icon.scale.set(
-    this.bgSize * this.iconProportion,
-    this.bgSize * this.iconProportion,
-    1.0
-  );
+  icon.scale.set(this.bgSize * this.iconProportion,
+                 this.bgSize * this.iconProportion, 1.0);
   icon.name = type;
   icon.position.set(0, 0, 1);
 
   // Background
   const bgMaterial = new THREE.SpriteMaterial({
-    map: this.bgShape,
-    color: this.plainColor,
+    map : this.bgShape,
+    color : this.plainColor,
   });
 
   const bg = new THREE.Sprite(bgMaterial);
@@ -357,8 +336,8 @@ GZ3D.RadialMenu.prototype.addItem = function (type, iconTexture) {
 
   // Highlight
   const highlightMaterial = new THREE.SpriteMaterial({
-    map: this.bgShape,
-    color: this.highlightColor,
+    map : this.bgShape,
+    color : this.highlightColor,
   });
 
   const highlight = new THREE.Sprite(highlightMaterial);
@@ -381,7 +360,7 @@ GZ3D.RadialMenu.prototype.addItem = function (type, iconTexture) {
  * Set number of items (different for models and lights)
  * @param {int} number
  */
-GZ3D.RadialMenu.prototype.setNumberOfItems = function (number) {
+GZ3D.RadialMenu.prototype.setNumberOfItems = function(number) {
   this.numberOfItems = number;
   this.offset = this.numberOfItems - 1 - Math.floor(this.numberOfItems / 2);
 };

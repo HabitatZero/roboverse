@@ -6,21 +6,19 @@
  * @param {object} gziface [optional] - the gz3d gziface object, if not gziface
  * object was provided, sdfParser wont try to connect to gzserver.
  **/
-GZ3D.SdfParser = function (scene, gui, gziface) {
-  this.emitter =
-    globalEmitter || new EventEmitter2({ verboseMemoryLeak: true });
+GZ3D.SdfParser = function(scene, gui, gziface) {
+  this.emitter = globalEmitter || new EventEmitter2({verboseMemoryLeak : true});
 
   // set the sdf version
   this.SDF_VERSION = 1.5;
-  this.MATERIAL_ROOT = gziface
-    ? gziface.protocol + "//" + gziface.url + "/assets"
-    : "assets";
+  this.MATERIAL_ROOT =
+      gziface ? gziface.protocol + "//" + gziface.url + "/assets" : "assets";
   // true for using URLs to load files.
   // false for using the files loaded in the memory.
   this.usingFilesUrls = false;
 
   // set the xml parser function
-  this.parseXML = function (xmlStr) {
+  this.parseXML = function(xmlStr) {
     return new window.DOMParser().parseFromString(xmlStr, "text/xml");
   };
 
@@ -42,9 +40,9 @@ GZ3D.SdfParser = function (scene, gui, gziface) {
   this.customUrls = [];
 
   const that = this;
-  this.emitter.on("material", function (mat) {
-    that.materials = Object.assign(that.materials, mat);
-  });
+  this.emitter.on(
+      "material",
+      function(mat) { that.materials = Object.assign(that.materials, mat); });
 };
 
 /**
@@ -52,31 +50,28 @@ GZ3D.SdfParser = function (scene, gui, gziface) {
  * if gziface was not provided, just initialize the scene and don't listen
  * on gziface events.
  */
-GZ3D.SdfParser.prototype.init = function () {
+GZ3D.SdfParser.prototype.init = function() {
   if (this.gziface) {
     this.usingFilesUrls = true;
     const that = this;
-    this.emitter.on("connectionError", function () {
+    this.emitter.on("connectionError", function() {
       // init scene and show popup only for the first connection error
       that.emitter.emit(
-        "notification_popup",
-        "GzWeb is currently running" +
-          "without a server, and materials could not be loaded." +
-          "When connected scene will be reinitialized",
-        5000
-      );
+          "notification_popup",
+          "GzWeb is currently running" +
+              "without a server, and materials could not be loaded." +
+              "When connected scene will be reinitialized",
+          5000);
       that.onConnectionError();
     });
 
-    this.emitter.on("gzstatus", function (gzstatus) {
+    this.emitter.on("gzstatus", function(gzstatus) {
       if (gzstatus === "error") {
-        that.emitter.emit(
-          "notification_popup",
-          "GzWeb is currently " +
-            "running without a GzServer," +
-            "and Scene is reinitialized.",
-          5000
-        );
+        that.emitter.emit("notification_popup",
+                          "GzWeb is currently " +
+                              "running without a GzServer," +
+                              "and Scene is reinitialized.",
+                          5000);
         that.onConnectionError();
       }
     });
@@ -90,7 +85,7 @@ GZ3D.SdfParser.prototype.init = function () {
  * If `usingFilesUrls` is true, resources will only be taken from this array.
  * TODO: Find a less intrusive way to support custom URLs (issue #147)
  */
-GZ3D.SdfParser.prototype.addUrl = function (url) {
+GZ3D.SdfParser.prototype.addUrl = function(url) {
   if (url === undefined || url.indexOf("http") !== 0) {
     console.log("Trying to add invalid URL");
     return;
@@ -107,25 +102,25 @@ GZ3D.SdfParser.prototype.addUrl = function (url) {
  * 2 - gzbridge websocket is trying to connect to
  *       gzserver which is not running currenly
  */
-GZ3D.SdfParser.prototype.onConnectionError = function () {
+GZ3D.SdfParser.prototype.onConnectionError = function() {
   this.scene.initScene();
 
   const that = this;
-  const entityCreated = function (model, type) {
+  const entityCreated = function(model, type) {
     if (!that.gziface.isConnected) {
       that.addModelByType(model, type);
     }
   };
   this.emitter.on("entityCreated", entityCreated);
 
-  const deleteEntity = function (entity) {
+  const deleteEntity = function(entity) {
     const name = entity.name;
     const obj = that.scene.getByName(name);
     if (obj !== undefined) {
       if (obj.children[0] instanceof THREE.Light) {
-        that.emitter.emit("setLightStats", { name: name }, "delete");
+        that.emitter.emit("setLightStats", {name : name}, "delete");
       } else {
-        that.gui.setModelStats({ name: name }, "delete");
+        that.gui.setModelStats({name : name}, "delete");
       }
       that.scene.remove(obj);
     }
@@ -139,7 +134,7 @@ GZ3D.SdfParser.prototype.onConnectionError = function () {
  * should be separated with single white space
  * @returns {object} color - color object having r,g,b and alpha values
  */
-GZ3D.SdfParser.prototype.parseColor = function (colorStr) {
+GZ3D.SdfParser.prototype.parseColor = function(colorStr) {
   const color = {};
   const values = colorStr.split(/\s+/);
 
@@ -157,7 +152,7 @@ GZ3D.SdfParser.prototype.parseColor = function (colorStr) {
  * should be separated with single white space
  * @returns {object} vector3D - vector having x, y, z values
  */
-GZ3D.SdfParser.prototype.parse3DVector = function (vectorStr) {
+GZ3D.SdfParser.prototype.parse3DVector = function(vectorStr) {
   const vector3D = {};
   const values = vectorStr.split(/\s+/);
   vector3D.x = parseFloat(values[0]);
@@ -174,7 +169,7 @@ GZ3D.SdfParser.prototype.parse3DVector = function (vectorStr) {
  * according to given properties. The type of light object is determined
  * according to light type
  */
-GZ3D.SdfParser.prototype.spawnLightFromSDF = function (sdfObj) {
+GZ3D.SdfParser.prototype.spawnLightFromSDF = function(sdfObj) {
   const light = sdfObj.light;
   const name = light["@name"];
   const diffuse = this.parseColor(light.diffuse);
@@ -210,10 +205,8 @@ GZ3D.SdfParser.prototype.spawnLightFromSDF = function (sdfObj) {
   const r = 1;
   const L = attLin;
   const Q = attQuad;
-  const intensity =
-    E *
-    (D / (D + L * r)) *
-    (Math.pow(D, 2) / (Math.pow(D, 2) + Q * Math.pow(r, 2)));
+  const intensity = E * (D / (D + L * r)) *
+                    (Math.pow(D, 2) / (Math.pow(D, 2) + Q * Math.pow(r, 2)));
 
   if (light["@type"] === "point") {
     type = 1;
@@ -225,19 +218,8 @@ GZ3D.SdfParser.prototype.spawnLightFromSDF = function (sdfObj) {
     direction = this.parse3DVector(light.direction);
   }
   const lightObj = this.scene.createLight(
-    type,
-    diffuse,
-    intensity,
-    pose,
-    distance,
-    castShadows,
-    name,
-    direction,
-    specular,
-    attConst,
-    attLin,
-    attQuad
-  );
+      type, diffuse, intensity, pose, distance, castShadows, name, direction,
+      specular, attConst, attLin, attQuad);
 
   return lightObj;
 };
@@ -251,10 +233,10 @@ GZ3D.SdfParser.prototype.spawnLightFromSDF = function (sdfObj) {
  * @returns {object} pose - pose object having position (x,y,z)(THREE.Vector3)
  * and orientation (THREE.Quaternion) properties
  */
-GZ3D.SdfParser.prototype.parsePose = function (poseStr) {
+GZ3D.SdfParser.prototype.parsePose = function(poseStr) {
   const pose = {
-    position: new THREE.Vector3(),
-    orientation: new THREE.Quaternion(),
+    position : new THREE.Vector3(),
+    orientation : new THREE.Quaternion(),
   };
 
   if (typeof poseStr !== "string" && !(poseStr instanceof String)) {
@@ -264,19 +246,12 @@ GZ3D.SdfParser.prototype.parsePose = function (poseStr) {
   const values = poseStr.split(/\s+/);
 
   const position = new THREE.Vector3(
-    parseFloat(values[0]),
-    parseFloat(values[1]),
-    parseFloat(values[2])
-  );
+      parseFloat(values[0]), parseFloat(values[1]), parseFloat(values[2]));
 
   // get euler rotation and convert it to Quaternion
   const quaternion = new THREE.Quaternion();
-  const euler = new THREE.Euler(
-    parseFloat(values[3]),
-    parseFloat(values[4]),
-    parseFloat(values[5]),
-    "ZYX"
-  );
+  const euler = new THREE.Euler(parseFloat(values[3]), parseFloat(values[4]),
+                                parseFloat(values[5]), "ZYX");
   quaternion.setFromEuler(euler);
 
   pose.position = position;
@@ -292,13 +267,10 @@ GZ3D.SdfParser.prototype.parsePose = function (poseStr) {
  * @returns {THREE.Vector3} scale - THREE Vector3 object
  * which denotes scaling of an object in x,y,z
  */
-GZ3D.SdfParser.prototype.parseScale = function (scaleStr) {
+GZ3D.SdfParser.prototype.parseScale = function(scaleStr) {
   const values = scaleStr.split(/\s+/);
-  const scale = new THREE.Vector3(
-    parseFloat(values[0]),
-    parseFloat(values[1]),
-    parseFloat(values[2])
-  );
+  const scale = new THREE.Vector3(parseFloat(values[0]), parseFloat(values[1]),
+                                  parseFloat(values[2]));
   return scale;
 };
 
@@ -308,9 +280,8 @@ GZ3D.SdfParser.prototype.parseScale = function (scaleStr) {
  * where the values can be true, false, 1, or 0.
  * @returns {bool} bool - bool value
  */
-GZ3D.SdfParser.prototype.parseBool = function (boolStr) {
-  return JSON.parse(boolStr);
-};
+GZ3D.SdfParser.prototype.parseBool = function(
+    boolStr) { return JSON.parse(boolStr); };
 
 /**
  * Parses SDF material element which is going to be used by THREE library
@@ -322,7 +293,7 @@ GZ3D.SdfParser.prototype.parseBool = function (boolStr) {
  * @returns {object} material - material object which has the followings:
  * texture, normalMap, ambient, diffuse, specular, opacity
  */
-GZ3D.SdfParser.prototype.createMaterial = function (material) {
+GZ3D.SdfParser.prototype.createMaterial = function(material) {
   let textureUri, texture, mat;
   let ambient, diffuse, specular, opacity, normalMap, scale;
 
@@ -334,11 +305,11 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
   if (script) {
     // if there is just one uri convert it to array
     if (!script.uri) {
-      script.uri = ["file://media/materials/scripts/gazebo.material"];
+      script.uri = [ "file://media/materials/scripts/gazebo.material" ];
     }
 
     if (!(script.uri instanceof Array)) {
-      script.uri = [script.uri];
+      script.uri = [ script.uri ];
     }
 
     if (script.name) {
@@ -353,25 +324,21 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
 
         if (mat.texture) {
           for (let i = 0; i < script.uri.length; ++i) {
-            const uriType = script.uri[i].substring(
-              0,
-              script.uri[i].indexOf("://")
-            );
+            const uriType =
+                script.uri[i].substring(0, script.uri[i].indexOf("://"));
             if (uriType === "model") {
               // if texture uri
               if (script.uri[i].indexOf("textures") > 0) {
-                textureUri = script.uri[i].substring(
-                  script.uri[i].indexOf("://") + 3
-                );
+                textureUri =
+                    script.uri[i].substring(script.uri[i].indexOf("://") + 3);
                 break;
               }
             } else if (uriType === "file") {
               if (script.uri[i].indexOf("materials") > 0) {
-                textureUri =
-                  script.uri[i].substring(
-                    script.uri[i].indexOf("://") + 3,
-                    script.uri[i].indexOf("materials") + 9
-                  ) + "/textures";
+                textureUri = script.uri[i].substring(
+                                 script.uri[i].indexOf("://") + 3,
+                                 script.uri[i].indexOf("materials") + 9) +
+                             "/textures";
                 break;
               }
             }
@@ -389,7 +356,7 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
               }
             } else {
               texture =
-                this.MATERIAL_ROOT + "/" + textureUri + "/" + mat.texture;
+                  this.MATERIAL_ROOT + "/" + textureUri + "/" + mat.texture;
             }
           }
         }
@@ -404,10 +371,9 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
   if (material.normal_map) {
     let mapUri;
     if (material.normal_map.indexOf("://") > 0) {
-      mapUri = material.normal_map.substring(
-        material.normal_map.indexOf("://") + 3,
-        material.normal_map.lastIndexOf("/")
-      );
+      mapUri =
+          material.normal_map.substring(material.normal_map.indexOf("://") + 3,
+                                        material.normal_map.lastIndexOf("/"));
     } else {
       mapUri = textureUri;
     }
@@ -417,9 +383,7 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
         startIndex = 0;
       }
       const normalMapName = material.normal_map.substr(
-        startIndex,
-        material.normal_map.lastIndexOf(".") - startIndex
-      );
+          startIndex, material.normal_map.lastIndexOf(".") - startIndex);
       // Map texture name to the corresponding texture.
       if (!this.usingFilesUrls) {
         normalMap = this.textures[normalMapName + ".png"];
@@ -433,20 +397,20 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
           }
         } else {
           normalMap =
-            this.MATERIAL_ROOT + "/" + mapUri + "/" + normalMapName + ".png";
+              this.MATERIAL_ROOT + "/" + mapUri + "/" + normalMapName + ".png";
         }
       }
     }
   }
 
   return {
-    texture: texture,
-    normalMap: normalMap,
-    ambient: ambient,
-    diffuse: diffuse,
-    specular: specular,
-    opacity: opacity,
-    scale: scale,
+    texture : texture,
+    normalMap : normalMap,
+    ambient : ambient,
+    diffuse : diffuse,
+    specular : specular,
+    opacity : opacity,
+    scale : scale,
   };
 };
 
@@ -457,16 +421,16 @@ GZ3D.SdfParser.prototype.createMaterial = function (material) {
  * @returns {object} size - size object which denotes
  * size of an object in x,y,z
  */
-GZ3D.SdfParser.prototype.parseSize = function (sizeStr) {
+GZ3D.SdfParser.prototype.parseSize = function(sizeStr) {
   let sizeObj;
   const values = sizeStr.split(/\s+/);
   const x = parseFloat(values[0]);
   const y = parseFloat(values[1]);
   const z = parseFloat(values[2]);
   sizeObj = {
-    x: x,
-    y: y,
-    z: z,
+    x : x,
+    y : y,
+    z : z,
   };
 
   return sizeObj;
@@ -485,7 +449,7 @@ GZ3D.SdfParser.prototype.parseSize = function (sizeStr) {
  * by createMaterial function
  * @param {object} parent - parent 3D object
  */
-GZ3D.SdfParser.prototype.createGeom = function (geom, mat, parent) {
+GZ3D.SdfParser.prototype.createGeom = function(geom, mat, parent) {
   const that = this;
   let obj;
   let size, normal;
@@ -547,46 +511,36 @@ GZ3D.SdfParser.prototype.createGeom = function (geom, mat, parent) {
           }
 
           that.scene.loadMeshFromString(
-            modelUri,
-            submesh,
-            centerSubmesh,
-            function (obj) {
-              if (!obj) {
-                console.error("Failed to load mesh.");
-                return;
-              }
+              modelUri, submesh, centerSubmesh, function(obj) {
+                if (!obj) {
+                  console.error("Failed to load mesh.");
+                  return;
+                }
 
-              parent.add(obj);
-              loadGeom(parent);
-            },
-            [meshFile, mtlFile]
-          );
+                parent.add(obj);
+                loadGeom(parent);
+              }, [ meshFile, mtlFile ]);
         } else if (ext === ".dae") {
           that.scene.loadMeshFromString(
-            modelUri,
-            submesh,
-            centerSubmesh,
-            function (dae) {
-              if (!dae) {
-                console.error("Failed to load mesh.");
-                return;
-              }
+              modelUri, submesh, centerSubmesh, function(dae) {
+                if (!dae) {
+                  console.error("Failed to load mesh.");
+                  return;
+                }
 
-              if (material) {
-                const allChildren = [];
-                dae.getDescendants(allChildren);
-                for (let c = 0; c < allChildren.length; ++c) {
-                  if (allChildren[c] instanceof THREE.Mesh) {
-                    that.scene.setMaterial(allChildren[c], material);
-                    break;
+                if (material) {
+                  const allChildren = [];
+                  dae.getDescendants(allChildren);
+                  for (let c = 0; c < allChildren.length; ++c) {
+                    if (allChildren[c] instanceof THREE.Mesh) {
+                      that.scene.setMaterial(allChildren[c], material);
+                      break;
+                    }
                   }
                 }
-              }
-              parent.add(dae);
-              loadGeom(parent);
-            },
-            [meshFile]
-          );
+                parent.add(dae);
+                loadGeom(parent);
+              }, [ meshFile ]);
         }
       } else {
         if (this.customUrls.length !== 0) {
@@ -598,39 +552,35 @@ GZ3D.SdfParser.prototype.createGeom = function (geom, mat, parent) {
           }
         }
         this.scene.loadMeshFromUri(
-          modelUri,
-          submesh,
-          centerSubmesh,
-          function (mesh) {
-            if (!mesh) {
-              console.error("Failed to load mesh.");
-              return;
-            }
+            modelUri, submesh, centerSubmesh, function(mesh) {
+              if (!mesh) {
+                console.error("Failed to load mesh.");
+                return;
+              }
 
-            if (material) {
-              // Because the stl mesh doesn't have any children we cannot set
-              // the materials like other mesh types.
-              if (ext !== ".stl") {
-                const allChildren = [];
-                mesh.getDescendants(allChildren);
-                for (let c = 0; c < allChildren.length; ++c) {
-                  if (allChildren[c] instanceof THREE.Mesh) {
-                    that.scene.setMaterial(allChildren[c], material);
-                    break;
+              if (material) {
+                // Because the stl mesh doesn't have any children we cannot set
+                // the materials like other mesh types.
+                if (ext !== ".stl") {
+                  const allChildren = [];
+                  mesh.getDescendants(allChildren);
+                  for (let c = 0; c < allChildren.length; ++c) {
+                    if (allChildren[c] instanceof THREE.Mesh) {
+                      that.scene.setMaterial(allChildren[c], material);
+                      break;
+                    }
                   }
+                } else {
+                  that.scene.setMaterial(mesh, material);
                 }
               } else {
-                that.scene.setMaterial(mesh, material);
+                if (ext === ".stl") {
+                  that.scene.setMaterial(mesh, {ambient : [ 1, 1, 1, 1 ]});
+                }
               }
-            } else {
-              if (ext === ".stl") {
-                that.scene.setMaterial(mesh, { ambient: [1, 1, 1, 1] });
-              }
-            }
-            parent.add(mesh);
-            loadGeom(parent);
-          }
-        );
+              parent.add(mesh);
+              loadGeom(parent);
+            });
       }
     }
   }
@@ -713,7 +663,7 @@ GZ3D.SdfParser.prototype.createGeom = function (geom, mat, parent) {
  * @returns {THREE.Object3D} visualObj - 3D object which is created
  * according to SDF visual element.
  */
-GZ3D.SdfParser.prototype.createVisual = function (visual) {
+GZ3D.SdfParser.prototype.createVisual = function(visual) {
   // TODO: handle these node values
   // cast_shadow, receive_shadows
   if (visual.geometry) {
@@ -722,11 +672,8 @@ GZ3D.SdfParser.prototype.createVisual = function (visual) {
 
     if (visual.pose) {
       const visualPose = this.parsePose(visual.pose);
-      this.scene.setPose(
-        visualObj,
-        visualPose.position,
-        visualPose.orientation
-      );
+      this.scene.setPose(visualObj, visualPose.position,
+                         visualPose.orientation);
     }
 
     this.createGeom(visual.geometry, visual.material, visualObj);
@@ -743,7 +690,7 @@ GZ3D.SdfParser.prototype.createVisual = function (visual) {
  * @returns {THREE.Object3D} object - 3D object which is created from the
  * given SDF.
  */
-GZ3D.SdfParser.prototype.spawnFromSDF = function (sdf) {
+GZ3D.SdfParser.prototype.spawnFromSDF = function(sdf) {
   // Parse sdfXML
   let sdfXML;
   if (typeof sdf === "string") {
@@ -778,10 +725,10 @@ GZ3D.SdfParser.prototype.spawnFromSDF = function (sdf) {
  * @returns {THREE.Object3D} sdfObject - 3D object which is created
  * according to SDF.
  */
-GZ3D.SdfParser.prototype.loadSDF = function (sdfName) {
+GZ3D.SdfParser.prototype.loadSDF = function(sdfName) {
   if (!sdfName) {
     const m =
-      "Must provide either a model/world name or the URL of an SDF file";
+        "Must provide either a model/world name or the URL of an SDF file";
     console.error(m);
     return;
   }
@@ -819,7 +766,7 @@ GZ3D.SdfParser.prototype.loadSDF = function (sdfName) {
  * @returns {THREE.Object3D} modelObject - 3D object which is created
  * according to SDF model object.
  */
-GZ3D.SdfParser.prototype.spawnModelFromSDF = function (sdfObj) {
+GZ3D.SdfParser.prototype.spawnModelFromSDF = function(sdfObj) {
   // create the model
   const modelObj = new THREE.Object3D();
   modelObj.name = sdfObj.model["@name"];
@@ -838,7 +785,7 @@ GZ3D.SdfParser.prototype.spawnModelFromSDF = function (sdfObj) {
 
   // convert link object to link array
   if (!(sdfObj.model.link instanceof Array)) {
-    sdfObj.model.link = [sdfObj.model.link];
+    sdfObj.model.link = [ sdfObj.model.link ];
   }
 
   for (i = 0; i < sdfObj.model.link.length; ++i) {
@@ -851,10 +798,10 @@ GZ3D.SdfParser.prototype.spawnModelFromSDF = function (sdfObj) {
   // convert nested model objects to model array
   if (sdfObj.model.model) {
     if (!(sdfObj.model.model instanceof Array)) {
-      sdfObj.model.model = [sdfObj.model.model];
+      sdfObj.model.model = [ sdfObj.model.model ];
     }
     for (i = 0; i < sdfObj.model.model.length; ++i) {
-      const tmpModelObj = { model: sdfObj.model.model[i] };
+      const tmpModelObj = {model : sdfObj.model.model[i]};
       const nestedModelObj = this.spawnModelFromSDF(tmpModelObj);
       if (nestedModelObj) {
         modelObj.add(nestedModelObj);
@@ -871,7 +818,7 @@ GZ3D.SdfParser.prototype.spawnModelFromSDF = function (sdfObj) {
  * @returns {THREE.Object3D} worldObject - 3D object which is created
  * according to SDF world object.
  */
-GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
+GZ3D.SdfParser.prototype.spawnWorldFromSDF = function(sdfObj) {
   const worldObj = new THREE.Object3D();
 
   // remove default sun before adding objects
@@ -885,7 +832,7 @@ GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
   if (sdfObj.world.include) {
     // convert object to array
     if (!(sdfObj.world.include instanceof Array)) {
-      sdfObj.world.include = [sdfObj.world.include];
+      sdfObj.world.include = [ sdfObj.world.include ];
     }
 
     const modelPrefix = "model://";
@@ -896,10 +843,8 @@ GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
         const modelName = incObj.uri.substr(modelPrefix.length);
         for (let u = 0; u < this.customUrls.length; ++u) {
           const urlObj = new URL(this.customUrls[u]);
-          if (
-            urlObj.pathname.indexOf(modelName) > 0 &&
-            urlObj.pathname.toLowerCase().endsWith(".sdf")
-          ) {
+          if (urlObj.pathname.indexOf(modelName) > 0 &&
+              urlObj.pathname.toLowerCase().endsWith(".sdf")) {
             const incSDF = this.fileFromUrl(this.customUrls[u]);
             if (!incSDF) {
               console.log("Failed to spawn model: " + modelName);
@@ -925,11 +870,11 @@ GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
   if (sdfObj.world.model) {
     // convert object to array
     if (!(sdfObj.world.model instanceof Array)) {
-      sdfObj.world.model = [sdfObj.world.model];
+      sdfObj.world.model = [ sdfObj.world.model ];
     }
 
     for (let j = 0; j < sdfObj.world.model.length; ++j) {
-      const tmpModelObj = { model: sdfObj.world.model[j] };
+      const tmpModelObj = {model : sdfObj.world.model[j]};
       const modelObj = this.spawnModelFromSDF(tmpModelObj);
       worldObj.add(modelObj);
     }
@@ -939,11 +884,11 @@ GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
   if (sdfObj.world.light) {
     // convert object to array
     if (!(sdfObj.world.light instanceof Array)) {
-      sdfObj.world.light = [sdfObj.world.light];
+      sdfObj.world.light = [ sdfObj.world.light ];
     }
 
     for (let k = 0; k < sdfObj.world.light.length; ++k) {
-      const tmpLightObj = { light: sdfObj.world.light[k] };
+      const tmpLightObj = {light : sdfObj.world.light[k]};
       const lightObj = this.spawnLightFromSDF(tmpLightObj);
       worldObj.add(lightObj);
     }
@@ -959,7 +904,7 @@ GZ3D.SdfParser.prototype.spawnWorldFromSDF = function (sdfObj) {
  * @param {object} link - parsed SDF link object
  * @returns {THREE.Object3D} linkObject - 3D link object
  */
-GZ3D.SdfParser.prototype.createLink = function (link) {
+GZ3D.SdfParser.prototype.createLink = function(link) {
   let linkPose, visualObj;
   const linkObj = new THREE.Object3D();
   linkObj.name = link["@name"];
@@ -993,7 +938,7 @@ GZ3D.SdfParser.prototype.createLink = function (link) {
 
   if (link.visual) {
     if (!(link.visual instanceof Array)) {
-      link.visual = [link.visual];
+      link.visual = [ link.visual ];
     }
 
     for (let i = 0; i < link.visual.length; ++i) {
@@ -1006,7 +951,7 @@ GZ3D.SdfParser.prototype.createLink = function (link) {
 
   if (link.collision) {
     if (!(link.collision instanceof Array)) {
-      link.collision = [link.collision];
+      link.collision = [ link.collision ];
     }
 
     for (let j = 0; j < link.collision.length; ++j) {
@@ -1030,7 +975,7 @@ GZ3D.SdfParser.prototype.createLink = function (link) {
  * @param {string} type - type of the model which can be followings: box,
  * sphere, cylinder, spotlight, directionallight, pointlight
  */
-GZ3D.SdfParser.prototype.addModelByType = function (model, type) {
+GZ3D.SdfParser.prototype.addModelByType = function(model, type) {
   let sdf, translation, euler;
   const quaternion = new THREE.Quaternion();
   let modelObj;
@@ -1073,7 +1018,7 @@ GZ3D.SdfParser.prototype.addModelByType = function (model, type) {
   const that = this;
 
   let addModelFunc;
-  addModelFunc = function () {
+  addModelFunc = function() {
     // check whether object is removed
     const obj = that.scene.getByName(modelObj.name);
     if (obj === undefined) {
@@ -1101,56 +1046,32 @@ GZ3D.SdfParser.prototype.addModelByType = function (model, type) {
  * already created according to type of the object
  * @returns {string} sdf - SDF string of the simple shape
  */
-GZ3D.SdfParser.prototype.createSimpleShapeSDF = function (
-  type,
-  translation,
-  euler,
-  geomSDF
-) {
+GZ3D.SdfParser.prototype.createSimpleShapeSDF = function(type, translation,
+                                                         euler, geomSDF) {
   let sdf;
 
-  sdf =
-    '<sdf version="' +
-    this.SDF_VERSION +
-    '">' +
-    '<model name="' +
-    type +
-    '">' +
-    "<pose>" +
-    translation.x +
-    " " +
-    translation.y +
-    " " +
-    translation.z +
-    " " +
-    euler.x +
-    " " +
-    euler.y +
-    " " +
-    euler.z +
-    "</pose>" +
-    '<link name="link">' +
-    "<inertial><mass>1.0</mass></inertial>" +
-    '<collision name="collision">' +
-    "<geometry>" +
-    geomSDF +
-    "</geometry>" +
-    "</collision>" +
-    '<visual name="visual">' +
-    "<geometry>" +
-    geomSDF +
-    "</geometry>" +
-    "<material>" +
-    "<script>" +
-    "<uri>file://media/materials/scripts/gazebo.material" +
-    "</uri>" +
-    "<name>Gazebo/Grey</name>" +
-    "</script>" +
-    "</material>" +
-    "</visual>" +
-    "</link>" +
-    "</model>" +
-    "</sdf>";
+  sdf = '<sdf version="' + this.SDF_VERSION + '">' +
+        '<model name="' + type + '">' +
+        "<pose>" + translation.x + " " + translation.y + " " + translation.z +
+        " " + euler.x + " " + euler.y + " " + euler.z + "</pose>" +
+        '<link name="link">' +
+        "<inertial><mass>1.0</mass></inertial>" +
+        '<collision name="collision">' +
+        "<geometry>" + geomSDF + "</geometry>" +
+        "</collision>" +
+        '<visual name="visual">' +
+        "<geometry>" + geomSDF + "</geometry>" +
+        "<material>" +
+        "<script>" +
+        "<uri>file://media/materials/scripts/gazebo.material" +
+        "</uri>" +
+        "<name>Gazebo/Grey</name>" +
+        "</script>" +
+        "</material>" +
+        "</visual>" +
+        "</link>" +
+        "</model>" +
+        "</sdf>";
 
   return sdf;
 };
@@ -1162,8 +1083,10 @@ GZ3D.SdfParser.prototype.createSimpleShapeSDF = function (
  * @param {THREE.Euler} euler - the euler rotation of the box object
  * @returns {string} geomSDF - geometry SDF string of the box
  */
-GZ3D.SdfParser.prototype.createBoxSDF = function (translation, euler) {
-  const geomSDF = "<box>" + "<size>1.0 1.0 1.0</size>" + "</box>";
+GZ3D.SdfParser.prototype.createBoxSDF = function(translation, euler) {
+  const geomSDF = "<box>" +
+                  "<size>1.0 1.0 1.0</size>" +
+                  "</box>";
 
   return this.createSimpleShapeSDF("box", translation, euler, geomSDF);
 };
@@ -1175,8 +1098,10 @@ GZ3D.SdfParser.prototype.createBoxSDF = function (translation, euler) {
  * @param {THREE.Euler} euler - the euler rotation of the box object
  * @returns {string} geomSDF - geometry SDF string of the sphere
  */
-GZ3D.SdfParser.prototype.createSphereSDF = function (translation, euler) {
-  const geomSDF = "<sphere>" + "<radius>0.5</radius>" + "</sphere>";
+GZ3D.SdfParser.prototype.createSphereSDF = function(translation, euler) {
+  const geomSDF = "<sphere>" +
+                  "<radius>0.5</radius>" +
+                  "</sphere>";
 
   return this.createSimpleShapeSDF("sphere", translation, euler, geomSDF);
 };
@@ -1188,12 +1113,11 @@ GZ3D.SdfParser.prototype.createSphereSDF = function (translation, euler) {
  * @param {THREE.Euler} euler - the euler rotation of the cylinder object
  * @returns {string} geomSDF - geometry SDF string of the cylinder
  */
-GZ3D.SdfParser.prototype.createCylinderSDF = function (translation, euler) {
-  const geomSDF =
-    "<cylinder>" +
-    "<radius>0.5</radius>" +
-    "<length>1.0</length>" +
-    "</cylinder>";
+GZ3D.SdfParser.prototype.createCylinderSDF = function(translation, euler) {
+  const geomSDF = "<cylinder>" +
+                  "<radius>0.5</radius>" +
+                  "<length>1.0</length>" +
+                  "</cylinder>";
 
   return this.createSimpleShapeSDF("cylinder", translation, euler, geomSDF);
 };
@@ -1202,7 +1126,7 @@ GZ3D.SdfParser.prototype.createCylinderSDF = function (translation, euler) {
  * Download a file from url.
  * @param {string} url - full URL to an SDF file.
  */
-GZ3D.SdfParser.prototype.fileFromUrl = function (url) {
+GZ3D.SdfParser.prototype.fileFromUrl = function(url) {
   const xhttp = new XMLHttpRequest();
   xhttp.overrideMimeType("text/xml");
   xhttp.open("GET", url, false);

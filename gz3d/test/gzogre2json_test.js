@@ -1,8 +1,8 @@
-describe("GzOgre2Json tests", function () {
+describe("GzOgre2Json tests", function() {
   const utilsPath = "http://localhost:9876/base/gz3d/test/utils/";
 
-  describe("Parse material strings", function () {
-    it("should parse deep properties", function () {
+  describe("Parse material strings", function() {
+    it("should parse deep properties", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material Beer/Diffuse
 {
@@ -68,7 +68,7 @@ describe("GzOgre2Json tests", function () {
       expect(mat.depth_write).toEqual(true);
     });
 
-    it("should parse array properties", function () {
+    it("should parse array properties", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material many_arrays
 {
@@ -104,22 +104,22 @@ describe("GzOgre2Json tests", function () {
 
       expect(pass.ambient).toBeDefined();
       expect(pass.ambient.length).toEqual(4);
-      expect(pass.ambient).toEqual(["0.7", "0.8", "0.9", "1.0"]);
+      expect(pass.ambient).toEqual([ "0.7", "0.8", "0.9", "1.0" ]);
 
       expect(pass.emissive).toBeDefined();
       expect(pass.emissive).toEqual("vertexcolour");
 
       expect(pass.specular).toBeDefined();
       expect(pass.specular.length).toEqual(4);
-      expect(pass.specular).toEqual(["1.0", "0.9", "0.8", "0.7"]);
+      expect(pass.specular).toEqual([ "1.0", "0.9", "0.8", "0.7" ]);
 
       expect(pass.diffuse).toBeDefined();
       expect(pass.diffuse.length).toEqual(4);
-      expect(pass.diffuse).toEqual(["0.0", "0.0", "0.0", "1.0"]);
+      expect(pass.diffuse).toEqual([ "0.0", "0.0", "0.0", "1.0" ]);
 
       expect(pass.texture_unit.scale).toBeDefined();
       expect(pass.texture_unit.scale.length).toEqual(2);
-      expect(pass.texture_unit.scale).toEqual(["0.3", "0.4"]);
+      expect(pass.texture_unit.scale).toEqual([ "0.3", "0.4" ]);
 
       expect(pass.texture_unit.alpha_op_ex).toBeDefined();
       expect(pass.texture_unit.alpha_op_ex.length).toEqual(4);
@@ -140,24 +140,24 @@ describe("GzOgre2Json tests", function () {
       expect(mat.texture).toEqual("coupling_hexagon.png");
 
       expect(mat.scale).toBeDefined();
-      expect(mat.scale).toEqual([0.3, 0.4]);
+      expect(mat.scale).toEqual([ 0.3, 0.4 ]);
 
       expect(mat.ambient).toBeDefined();
-      expect(mat.ambient).toEqual([0.7, 0.8, 0.9, 1.0]);
+      expect(mat.ambient).toEqual([ 0.7, 0.8, 0.9, 1.0 ]);
 
       expect(mat.emissive).not.toBeDefined();
 
       expect(mat.specular).toBeDefined();
-      expect(mat.specular).toEqual([1.0, 0.9, 0.8, 0.7]);
+      expect(mat.specular).toEqual([ 1.0, 0.9, 0.8, 0.7 ]);
 
       expect(mat.diffuse).toBeDefined();
-      expect(mat.diffuse).toEqual([0.0, 0.0, 0.0, 1.0]);
+      expect(mat.diffuse).toEqual([ 0.0, 0.0, 0.0, 1.0 ]);
 
       expect(mat.opacity).toBeDefined();
       expect(mat.opacity).toEqual(0.5);
     });
 
-    it("should parse multiple properties", function () {
+    it("should parse multiple properties", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material Dumpster/Diffuse
 {
@@ -204,16 +204,14 @@ material Dumpster/Specular
       // Check materials
       expect(o2j.materials).toBeDefined();
 
-      expect(o2j.materials["Dumpster/Diffuse"].texture).toEqual(
-        "Dumpster_Diffuse.png"
-      );
+      expect(o2j.materials["Dumpster/Diffuse"].texture)
+          .toEqual("Dumpster_Diffuse.png");
 
-      expect(o2j.materials["Dumpster/Specular"].texture).toEqual(
-        "Dumpster_Spec.png"
-      );
+      expect(o2j.materials["Dumpster/Specular"].texture)
+          .toEqual("Dumpster_Spec.png");
     });
 
-    it("should parse sibling objects", function () {
+    it("should parse sibling objects", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material FireStation/Diffuse
 {
@@ -244,29 +242,28 @@ material Dumpster/Specular
       expect(o2j.materialObj.length).toEqual(1);
 
       expect(
-        o2j.materialObj[0]["FireStation/Diffuse"].technique.pass.texture_unit
-      ).toBeDefined();
+          o2j.materialObj[0]["FireStation/Diffuse"].technique.pass.texture_unit)
+          .toBeDefined();
 
-      expect(
-        o2j.materialObj[0]["FireStation/Diffuse"].technique.pass.rtshader_system
-      ).toBeDefined();
+      expect(o2j.materialObj[0]["FireStation/Diffuse"]
+                 .technique.pass.rtshader_system)
+          .toBeDefined();
 
       // Check materials
       expect(o2j.materials).toBeDefined();
 
-      expect(o2j.materials["FireStation/Diffuse"].texture).toEqual(
-        "FireStation_Diffuse.png"
-      );
+      expect(o2j.materials["FireStation/Diffuse"].texture)
+          .toEqual("FireStation_Diffuse.png");
     });
 
-    it("should gracefully handle malformed materials", function () {
+    it("should gracefully handle malformed materials", function() {
       const o2j = new GZ3D.Ogre2Json();
 
       expect(o2j.Parse("banana")).not.toBeTruthy();
       expect(o2j.Parse("{}")).not.toBeTruthy();
     });
 
-    it("should ignore comments", function () {
+    it("should ignore comments", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material FireStation/Diffuse
 {
@@ -290,20 +287,18 @@ material Dumpster/Specular
 
       expect(o2j.materialObj[0]["FireStation/Diffuse"]).toBeDefined();
 
-      expect(
-        o2j.materialObj[0]["FireStation/Diffuse"].receive_shadows
-      ).toBeDefined();
+      expect(o2j.materialObj[0]["FireStation/Diffuse"].receive_shadows)
+          .toBeDefined();
+
+      expect(o2j.materialObj[0]["FireStation/Diffuse"].property)
+          .not.toBeDefined();
 
       expect(
-        o2j.materialObj[0]["FireStation/Diffuse"].property
-      ).not.toBeDefined();
-
-      expect(
-        o2j.materialObj[0]["FireStation/Diffuse"].transparency_casts_shadows
-      ).toBeDefined();
+          o2j.materialObj[0]["FireStation/Diffuse"].transparency_casts_shadows)
+          .toBeDefined();
     });
 
-    it("should handle programs", function () {
+    it("should handle programs", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material OakTree/Branch
 {
@@ -336,15 +331,13 @@ fragment_program caster_fp_glsl glsl
       expect(o2j.materialObj[2]["OakTree/Bark"]).toBeDefined();
 
       // Check programs exist
-      expect(
-        o2j.materialObj[1].vertex_program_caster_vp_glsl_glsl
-      ).toBeDefined();
-      expect(
-        o2j.materialObj[3].fragment_program_caster_fp_glsl_glsl
-      ).toBeDefined();
+      expect(o2j.materialObj[1].vertex_program_caster_vp_glsl_glsl)
+          .toBeDefined();
+      expect(o2j.materialObj[3].fragment_program_caster_fp_glsl_glsl)
+          .toBeDefined();
     });
 
-    it("should handle program refs and inline {}", function () {
+    it("should handle program refs and inline {}", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material OakTree/shadow_caster_alpha
 { technique
@@ -365,19 +358,17 @@ fragment_program caster_fp_glsl glsl
       expect(o2j.Parse(str)).toBeTruthy();
 
       // Check refs
-      expect(
-        o2j.materialObj[0]["OakTree/shadow_caster_alpha"].technique.pass
-          .vertex_program_ref_caster_vp_glsl
-      ).toBeDefined();
+      expect(o2j.materialObj[0]["OakTree/shadow_caster_alpha"]
+                 .technique.pass.vertex_program_ref_caster_vp_glsl)
+          .toBeDefined();
 
       // Check refs
-      expect(
-        o2j.materialObj[0]["OakTree/shadow_caster_alpha"].technique.pass
-          .fragment_program_ref_caster_fp_glsl
-      ).toBeDefined();
+      expect(o2j.materialObj[0]["OakTree/shadow_caster_alpha"]
+                 .technique.pass.fragment_program_ref_caster_fp_glsl)
+          .toBeDefined();
     });
 
-    it("should ignore material aliases", function () {
+    it("should ignore material aliases", function() {
       const o2j = new GZ3D.Ogre2Json();
       const str = `material Gazebo/Gray : Gazebo/Grey
 {
@@ -394,45 +385,36 @@ fragment_program caster_fp_glsl glsl
     });
   });
 
-  describe("Loading from URL", function () {
-    it("should load existing material", function (done) {
+  describe("Loading from URL", function() {
+    it("should load existing material", function(done) {
       const o2j = new GZ3D.Ogre2Json();
-      o2j
-        .LoadFromUrl(utilsPath + "beer/materials/scripts/beer.material")
-        .then((success) => {
-          expect(success).toEqual(true);
-          expect(o2j.materials["Beer/Diffuse"]).toBeDefined();
-          done();
-        })
-        .catch(() => {
-          fail();
-        });
+      o2j.LoadFromUrl(utilsPath + "beer/materials/scripts/beer.material")
+          .then((success) => {
+            expect(success).toEqual(true);
+            expect(o2j.materials["Beer/Diffuse"]).toBeDefined();
+            done();
+          })
+          .catch(() => { fail(); });
     });
 
-    it("should fail to load inexistent material", function (done) {
+    it("should fail to load inexistent material", function(done) {
       const o2j = new GZ3D.Ogre2Json();
-      o2j
-        .LoadFromUrl(utilsPath + "bad/bad.material")
-        .then(() => {
-          fail();
-        })
-        .catch((error) => {
-          expect(error).toEqual("Not Found");
-          done();
-        });
+      o2j.LoadFromUrl(utilsPath + "bad/bad.material")
+          .then(() => { fail(); })
+          .catch((error) => {
+            expect(error).toEqual("Not Found");
+            done();
+          });
     });
 
-    it("should fail to load malformed material", function (done) {
+    it("should fail to load malformed material", function(done) {
       const o2j = new GZ3D.Ogre2Json();
-      o2j
-        .LoadFromUrl(utilsPath + "beer/materials/scripts/bad.material")
-        .then((success) => {
-          expect(success).toEqual(false);
-          done();
-        })
-        .catch(() => {
-          fail();
-        });
+      o2j.LoadFromUrl(utilsPath + "beer/materials/scripts/bad.material")
+          .then((success) => {
+            expect(success).toEqual(false);
+            done();
+          })
+          .catch(() => { fail(); });
     });
   });
 });

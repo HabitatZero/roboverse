@@ -4,16 +4,19 @@
  * @author gero3 / https://github.com/gero3
  * @author Mugen87 / https://github.com/Mugen87
  *
- * Description: A THREE loader for STL ASCII files, as created by Solidworks and other CAD programs.
+ * Description: A THREE loader for STL ASCII files, as created by Solidworks and
+ * other CAD programs.
  *
- * Supports both binary and ASCII encoded files, with automatic detection of type.
+ * Supports both binary and ASCII encoded files, with automatic detection of
+ * type.
  *
  * The loader returns a non-indexed buffer geometry.
  *
  * Limitations:
- *  Binary decoding supports "Magics" color format (http://en.wikipedia.org/wiki/STL_(file_format)#Color_in_binary_STL).
- *  There is perhaps some question as to how valid it is to always assume little-endian-ness.
- *  ASCII decoding assumes file is UTF-8.
+ *  Binary decoding supports "Magics" color format
+ * (http://en.wikipedia.org/wiki/STL_(file_format)#Color_in_binary_STL). There
+ * is perhaps some question as to how valid it is to always assume
+ * little-endian-ness. ASCII decoding assumes file is UTF-8.
  *
  * Usage:
  *  var loader = new THREE.STLLoader();
@@ -24,34 +27,28 @@
  * For binary STLs geometry might contain colors for vertices. To use it:
  *  // use the same code to load STL as above
  *  if (geometry.hasColors) {
- *    material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha, vertexColors: THREE.VertexColors });
- *  } else { .... }
- *  var mesh = new THREE.Mesh( geometry, material );
+ *    material = new THREE.MeshPhongMaterial({ opacity: geometry.alpha,
+ * vertexColors: THREE.VertexColors }); } else { .... } var mesh = new
+ * THREE.Mesh( geometry, material );
  */
 
-THREE.STLLoader = function (manager) {
+THREE.STLLoader = function(manager) {
   this.manager = manager !== undefined ? manager : THREE.DefaultLoadingManager;
 };
 
 THREE.STLLoader.prototype = {
-  constructor: THREE.STLLoader,
+  constructor : THREE.STLLoader,
 
-  load: function (url, onLoad, onProgress, onError) {
+  load : function(url, onLoad, onProgress, onError) {
     const scope = this;
 
     const loader = new THREE.FileLoader(scope.manager);
     loader.setResponseType("arraybuffer");
-    loader.load(
-      url,
-      function (text) {
-        onLoad(scope.parse(text));
-      },
-      onProgress,
-      onError
-    );
+    loader.load(url, function(text) { onLoad(scope.parse(text)); }, onProgress,
+                onError);
   },
 
-  parse: function (data) {
+  parse : function(data) {
     function isBinary(data) {
       let expect, face_size, n_faces, reader;
       reader = new DataView(data);
@@ -69,13 +66,14 @@ THREE.STLLoader.prototype = {
 
       // US-ASCII ordinal values for 's', 'o', 'l', 'i', 'd'
 
-      const solid = [115, 111, 108, 105, 100];
+      const solid = [ 115, 111, 108, 105, 100 ];
 
       for (let i = 0; i < 5; i++) {
         // If solid[ i ] does not match the i-th byte, then it is not an
         // ASCII STL; hence, it is binary and return true.
 
-        if (solid[i] != reader.getUint8(i, false)) return true;
+        if (solid[i] != reader.getUint8(i, false))
+          return true;
       }
 
       // First 5 bytes read "solid"; declare it to be an ASCII STL
@@ -99,9 +97,9 @@ THREE.STLLoader.prototype = {
 
       for (let index = 0; index < 80 - 10; index++) {
         if (
-          reader.getUint32(index, false) == 0x434f4c4f /* COLO */ &&
-          reader.getUint8(index + 4) == 0x52 /* 'R' */ &&
-          reader.getUint8(index + 5) == 0x3d /* '=' */
+            reader.getUint32(index, false) == 0x434f4c4f /* COLO */ &&
+            reader.getUint8(index + 4) == 0x52 /* 'R' */ &&
+            reader.getUint8(index + 5) == 0x3d /* '=' */
         ) {
           hasColors = true;
           colors = [];
@@ -159,19 +157,13 @@ THREE.STLLoader.prototype = {
       }
 
       geometry.addAttribute(
-        "position",
-        new THREE.BufferAttribute(new Float32Array(vertices), 3)
-      );
+          "position", new THREE.BufferAttribute(new Float32Array(vertices), 3));
       geometry.addAttribute(
-        "normal",
-        new THREE.BufferAttribute(new Float32Array(normals), 3)
-      );
+          "normal", new THREE.BufferAttribute(new Float32Array(normals), 3));
 
       if (hasColors) {
         geometry.addAttribute(
-          "color",
-          new THREE.BufferAttribute(new Float32Array(colors), 3)
-        );
+            "color", new THREE.BufferAttribute(new Float32Array(colors), 3));
         geometry.hasColors = true;
         geometry.alpha = alpha;
       }
@@ -184,16 +176,12 @@ THREE.STLLoader.prototype = {
       const patternFace = /facet([\s\S]*?)endfacet/g;
       let faceCounter = 0;
 
-      const patternFloat = /[\s]+([+-]?(?:\d+.\d+|\d+.|\d+|.\d+)(?:[eE][+-]?\d+)?)/
-        .source;
+      const patternFloat =
+          /[\s]+([+-]?(?:\d+.\d+|\d+.|\d+|.\d+)(?:[eE][+-]?\d+)?)/.source;
       const patternVertex = new RegExp(
-        "vertex" + patternFloat + patternFloat + patternFloat,
-        "g"
-      );
+          "vertex" + patternFloat + patternFloat + patternFloat, "g");
       const patternNormal = new RegExp(
-        "normal" + patternFloat + patternFloat + patternFloat,
-        "g"
-      );
+          "normal" + patternFloat + patternFloat + patternFloat, "g");
 
       const vertices = [];
       const normals = [];
@@ -216,11 +204,8 @@ THREE.STLLoader.prototype = {
         }
 
         while ((result = patternVertex.exec(text)) !== null) {
-          vertices.push(
-            parseFloat(result[1]),
-            parseFloat(result[2]),
-            parseFloat(result[3])
-          );
+          vertices.push(parseFloat(result[1]), parseFloat(result[2]),
+                        parseFloat(result[3]));
           normals.push(normal.x, normal.y, normal.z);
           vertexCountPerFace++;
         }
@@ -229,31 +214,25 @@ THREE.STLLoader.prototype = {
 
         if (normalCountPerFace !== 1) {
           console.error(
-            "THREE.STLLoader: Something isn't right with the normal of face number " +
-              faceCounter
-          );
+              "THREE.STLLoader: Something isn't right with the normal of face number " +
+              faceCounter);
         }
 
         // each face have to own THREE valid vertices
 
         if (vertexCountPerFace !== 3) {
           console.error(
-            "THREE.STLLoader: Something isn't right with the vertices of face number " +
-              faceCounter
-          );
+              "THREE.STLLoader: Something isn't right with the vertices of face number " +
+              faceCounter);
         }
 
         faceCounter++;
       }
 
-      geometry.addAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(vertices, 3)
-      );
-      geometry.addAttribute(
-        "normal",
-        new THREE.Float32BufferAttribute(normals, 3)
-      );
+      geometry.addAttribute("position",
+                            new THREE.Float32BufferAttribute(vertices, 3));
+      geometry.addAttribute("normal",
+                            new THREE.Float32BufferAttribute(normals, 3));
 
       return geometry;
     }
@@ -269,7 +248,8 @@ THREE.STLLoader.prototype = {
         let str = "";
 
         for (let i = 0, il = buffer.byteLength; i < il; i++) {
-          str += String.fromCharCode(array_buffer[i]); // implicitly assumes little-endian
+          str += String.fromCharCode(
+              array_buffer[i]); // implicitly assumes little-endian
         }
 
         return str;
@@ -282,7 +262,8 @@ THREE.STLLoader.prototype = {
       if (typeof buffer === "string") {
         const array_buffer = new Uint8Array(buffer.length);
         for (let i = 0; i < buffer.length; i++) {
-          array_buffer[i] = buffer.charCodeAt(i) & 0xff; // implicitly assumes little-endian
+          array_buffer[i] =
+              buffer.charCodeAt(i) & 0xff; // implicitly assumes little-endian
         }
         return array_buffer.buffer || array_buffer;
       } else {
@@ -294,8 +275,7 @@ THREE.STLLoader.prototype = {
 
     const binData = ensureBinary(data);
 
-    return isBinary(binData)
-      ? parseBinary(binData)
-      : parseASCII(ensureString(data));
+    return isBinary(binData) ? parseBinary(binData)
+                             : parseASCII(ensureString(data));
   },
 };

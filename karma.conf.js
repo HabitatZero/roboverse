@@ -1,17 +1,17 @@
 // Karma configuration
 // Generated on Sun Aug 27 2017 18:36:29 GMT+0200 (EET)
 
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
-    basePath: "",
+    basePath : "",
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["jasmine"],
+    frameworks : [ "jasmine" ],
 
     // list of files / patterns to load in the browser
-    files: [
+    files : [
       "gz3d/client/js/include/jquery-1.9.1.js",
       "gz3d/client/js/include/jquery.mobile-1.4.0.min.js",
       "node_modules/jasmine-jquery/lib/jasmine-jquery.js",
@@ -36,109 +36,113 @@ module.exports = function (config) {
       "gz3d/test/fixture/*.html",
       "gz3d/test/*.js",
       {
-        pattern: "gz3d/test/utils/beer/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/beer/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/beer/materials/scripts/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/beer/materials/scripts/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/walkway_metal_straight/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/walkway_metal_straight/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/walkway_metal_straight/meshes/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/walkway_metal_straight/meshes/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/house_2/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/house_2/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/house_2/meshes/*",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/house_2/meshes/*",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
       {
-        pattern: "gz3d/test/utils/husky/model.sdf",
-        included: false,
-        served: true,
-        watched: false,
-        nocache: true,
+        pattern : "gz3d/test/utils/husky/model.sdf",
+        included : false,
+        served : true,
+        watched : false,
+        nocache : true,
       },
     ],
 
     // list of files to exclude
-    exclude: [],
+    exclude : [],
 
     // preprocess matching files before serving them to the browser
-    // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-      "gz3d/build/gz3d.src.js": "coverage",
+    // available preprocessors:
+    // https://npmjs.org/browse/keyword/karma-preprocessor
+    preprocessors : {
+      "gz3d/build/gz3d.src.js" : "coverage",
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress", "coverage", "html"],
+    reporters : [ "progress", "coverage", "html" ],
 
     // optionally, configure the reporter
-    coverageReporter: {
-      reporters: [
+    coverageReporter : {
+      reporters : [
         {
-          type: "html",
-          dir: "coverage/",
+          type : "html",
+          dir : "coverage/",
         },
         {
-          type: "lcov",
+          type : "lcov",
         },
       ],
     },
-    htmlReporter: {
-      outputFile: "test_results/test_results.html",
+    htmlReporter : {
+      outputFile : "test_results/test_results.html",
     },
 
     // web server port
-    port: 9876,
+    port : 9876,
 
     // enable / disable colors in the output (reporters and logs)
-    colors: true,
+    colors : true,
 
     // level of logging
-    // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    // possible values: config.LOG_DISABLE || config.LOG_ERROR ||
+    // config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    logLevel : config.LOG_INFO,
 
-    // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: true,
+    // enable / disable watching file and executing tests whenever any file
+    // changes
+    autoWatch : true,
 
     // start these browsers
-    // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["Firefox"],
+    // available browser launchers:
+    // https://npmjs.org/browse/keyword/karma-launcher
+    browsers : [ "Firefox" ],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: false,
+    singleRun : false,
 
     // Concurrency level
     // how many browser should be started simultaneous
-    concurrency: Infinity,
+    concurrency : Infinity,
   });
 };

@@ -5,7 +5,7 @@ const nsInSec = 1000000000;
  * preserve the internal seconds and nanoseconds separation
  * @param {} time - Time to be corrected
  */
-const correctTime = function (time) {
+const correctTime = function(time) {
   let n = 0;
   // In the case sec and nsec have different signs, normalize
   if (time.sec > 0 && time.nsec < 0) {
@@ -29,7 +29,7 @@ const correctTime = function (time) {
  * @param {} timeA - Time being subtracted
  * @param {} timeB - Time to subtract
  */
-const subtractTime = function (timeA, timeB) {
+const subtractTime = function(timeA, timeB) {
   const result = {};
   result.sec = timeA.sec - timeB.sec;
   result.nsec = timeA.nsec - timeB.nsec;
@@ -42,9 +42,8 @@ const subtractTime = function (timeA, timeB) {
  * GzIface and updates some UI elements.
  * @constructor
  */
-GZ3D.LogPlay = function () {
-  this.emitter =
-    globalEmitter || new EventEmitter2({ verboseMemoryLeak: true });
+GZ3D.LogPlay = function() {
+  this.emitter = globalEmitter || new EventEmitter2({verboseMemoryLeak : true});
   this.visible = null;
   this.startTime = null;
   this.endTime = null;
@@ -55,16 +54,14 @@ GZ3D.LogPlay = function () {
   const that = this;
 
   // when slide pos changes
-  this.emitter.on("logPlaySlideStop", function (value) {
+  this.emitter.on("logPlaySlideStop", function(value) {
     if (!that.startTime || !that.endTime) {
       return;
     }
 
     const rel = value / that.sliderRange;
-    const seek =
-      that.startTime.sec +
-      that.startTime.nsec * 1e-9 +
-      rel * (that.totalTime.sec + that.totalTime.nsec * 1e-9);
+    const seek = that.startTime.sec + that.startTime.nsec * 1e-9 +
+                 rel * (that.totalTime.sec + that.totalTime.nsec * 1e-9);
 
     const playback = {};
     playback.seek = {};
@@ -76,41 +73,37 @@ GZ3D.LogPlay = function () {
     that.active = false;
   });
 
-  this.emitter.on("logPlaySlideStart", function () {
-    that.active = true;
-  });
+  this.emitter.on("logPlaySlideStart", function() { that.active = true; });
 
-  this.emitter.on("logPlayRewind", function () {
+  this.emitter.on("logPlayRewind", function() {
     const playback = {};
     playback.rewind = true;
     that.emitter.emit("logPlayChanged", playback);
   });
-  this.emitter.on("logPlayForward", function () {
+  this.emitter.on("logPlayForward", function() {
     const playback = {};
     playback.forward = true;
     that.emitter.emit("logPlayChanged", playback);
   });
-  this.emitter.on("logPlayStepforward", function () {
+  this.emitter.on("logPlayStepforward", function() {
     const playback = {};
     playback.multi_step = 1;
     that.emitter.emit("logPlayChanged", playback);
   });
-  this.emitter.on("logPlayStepback", function () {
+  this.emitter.on("logPlayStepback", function() {
     const playback = {};
     playback.multi_step = -1;
     that.emitter.emit("logPlayChanged", playback);
   });
-  this.emitter.on("paused", function (paused) {
+  this.emitter.on("paused", function(paused) {
     if (paused) {
-      $("#logplay-playText").html(
-        '<img style="height:1.2em" src="style/images/play.png" ' +
-          'title="Play">'
-      );
+      $("#logplay-playText")
+          .html('<img style="height:1.2em" src="style/images/play.png" ' +
+                'title="Play">');
     } else {
-      $("#logplay-playText").html(
-        '<img style="height:1.2em" src="style/images/pause.png" ' +
-          'title="Pause">'
-      );
+      $("#logplay-playText")
+          .html('<img style="height:1.2em" src="style/images/pause.png" ' +
+                'title="Pause">');
     }
   });
 };
@@ -118,14 +111,12 @@ GZ3D.LogPlay = function () {
 /**
  * get log playback widget visibility
  */
-GZ3D.LogPlay.prototype.isVisible = function () {
-  return this.visible;
-};
+GZ3D.LogPlay.prototype.isVisible = function() { return this.visible; };
 
 /**
  * Set log playback widget visibility
  */
-GZ3D.LogPlay.prototype.setVisible = function (visible) {
+GZ3D.LogPlay.prototype.setVisible = function(visible) {
   if (visible === this.visible) {
     return;
   }
@@ -141,18 +132,13 @@ GZ3D.LogPlay.prototype.setVisible = function (visible) {
 /**
  * Set log playback stats based on data received
  */
-GZ3D.LogPlay.prototype.setStats = function (simTime, startTime, endTime) {
+GZ3D.LogPlay.prototype.setStats = function(simTime, startTime, endTime) {
   this.simTime = simTime;
 
-  if (
-    !this.startTime ||
-    !this.endTime ||
-    !this.totalTime ||
-    this.startTime.sec !== startTime.sec ||
-    this.startTime.nsec !== startTime.nsec ||
-    this.endTime.sec !== endTime.sec ||
-    this.endTime.nsec !== endTime.nsec
-  ) {
+  if (!this.startTime || !this.endTime || !this.totalTime ||
+      this.startTime.sec !== startTime.sec ||
+      this.startTime.nsec !== startTime.nsec ||
+      this.endTime.sec !== endTime.sec || this.endTime.nsec !== endTime.nsec) {
     this.startTime = startTime;
     this.endTime = endTime;
     this.totalTime = subtractTime(endTime, startTime);
@@ -161,17 +147,14 @@ GZ3D.LogPlay.prototype.setStats = function (simTime, startTime, endTime) {
   if (!this.active) {
     // work out new slider value to set to
     const relTime = subtractTime(this.simTime, this.startTime);
-    let newVal =
-      (relTime.sec + relTime.nsec * 1e-9) /
-      (this.totalTime.sec + this.totalTime.nsec * 1e-9);
+    let newVal = (relTime.sec + relTime.nsec * 1e-9) /
+                 (this.totalTime.sec + this.totalTime.nsec * 1e-9);
     newVal = Math.max(newVal, 0);
 
     // slider range: 0 - 100
+    $("#logplay-slider-input").val(newVal * this.sliderRange).slider("refresh");
     $("#logplay-slider-input")
-      .val(newVal * this.sliderRange)
-      .slider("refresh");
-    $("#logplay-slider-input")
-      .text(newVal * this.sliderRange)
-      .slider("refresh");
+        .text(newVal * this.sliderRange)
+        .slider("refresh");
   }
 };

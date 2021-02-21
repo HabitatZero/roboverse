@@ -1,16 +1,16 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
   grunt.initConfig({
-    pkg: grunt.file.readJSON("package.json"),
-    concat: {
+    pkg : grunt.file.readJSON("package.json"),
+    concat : {
       // All gz*.js files
-      build_src: {
-        src: ["gz3d/src/*.js"],
-        dest: "gz3d/build/gz3d.src.js",
+      build_src : {
+        src : [ "gz3d/src/*.js" ],
+        dest : "gz3d/build/gz3d.src.js",
       },
       // * All src except for GUI-related
       // * All needed dependencies
-      build_gz3d: {
-        src: [
+      build_gz3d : {
+        src : [
           "gz3d/client/js/include/three.js",
           "gz3d/client/js/include/three.compat.js",
           "gz3d/client/js/include/*.js",
@@ -26,12 +26,12 @@ module.exports = function (grunt) {
           "!gz3d/src/gzlogplay.js",
           "!gz3d/src/gzradialmenu.js",
         ],
-        dest: "gz3d/build/gz3d.js",
+        dest : "gz3d/build/gz3d.js",
       },
       // * All src including GUI
       // * All needed dependencies
-      build_gui: {
-        src: [
+      build_gui : {
+        src : [
           "gz3d/client/js/include/three.js",
           "gz3d/client/js/include/three.compat.js",
           "gz3d/client/js/include/*.js",
@@ -41,65 +41,65 @@ module.exports = function (grunt) {
           "!gz3d/client/js/include/",
           "gz3d/src/gz*.js",
         ],
-        dest: "gz3d/build/gz3d.gui.js",
+        dest : "gz3d/build/gz3d.gui.js",
       },
     },
-    jshint: {
-      options: {
-        jshintrc: ".jshintrc",
+    jshint : {
+      options : {
+        jshintrc : ".jshintrc",
       },
-      files: ["Gruntfile.js", "gz3d/build/gz3d.src.js"],
+      files : [ "Gruntfile.js", "gz3d/build/gz3d.src.js" ],
     },
-    uglify: {
-      options: {
-        report: "min",
+    uglify : {
+      options : {
+        report : "min",
       },
-      build_src: {
-        src: "gz3d/build/gz3d.js",
-        dest: "gz3d/build/gz3d.min.js",
+      build_src : {
+        src : "gz3d/build/gz3d.js",
+        dest : "gz3d/build/gz3d.min.js",
       },
-      build_gz3d: {
-        src: "gz3d/build/gz3d.js",
-        dest: "gz3d/build/gz3d.min.js",
+      build_gz3d : {
+        src : "gz3d/build/gz3d.js",
+        dest : "gz3d/build/gz3d.min.js",
       },
-      build_gui: {
-        src: "gz3d/build/gz3d.gui.js",
-        dest: "gz3d/build/gz3d.gui.min.js",
+      build_gui : {
+        src : "gz3d/build/gz3d.gui.js",
+        dest : "gz3d/build/gz3d.gui.min.js",
       },
     },
-    watch: {
-      dev: {
-        options: {
-          interrupt: true,
+    watch : {
+      dev : {
+        options : {
+          interrupt : true,
         },
-        files: ["gz3d/src/*.js", "gz3d/src/**/*.js"],
-        tasks: ["concat"],
+        files : [ "gz3d/src/*.js", "gz3d/src/**/*.js" ],
+        tasks : [ "concat" ],
       },
-      build_and_watch: {
-        options: {
-          interrupt: true,
+      build_and_watch : {
+        options : {
+          interrupt : true,
         },
-        files: [
+        files : [
           "Gruntfile.js",
           ".jshintrc",
           "gz3d/src/*.js",
           "gz3d/src/**/*.js",
         ],
-        tasks: ["build"],
+        tasks : [ "build" ],
       },
     },
-    clean: {
-      options: {
-        force: true,
+    clean : {
+      options : {
+        force : true,
       },
-      doc: ["doc"],
+      doc : [ "doc" ],
     },
-    jsdoc: {
-      jsdoc: "./node_modules/.bin/jsdoc",
-      doc: {
-        src: ["gz3d/src/*.js", "gz3d/src/**/*.js"],
-        options: {
-          destination: "doc",
+    jsdoc : {
+      jsdoc : "./node_modules/.bin/jsdoc",
+      doc : {
+        src : [ "gz3d/src/*.js", "gz3d/src/**/*.js" ],
+        options : {
+          destination : "doc",
         },
       },
     },
@@ -112,8 +112,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
   grunt.loadNpmTasks("grunt-jsdoc");
 
-  grunt.registerTask("dev", ["concat", "watch"]);
-  grunt.registerTask("build", ["concat", "jshint", "uglify"]);
-  grunt.registerTask("build_and_watch", ["watch"]);
-  grunt.registerTask("doc", ["clean", "jsdoc"]);
+  grunt.registerTask("dev", [ "concat", "watch" ]);
+  grunt.registerTask("build", [ "concat", "jshint", "uglify" ]);
+  grunt.registerTask("build_and_watch", [ "watch" ]);
+  grunt.registerTask("doc", [ "clean", "jsdoc" ]);
 };

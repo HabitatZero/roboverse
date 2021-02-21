@@ -6,7 +6,7 @@
  * within the scene.
  * @constructor
  */
-GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
+GZ3D.Manipulator = function(camera, mobile, domElement, doc) {
   // Needs camera for perspective
   this.camera = camera;
 
@@ -42,7 +42,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
   const scope = this;
 
-  const changeEvent = { type: "change" };
+  const changeEvent = {type : "change"};
 
   const ray = new THREE.Raycaster();
   const pointerVector = new THREE.Vector2();
@@ -89,23 +89,21 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
   // Intersection planes
   const intersectionPlanes = {};
-  const intersectionPlaneList = ["XY", "YZ", "XZ"];
+  const intersectionPlaneList = [ "XY", "YZ", "XZ" ];
   let currentPlane = "XY";
 
   const planes = new THREE.Object3D();
   this.gizmo.add(planes);
 
   const planeMaterial = new THREE.MeshBasicMaterial({
-    visible: false,
-    side: THREE.DoubleSide,
+    visible : false,
+    side : THREE.DoubleSide,
   });
   for (const i in intersectionPlaneList) {
-    intersectionPlanes[intersectionPlaneList[i]] = new THREE.Mesh(
-      new THREE.PlaneGeometry(500, 500),
-      planeMaterial
-    );
+    intersectionPlanes[intersectionPlaneList[i]] =
+        new THREE.Mesh(new THREE.PlaneGeometry(500, 500), planeMaterial);
     intersectionPlanes[intersectionPlaneList[i]].material.side =
-      THREE.DoubleSide;
+        THREE.DoubleSide;
     planes.add(intersectionPlanes[intersectionPlaneList[i]]);
   }
 
@@ -119,7 +117,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   const pickerAxes = {};
   const displayAxes = {};
 
-  const HandleMaterial = function (parameters, over) {
+  const HandleMaterial = function(parameters, over) {
     const material = new THREE.MeshBasicMaterial();
     if (over) {
       material.side = THREE.DoubleSide;
@@ -135,7 +133,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     return material;
   };
 
-  const LineMaterial = function (color, opacity) {
+  const LineMaterial = function(color, opacity) {
     const material = new THREE.LineBasicMaterial();
     material.color = color;
     material.depthTest = false;
@@ -172,9 +170,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   }
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial({ color: red, visible: false, transparent: false })
-  );
+      geometry,
+      new HandleMaterial({color : red, visible : false, transparent : false}));
   mesh.position.x = 0.7;
   mesh.rotation.z = -Math.PI / 2;
   bakeTransformations(mesh);
@@ -183,9 +180,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.pickerNames.push(mesh.name);
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial({ color: green, visible: false, transparent: false })
-  );
+      geometry, new HandleMaterial(
+                    {color : green, visible : false, transparent : false}));
   mesh.position.y = 0.7;
   bakeTransformations(mesh);
   mesh.name = "TY";
@@ -193,9 +189,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.pickerNames.push(mesh.name);
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial({ color: blue, visible: false, transparent: false })
-  );
+      geometry,
+      new HandleMaterial({color : blue, visible : false, transparent : false}));
   mesh.position.z = 0.7;
   mesh.rotation.x = Math.PI / 2;
   bakeTransformations(mesh);
@@ -207,10 +202,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     // Display cylinder
     geometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 10, 1, false);
 
-    const mTXColor = new HandleMaterial(
-      { color: red, transparent: true },
-      true
-    );
+    const mTXColor =
+        new HandleMaterial({color : red, transparent : true}, true);
     mesh = new THREE.Mesh(geometry, mTXColor);
     mesh.position.x = 0.5;
     mesh.rotation.z = -Math.PI / 2;
@@ -218,20 +211,16 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     mesh.name = "TX";
     displayAxes.translate.add(mesh);
 
-    const mTYColor = new HandleMaterial(
-      { color: green, transparent: true },
-      true
-    );
+    const mTYColor =
+        new HandleMaterial({color : green, transparent : true}, true);
     mesh = new THREE.Mesh(geometry, mTYColor);
     mesh.position.y = 0.5;
     bakeTransformations(mesh);
     mesh.name = "TY";
     displayAxes.translate.add(mesh);
 
-    const mTZColor = new HandleMaterial(
-      { color: blue, transparent: true },
-      true
-    );
+    const mTZColor =
+        new HandleMaterial({color : blue, transparent : true}, true);
     mesh = new THREE.Mesh(geometry, mTZColor);
     mesh.position.z = 0.5;
     mesh.rotation.x = Math.PI / 2;
@@ -267,19 +256,15 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     // Display lines
     geometry = new THREE.Geometry();
     geometry.vertices.push(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(1, 0, 0),
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 1, 0),
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, 0, 1)
-    );
+        new THREE.Vector3(0, 0, 0), new THREE.Vector3(1, 0, 0),
+        new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1));
     geometry.colors.push(red, red, green, green, blue, blue);
     const material = new THREE.LineBasicMaterial({
-      vertexColors: THREE.VertexColors,
-      depthTest: false,
-      depthWrite: false,
-      transparent: true,
+      vertexColors : THREE.VertexColors,
+      depthTest : false,
+      depthWrite : false,
+      transparent : true,
     });
     mesh = new THREE.Line(geometry, material, THREE.LineSegments);
     displayAxes.translate.add(mesh);
@@ -287,10 +272,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     // Display cone (arrow tip)
     geometry = new THREE.CylinderGeometry(0, 0.05, 0.2, 4, 1, true);
 
-    mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: red, opacity: 1 }, true)
-    );
+    mesh = new THREE.Mesh(geometry,
+                          new HandleMaterial({color : red, opacity : 1}, true));
     mesh.position.x = 1.1;
     mesh.rotation.z = -Math.PI / 2;
     bakeTransformations(mesh);
@@ -298,18 +281,14 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: green, opacity: 1 }, true)
-    );
+        geometry, new HandleMaterial({color : green, opacity : 1}, true));
     mesh.position.y = 1.1;
     bakeTransformations(mesh);
     mesh.name = "TY";
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: blue, opacity: 1 }, true)
-    );
+        geometry, new HandleMaterial({color : blue, opacity : 1}, true));
     mesh.position.z = 1.1;
     mesh.rotation.x = Math.PI / 2;
     bakeTransformations(mesh);
@@ -318,17 +297,15 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
     // Picker and display octahedron for TXYZ
     mesh = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.1, 0),
-      new HandleMaterial({ color: white, opacity: 0.25 }, true)
-    );
+        new THREE.OctahedronGeometry(0.1, 0),
+        new HandleMaterial({color : white, opacity : 0.25}, true));
     mesh.name = "TXYZ";
     this.pickerNames.push(mesh.name);
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.1, 0),
-      new HandleMaterial({ color: white, visible: false }, true)
-    );
+        new THREE.OctahedronGeometry(0.1, 0),
+        new HandleMaterial({color : white, visible : false}, true));
     mesh.name = "TXYZ";
     pickerAxes.translate.add(mesh);
 
@@ -336,9 +313,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     geometry = new THREE.PlaneGeometry(0.3, 0.3);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: yellow, opacity: 0.25 }, true)
-    );
+        geometry, new HandleMaterial({color : yellow, opacity : 0.25}, true));
     mesh.position.set(0.15, 0.15, 0);
     bakeTransformations(mesh);
     mesh.name = "TXY";
@@ -346,18 +321,14 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: yellow, visible: false }, true)
-    );
+        geometry, new HandleMaterial({color : yellow, visible : false}, true));
     mesh.position.set(0.15, 0.15, 0);
     bakeTransformations(mesh);
     mesh.name = "TXY";
     pickerAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: cyan, opacity: 0.25 }, true)
-    );
+        geometry, new HandleMaterial({color : cyan, opacity : 0.25}, true));
     mesh.position.set(0, 0.15, 0.15);
     mesh.rotation.y = Math.PI / 2;
     bakeTransformations(mesh);
@@ -366,9 +337,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: cyan, visible: false }, true)
-    );
+        geometry, new HandleMaterial({color : cyan, visible : false}, true));
     mesh.position.set(0, 0.15, 0.15);
     mesh.rotation.y = Math.PI / 2;
     bakeTransformations(mesh);
@@ -376,9 +345,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     pickerAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: magenta, opacity: 0.25 }, true)
-    );
+        geometry, new HandleMaterial({color : magenta, opacity : 0.25}, true));
     mesh.position.set(0.15, 0, 0.15);
     mesh.rotation.x = Math.PI / 2;
     bakeTransformations(mesh);
@@ -387,9 +354,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     displayAxes.translate.add(mesh);
 
     mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: magenta, visible: false }, true)
-    );
+        geometry, new HandleMaterial({color : magenta, visible : false}, true));
     mesh.position.set(0.15, 0, 0.15);
     mesh.rotation.x = Math.PI / 2;
     bakeTransformations(mesh);
@@ -414,12 +379,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   }
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial(
-      { color: red, visible: false, transparent: false },
-      false
-    )
-  );
+      geometry,
+      new HandleMaterial({color : red, visible : false, transparent : false},
+                         false));
   mesh.rotation.z = -Math.PI / 2;
   mesh.rotation.y = -Math.PI / 2;
   bakeTransformations(mesh);
@@ -428,12 +390,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.pickerNames.push(mesh.name);
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial(
-      { color: green, visible: false, transparent: false },
-      false
-    )
-  );
+      geometry,
+      new HandleMaterial({color : green, visible : false, transparent : false},
+                         false));
   mesh.rotation.z = Math.PI;
   mesh.rotation.x = -Math.PI / 2;
   bakeTransformations(mesh);
@@ -442,12 +401,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   this.pickerNames.push(mesh.name);
 
   mesh = new THREE.Mesh(
-    geometry,
-    new HandleMaterial(
-      { color: blue, visible: false, transparent: false },
-      false
-    )
-  );
+      geometry,
+      new HandleMaterial({color : blue, visible : false, transparent : false},
+                         false));
   mesh.rotation.z = -Math.PI / 2;
   bakeTransformations(mesh);
   mesh.name = "RZ";
@@ -458,23 +414,20 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     // Display torus
     geometry = new THREE.TorusGeometry(1, 0.1, 4, 36, 2 * Math.PI);
 
-    mesh = new THREE.Mesh(geometry, new HandleMaterial({ color: blue }, false));
+    mesh = new THREE.Mesh(geometry, new HandleMaterial({color : blue}, false));
     mesh.rotation.z = -Math.PI / 2;
     bakeTransformations(mesh);
     mesh.name = "RZ";
     displayAxes.rotate.add(mesh);
 
-    mesh = new THREE.Mesh(geometry, new HandleMaterial({ color: red }, false));
+    mesh = new THREE.Mesh(geometry, new HandleMaterial({color : red}, false));
     mesh.rotation.z = -Math.PI / 2;
     mesh.rotation.y = -Math.PI / 2;
     bakeTransformations(mesh);
     mesh.name = "RX";
     displayAxes.rotate.add(mesh);
 
-    mesh = new THREE.Mesh(
-      geometry,
-      new HandleMaterial({ color: green }, false)
-    );
+    mesh = new THREE.Mesh(geometry, new HandleMaterial({color : green}, false));
     mesh.rotation.z = Math.PI;
     mesh.rotation.x = -Math.PI / 2;
     bakeTransformations(mesh);
@@ -482,36 +435,27 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     displayAxes.rotate.add(mesh);
   } else {
     // Display circles
-    const Circle = function (radius, facing, arc) {
+    const Circle = function(radius, facing, arc) {
       geometry = new THREE.Geometry();
       arc = arc || 1;
       for (let i = 0; i <= 64 * arc; ++i) {
         if (facing === "x") {
-          geometry.vertices.push(
-            new THREE.Vector3(
-              0,
-              Math.cos((i / 32) * Math.PI),
-              Math.sin((i / 32) * Math.PI)
-            ).multiplyScalar(radius)
-          );
+          geometry.vertices.push(new THREE
+                                     .Vector3(0, Math.cos((i / 32) * Math.PI),
+                                              Math.sin((i / 32) * Math.PI))
+                                     .multiplyScalar(radius));
         }
         if (facing === "y") {
-          geometry.vertices.push(
-            new THREE.Vector3(
-              Math.cos((i / 32) * Math.PI),
-              0,
-              Math.sin((i / 32) * Math.PI)
-            ).multiplyScalar(radius)
-          );
+          geometry.vertices.push(new THREE
+                                     .Vector3(Math.cos((i / 32) * Math.PI), 0,
+                                              Math.sin((i / 32) * Math.PI))
+                                     .multiplyScalar(radius));
         }
         if (facing === "z") {
-          geometry.vertices.push(
-            new THREE.Vector3(
-              Math.sin((i / 32) * Math.PI),
-              Math.cos((i / 32) * Math.PI),
-              0
-            ).multiplyScalar(radius)
-          );
+          geometry.vertices.push(new THREE
+                                     .Vector3(Math.sin((i / 32) * Math.PI),
+                                              Math.cos((i / 32) * Math.PI), 0)
+                                     .multiplyScalar(radius));
         }
       }
       return geometry;
@@ -534,33 +478,28 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     this.pickerNames.push(mesh.name);
     displayAxes.rotate.add(mesh);
 
-    mesh = new THREE.Line(
-      new Circle(1.25, "z"),
-      new LineMaterial(yellow, 0.25)
-    );
+    mesh =
+        new THREE.Line(new Circle(1.25, "z"), new LineMaterial(yellow, 0.25));
     mesh.name = "RE";
     this.pickerNames.push(mesh.name);
     displayAxes.rotate.add(mesh);
 
     // Picker spheres
     mesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.95, 12, 12),
-      new HandleMaterial({ color: gray, visible: false }, true)
-    );
+        new THREE.SphereGeometry(0.95, 12, 12),
+        new HandleMaterial({color : gray, visible : false}, true));
     mesh.name = "RXYZE";
     pickerAxes.rotate.add(mesh);
     this.pickerNames.push(mesh.name);
 
     intersectionPlanes.SPHERE = new THREE.Mesh(
-      new THREE.SphereGeometry(0.95, 12, 12),
-      new HandleMaterial({ color: white, visible: false }, true)
-    );
+        new THREE.SphereGeometry(0.95, 12, 12),
+        new HandleMaterial({color : white, visible : false}, true));
     planes.add(intersectionPlanes.SPHERE);
 
     mesh = new THREE.Mesh(
-      new THREE.TorusGeometry(1.3, 0.15, 4, 12),
-      new HandleMaterial({ color: yellow, visible: false }, true)
-    );
+        new THREE.TorusGeometry(1.3, 0.15, 4, 12),
+        new HandleMaterial({color : yellow, visible : false}, true));
     mesh.name = "RE";
     pickerAxes.rotate.add(mesh);
     this.pickerNames.push(mesh.name);
@@ -571,7 +510,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
    * Attach gizmo to an object
    * @param {THREE.Object3D} - Model to be manipulated
    */
-  this.attach = function (object) {
+  this.attach = function(object) {
     this.object = object;
     this.setMode(scope.mode);
 
@@ -587,7 +526,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
    * Detatch gizmo from an object
    * @param {THREE.Object3D} - Model
    */
-  this.detach = function (object) {
+  this.detach = function(object) {
     this.object = undefined;
     this.selected = "null";
 
@@ -604,7 +543,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   /**
    * Update gizmo's pose and scale
    */
-  this.update = function () {
+  this.update = function() {
     if (this.object === undefined) {
       return;
     }
@@ -625,24 +564,19 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
         const name = object.name;
 
         if (name.search("E") !== -1) {
-          lookAtMatrix.lookAt(
-            camPosition,
-            worldPosition,
-            tempVector.set(0, 1, 0)
-          );
+          lookAtMatrix.lookAt(camPosition, worldPosition,
+                              tempVector.set(0, 1, 0));
           object.rotation.setFromRotationMatrix(lookAtMatrix);
         } else {
           eye.copy(camPosition).sub(worldPosition).normalize();
 
           if (this.space === "local") {
             tempQuaternion.setFromRotationMatrix(
-              tempMatrix.extractRotation(this.object.matrixWorld)
-            );
+                tempMatrix.extractRotation(this.object.matrixWorld));
 
             if (name.search("R") !== -1) {
-              tempMatrix
-                .makeRotationFromQuaternion(tempQuaternion)
-                .getInverse(tempMatrix);
+              tempMatrix.makeRotationFromQuaternion(tempQuaternion)
+                  .getInverse(tempMatrix);
               eye.applyMatrix4(tempMatrix);
 
               if (name === "RX") {
@@ -680,7 +614,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   /**
    * Hide gizmo
    */
-  this.hide = function () {
+  this.hide = function() {
     for (const i in displayAxes) {
       for (const j in displayAxes[i].children) {
         displayAxes[i].children[j].visible = false;
@@ -692,7 +626,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
    * Set mode
    * @param {string} value - translate | rotate
    */
-  this.setMode = function (value) {
+  this.setMode = function(value) {
     scope.mode = value;
 
     this.hide();
@@ -706,7 +640,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   /**
    * Choose intersection plane
    */
-  this.setIntersectionPlane = function () {
+  this.setIntersectionPlane = function() {
     eye.copy(camPosition).sub(worldPosition).normalize();
 
     if (this.space === "local") {
@@ -714,15 +648,11 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     }
 
     if (isSelected("TXYZ")) {
-      if (
-        Math.abs(eye.x) > Math.abs(eye.y) &&
-        Math.abs(eye.x) > Math.abs(eye.z)
-      ) {
+      if (Math.abs(eye.x) > Math.abs(eye.y) &&
+          Math.abs(eye.x) > Math.abs(eye.z)) {
         currentPlane = "YZ";
-      } else if (
-        Math.abs(eye.y) > Math.abs(eye.x) &&
-        Math.abs(eye.y) > Math.abs(eye.z)
-      ) {
+      } else if (Math.abs(eye.y) > Math.abs(eye.x) &&
+                 Math.abs(eye.y) > Math.abs(eye.z)) {
         currentPlane = "XZ";
       } else {
         currentPlane = "XY";
@@ -769,9 +699,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
         let selectedDisplay = null;
         // Back to original color
         if (selectedPicker !== null) {
-          selectedDisplay = displayAxes[scope.mode].getObjectByName(
-            selectedPicker.name
-          );
+          selectedDisplay =
+              displayAxes[scope.mode].getObjectByName(selectedPicker.name);
           if (selectedDisplay) {
             selectedDisplay.material.color.copy(selectedColor);
           }
@@ -783,9 +712,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
         selectedColor.copy(selectedPicker.material.color);
 
         // Darken color
-        selectedDisplay = displayAxes[scope.mode].getObjectByName(
-          selectedPicker.name
-        );
+        selectedDisplay =
+            displayAxes[scope.mode].getObjectByName(selectedPicker.name);
         if (selectedDisplay) {
           selectedDisplay.material.color.offsetHSL(0, 0, -0.3);
         }
@@ -810,8 +738,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
         parentRotationMatrix.extractRotation(scope.object.parent.matrixWorld);
         parentScale.setFromMatrixScale(
-          tempMatrix.getInverse(scope.object.parent.matrixWorld)
-        );
+            tempMatrix.getInverse(scope.object.parent.matrixWorld));
 
         offset.copy(planeIntersect.point);
       }
@@ -828,9 +755,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
   function onTouchEnd() {
     // Previously selected picker back to its color
     if (selectedPicker) {
-      const selectedDisplay = displayAxes[scope.mode].getObjectByName(
-        selectedPicker.name
-      );
+      const selectedDisplay =
+          displayAxes[scope.mode].getObjectByName(selectedPicker.name);
       if (selectedDisplay) {
         selectedDisplay.material.color.copy(selectedColor);
       }
@@ -855,19 +781,16 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
     event.preventDefault();
 
     if (event.button === 0 && scope.selected === "null") {
-      const intersect = intersectObjects(
-        event,
-        pickerAxes[scope.mode].children
-      );
+      const intersect =
+          intersectObjects(event, pickerAxes[scope.mode].children);
 
       let hoveredDisplay = null;
       if (intersect) {
         if (hovered !== intersect.object) {
           if (hovered !== null) {
             // revert display axis color
-            hoveredDisplay = displayAxes[scope.mode].getObjectByName(
-              hovered.name
-            );
+            hoveredDisplay =
+                displayAxes[scope.mode].getObjectByName(hovered.name);
             if (hoveredDisplay) {
               hoveredDisplay.material.color.copy(hoveredColor);
             }
@@ -878,9 +801,8 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
           hoveredColor.copy(hovered.material.color);
 
           // highlight display axis color
-          hoveredDisplay = displayAxes[scope.mode].getObjectByName(
-            hovered.name
-          );
+          hoveredDisplay =
+              displayAxes[scope.mode].getObjectByName(hovered.name);
           if (hoveredDisplay) {
             hoveredDisplay.material.color.offsetHSL(0, 0, -0.3);
           }
@@ -938,8 +860,7 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
         parentRotationMatrix.extractRotation(scope.object.parent.matrixWorld);
         parentScale.setFromMatrixScale(
-          tempMatrix.getInverse(scope.object.parent.matrixWorld)
-        );
+            tempMatrix.getInverse(scope.object.parent.matrixWorld));
 
         offset.copy(planeIntersect.point);
       }
@@ -1010,18 +931,18 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
           if (scope.snapDist) {
             if (isSelected("X")) {
               scope.object.position.x =
-                Math.round(scope.object.position.x / scope.snapDist) *
-                scope.snapDist;
+                  Math.round(scope.object.position.x / scope.snapDist) *
+                  scope.snapDist;
             }
             if (isSelected("Y")) {
               scope.object.position.y =
-                Math.round(scope.object.position.y / scope.snapDist) *
-                scope.snapDist;
+                  Math.round(scope.object.position.y / scope.snapDist) *
+                  scope.snapDist;
             }
             if (isSelected("Z")) {
               scope.object.position.z =
-                Math.round(scope.object.position.z / scope.snapDist) *
-                scope.snapDist;
+                  Math.round(scope.object.position.z / scope.snapDist) *
+                  scope.snapDist;
             }
           }
         }
@@ -1035,20 +956,15 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
           point.applyMatrix4(tempMatrix.getInverse(lookAtMatrix));
           tempVector.applyMatrix4(tempMatrix.getInverse(lookAtMatrix));
 
-          rotation.set(
-            Math.atan2(point.z, point.y),
-            Math.atan2(point.x, point.z),
-            Math.atan2(point.y, point.x)
-          );
-          offsetRotation.set(
-            Math.atan2(tempVector.z, tempVector.y),
-            Math.atan2(tempVector.x, tempVector.z),
-            Math.atan2(tempVector.y, tempVector.x)
-          );
+          rotation.set(Math.atan2(point.z, point.y),
+                       Math.atan2(point.x, point.z),
+                       Math.atan2(point.y, point.x));
+          offsetRotation.set(Math.atan2(tempVector.z, tempVector.y),
+                             Math.atan2(tempVector.x, tempVector.z),
+                             Math.atan2(tempVector.y, tempVector.x));
 
           tempQuaternion.setFromRotationMatrix(
-            tempMatrix.getInverse(parentRotationMatrix)
-          );
+              tempMatrix.getInverse(parentRotationMatrix));
 
           quaternionE.setFromAxisAngle(eye, rotation.z - offsetRotation.z);
           quaternionXYZ.setFromRotationMatrix(worldRotationMatrix);
@@ -1062,12 +978,9 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
           quaternionE.setFromEuler(point.clone().cross(tempVector).normalize());
 
           tempQuaternion.setFromRotationMatrix(
-            tempMatrix.getInverse(parentRotationMatrix)
-          );
-          quaternionX.setFromAxisAngle(
-            quaternionE,
-            -point.clone().angleTo(tempVector)
-          );
+              tempMatrix.getInverse(parentRotationMatrix));
+          quaternionX.setFromAxisAngle(quaternionE,
+                                       -point.clone().angleTo(tempVector));
           quaternionXYZ.setFromRotationMatrix(worldRotationMatrix);
 
           tempQuaternion.multiplyQuaternions(tempQuaternion, quaternionX);
@@ -1080,16 +993,12 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
             tempVector.applyMatrix4(tempMatrix.getInverse(worldRotationMatrix));
 
-            rotation.set(
-              Math.atan2(point.z, point.y),
-              Math.atan2(point.x, point.z),
-              Math.atan2(point.y, point.x)
-            );
-            offsetRotation.set(
-              Math.atan2(tempVector.z, tempVector.y),
-              Math.atan2(tempVector.x, tempVector.z),
-              Math.atan2(tempVector.y, tempVector.x)
-            );
+            rotation.set(Math.atan2(point.z, point.y),
+                         Math.atan2(point.x, point.z),
+                         Math.atan2(point.y, point.x));
+            offsetRotation.set(Math.atan2(tempVector.z, tempVector.y),
+                               Math.atan2(tempVector.x, tempVector.z),
+                               Math.atan2(tempVector.y, tempVector.x));
 
             quaternionXYZ.setFromRotationMatrix(oldRotationMatrix);
             quaternionX.setFromAxisAngle(unitX, rotation.x - offsetRotation.x);
@@ -1108,20 +1017,15 @@ GZ3D.Manipulator = function (camera, mobile, domElement, doc) {
 
             scope.object.quaternion.copy(quaternionXYZ);
           } else if (scope.space === "world") {
-            rotation.set(
-              Math.atan2(point.z, point.y),
-              Math.atan2(point.x, point.z),
-              Math.atan2(point.y, point.x)
-            );
-            offsetRotation.set(
-              Math.atan2(tempVector.z, tempVector.y),
-              Math.atan2(tempVector.x, tempVector.z),
-              Math.atan2(tempVector.y, tempVector.x)
-            );
+            rotation.set(Math.atan2(point.z, point.y),
+                         Math.atan2(point.x, point.z),
+                         Math.atan2(point.y, point.x));
+            offsetRotation.set(Math.atan2(tempVector.z, tempVector.y),
+                               Math.atan2(tempVector.x, tempVector.z),
+                               Math.atan2(tempVector.y, tempVector.x));
 
             tempQuaternion.setFromRotationMatrix(
-              tempMatrix.getInverse(parentRotationMatrix)
-            );
+                tempMatrix.getInverse(parentRotationMatrix));
 
             quaternionX.setFromAxisAngle(unitX, rotation.x - offsetRotation.x);
             quaternionY.setFromAxisAngle(unitY, rotation.y - offsetRotation.y);

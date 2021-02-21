@@ -1,15 +1,14 @@
-describe("Iface tests", function () {
+describe("Iface tests", function() {
   let scene;
   let iface;
 
-  beforeAll(function () {
+  beforeAll(function() {
     scene = new GZ3D.Scene();
     iface = new GZ3D.GZIface(scene);
   });
 
-  describe("Initialization", function () {
-    it("should be properly initialized", function () {
-      expect(iface.emitter).toEqual(globalEmitter);
-    });
+  describe("Initialization", function() {
+    it("should be properly initialized",
+       function() { expect(iface.emitter).toEqual(globalEmitter); });
   });
 });

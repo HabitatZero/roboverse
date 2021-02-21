@@ -2,7 +2,7 @@
  * Spawn a model into the scene
  * @constructor
  */
-GZ3D.SpawnModel = function (scene, domElement) {
+GZ3D.SpawnModel = function(scene, domElement) {
   this.scene = scene;
   this.domElement = domElement !== undefined ? domElement : document;
   this.init();
@@ -12,8 +12,8 @@ GZ3D.SpawnModel = function (scene, domElement) {
 
   // Material for simple shapes being spawned (grey transparent)
   this.spawnedShapeMaterial = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    shading: THREE.SmoothShading,
+    color : 0xffffff,
+    shading : THREE.SmoothShading,
   });
   this.spawnedShapeMaterial.transparent = true;
   this.spawnedShapeMaterial.opacity = 0.5;
@@ -22,7 +22,7 @@ GZ3D.SpawnModel = function (scene, domElement) {
 /**
  * Initialize SpawnModel
  */
-GZ3D.SpawnModel.prototype.init = function () {
+GZ3D.SpawnModel.prototype.init = function() {
   this.plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
   this.ray = new THREE.Ray();
   this.obj = null;
@@ -36,7 +36,7 @@ GZ3D.SpawnModel.prototype.init = function () {
  * @param {string} entity
  * @param {function} callback
  */
-GZ3D.SpawnModel.prototype.start = function (entity, callback) {
+GZ3D.SpawnModel.prototype.start = function(entity, callback) {
   if (this.active) {
     this.finish();
   }
@@ -69,10 +69,8 @@ GZ3D.SpawnModel.prototype.start = function (entity, callback) {
   this.obj.add(mesh);
 
   // temp model appears within current view
-  const pos = new THREE.Vector2(
-    window.window.innerWidth / 2,
-    window.innerHeight / 2
-  );
+  const pos =
+      new THREE.Vector2(window.window.innerWidth / 2, window.innerHeight / 2);
   const intersect = new THREE.Vector3();
   this.scene.getRayCastModel(pos, intersect);
 
@@ -91,24 +89,12 @@ GZ3D.SpawnModel.prototype.start = function (entity, callback) {
 
   const that = this;
 
-  this.mouseDown = function (event) {
-    that.onMouseDown(event);
-  };
-  this.mouseUp = function (event) {
-    that.onMouseUp(event);
-  };
-  this.mouseMove = function (event) {
-    that.onMouseMove(event);
-  };
-  this.keyDown = function (event) {
-    that.onKeyDown(event);
-  };
-  this.touchMove = function (event) {
-    that.onTouchMove(event, true);
-  };
-  this.touchEnd = function (event) {
-    that.onTouchEnd(event);
-  };
+  this.mouseDown = function(event) { that.onMouseDown(event); };
+  this.mouseUp = function(event) { that.onMouseUp(event); };
+  this.mouseMove = function(event) { that.onMouseMove(event); };
+  this.keyDown = function(event) { that.onKeyDown(event); };
+  this.touchMove = function(event) { that.onTouchMove(event, true); };
+  this.touchEnd = function(event) { that.onTouchEnd(event); };
 
   this.domElement.addEventListener("mousedown", that.mouseDown, false);
   this.domElement.addEventListener("mouseup", that.mouseUp, false);
@@ -125,7 +111,7 @@ GZ3D.SpawnModel.prototype.start = function (entity, callback) {
  * Finish spawning an entity: re-enable camera controls,
  * remove listeners, remove temp object
  */
-GZ3D.SpawnModel.prototype.finish = function () {
+GZ3D.SpawnModel.prototype.finish = function() {
   const that = this;
 
   this.domElement.removeEventListener("mousedown", that.mouseDown, false);
@@ -142,7 +128,7 @@ GZ3D.SpawnModel.prototype.finish = function () {
  * Window event callback
  * @param {} event - not yet
  */
-GZ3D.SpawnModel.prototype.onMouseDown = function (event) {
+GZ3D.SpawnModel.prototype.onMouseDown = function(event) {
   // Does this ever get called?
   // Change like this:
   // https://bitbucket.org/osrf/gzweb/pull-request/14
@@ -154,7 +140,7 @@ GZ3D.SpawnModel.prototype.onMouseDown = function (event) {
  * Window event callback
  * @param {} event - mousemove events
  */
-GZ3D.SpawnModel.prototype.onMouseMove = function (event) {
+GZ3D.SpawnModel.prototype.onMouseMove = function(event) {
   if (!this.active) {
     return;
   }
@@ -168,7 +154,7 @@ GZ3D.SpawnModel.prototype.onMouseMove = function (event) {
  * Window event callback
  * @param {} event - touchmove events
  */
-GZ3D.SpawnModel.prototype.onTouchMove = function (event, originalEvent) {
+GZ3D.SpawnModel.prototype.onTouchMove = function(event, originalEvent) {
   if (!this.active) {
     return;
   }
@@ -191,7 +177,7 @@ GZ3D.SpawnModel.prototype.onTouchMove = function (event, originalEvent) {
  * Window event callback
  * @param {} event - touchend events
  */
-GZ3D.SpawnModel.prototype.onTouchEnd = function () {
+GZ3D.SpawnModel.prototype.onTouchEnd = function() {
   if (!this.active) {
     return;
   }
@@ -204,7 +190,7 @@ GZ3D.SpawnModel.prototype.onTouchEnd = function () {
  * Window event callback
  * @param {} event - mousedown events
  */
-GZ3D.SpawnModel.prototype.onMouseUp = function (event) {
+GZ3D.SpawnModel.prototype.onMouseUp = function(event) {
   if (!this.active) {
     return;
   }
@@ -217,7 +203,7 @@ GZ3D.SpawnModel.prototype.onMouseUp = function (event) {
  * Window event callback
  * @param {} event - keydown events
  */
-GZ3D.SpawnModel.prototype.onKeyDown = function (event) {
+GZ3D.SpawnModel.prototype.onKeyDown = function(event) {
   if (event.keyCode === 27) {
     // Esc
     this.finish();
@@ -229,17 +215,13 @@ GZ3D.SpawnModel.prototype.onKeyDown = function (event) {
  * @param {integer} positionX - Horizontal position on the canvas
  * @param {integer} positionY - Vertical position on the canvas
  */
-GZ3D.SpawnModel.prototype.moveSpawnedModel = function (positionX, positionY) {
-  const vector = new THREE.Vector3(
-    (positionX / window.innerWidth) * 2 - 1,
-    -(positionY / window.innerHeight) * 2 + 1,
-    0.5
-  );
+GZ3D.SpawnModel.prototype.moveSpawnedModel = function(positionX, positionY) {
+  const vector =
+      new THREE.Vector3((positionX / window.innerWidth) * 2 - 1,
+                        -(positionY / window.innerHeight) * 2 + 1, 0.5);
   vector.unproject(this.scene.camera);
-  this.ray.set(
-    this.scene.camera.position,
-    vector.sub(this.scene.camera.position).normalize()
-  );
+  this.ray.set(this.scene.camera.position,
+               vector.sub(this.scene.camera.position).normalize());
   const point = this.ray.intersectPlane(this.plane);
 
   if (!point) {
@@ -255,11 +237,9 @@ GZ3D.SpawnModel.prototype.moveSpawnedModel = function (positionX, positionY) {
 
   this.scene.setPose(this.obj, point, new THREE.Quaternion());
 
-  if (
-    this.obj.children[0].children[0] &&
-    (this.obj.children[0].children[0] instanceof THREE.SpotLight ||
-      this.obj.children[0].children[0] instanceof THREE.DirectionalLight)
-  ) {
+  if (this.obj.children[0].children[0] &&
+      (this.obj.children[0].children[0] instanceof THREE.SpotLight ||
+       this.obj.children[0].children[0] instanceof THREE.DirectionalLight)) {
     const lightObj = this.obj.children[0].children[0];
     if (lightObj.direction) {
       if (lightObj.target) {
@@ -273,7 +253,7 @@ GZ3D.SpawnModel.prototype.moveSpawnedModel = function (positionX, positionY) {
  * Generate unique name for spawned entity
  * @param {string} entity - entity type
  */
-GZ3D.SpawnModel.prototype.generateUniqueName = function (entity) {
+GZ3D.SpawnModel.prototype.generateUniqueName = function(entity) {
   let i = 0;
   while (i < 1000) {
     if (this.scene.getByName(entity + "_" + i)) {
