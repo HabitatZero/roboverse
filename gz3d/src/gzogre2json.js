@@ -57,11 +57,7 @@ GZ3D.Ogre2Json.prototype.Parse = function (_str) {
 
   // Remove "material " and properly add commas if more than one
   str = str.replace(/^material /gm, function (match, offset) {
-    if (offset === 0) {
-      return "";
-    } else {
-      return "},{";
-    }
+    return offset === 0 ? "" : "},{";
   });
 
   // Handle vertex and fragment programs
@@ -69,11 +65,7 @@ GZ3D.Ogre2Json.prototype.Parse = function (_str) {
     /^vertex_program .*$|^fragment_program .*$/gm,
     function (match, offset) {
       const underscores = match.replace(/ /g, "_");
-      if (offset === 0) {
-        return underscores;
-      } else {
-        return "},{" + underscores;
-      }
+      return offset === 0 ? underscores : "},{" + underscores;
     }
   );
 
@@ -136,11 +128,7 @@ GZ3D.Ogre2Json.prototype.Parse = function (_str) {
   str = str.replace(/\s/g, ": ");
   str = str.replace(/{/g, function (match, offset, full) {
     // Don't add if preceeded by comma
-    if (full[offset - 1] === ",") {
-      return "{";
-    } else {
-      return ": {";
-    }
+    return full[offset - 1] === "," ? "{" : ": {";
   });
 
   // Add surrounding brackets
