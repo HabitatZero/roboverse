@@ -7,9 +7,7 @@ use std::{
     result::Result,
 };
 
-pub fn parse_args_for_path<'a>(
-    args: &'a Vec<String>,
-) -> Result<&'a std::path::Path, std::io::Error> {
+pub fn parse_args_for_path<'a>(args: &'a Vec<String>) -> Result<&'a Path, Error> {
     if args.len() <= 1 {
         return Err(Error::new(
             ErrorKind::Other,
