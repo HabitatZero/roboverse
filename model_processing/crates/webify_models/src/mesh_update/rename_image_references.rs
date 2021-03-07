@@ -20,11 +20,18 @@ pub fn rename_image_references(mesh: &PathBuf) -> std::result::Result<(), std::i
 
 /// Rename all occurences of supported image types to PNG
 fn find_and_rename_image_references(mesh: &PathBuf) -> std::result::Result<String, std::io::Error> {
-    let patterns = &[".tga", "_tga", ".jpg", "_jpg", ".jpeg", "_jpeg", ".gif", "_gif"];
+    let patterns = &[
+        ".tga", "_tga", ".jpg", "_jpg", ".jpeg", "_jpeg", ".gif", "_gif",
+    ];
     let f = fs::read_to_string(mesh)?;
 
     let ac = AhoCorasickBuilder::new().build(patterns);
-    let result = ac.replace_all(&f, &[".png", "_png", ".png", "_png", ".png", "_png", ".png", "_png"]);
+    let result = ac.replace_all(
+        &f,
+        &[
+            ".png", "_png", ".png", "_png", ".png", "_png", ".png", "_png",
+        ],
+    );
 
     Ok(result)
 }

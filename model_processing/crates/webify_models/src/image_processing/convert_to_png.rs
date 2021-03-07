@@ -9,10 +9,12 @@ use crate::image_processing::Image;
 
 /// Convert the specified image to a PNG version
 pub fn convert_to_png(mut image: Image) -> Result<Image, Error> {
-    if image.extension == "tif" {
+    let Image { ref extension, ref path } = image;
+
+    if extension == "tif" {
         return Ok(image); // Skip tif!
     }
-    let image_reader = match ImageReader::open(image.path.clone()) {
+    let image_reader = match ImageReader::open(path) {
         Ok(img) => img,
         Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
     };
@@ -24,15 +26,15 @@ pub fn convert_to_png(mut image: Image) -> Result<Image, Error> {
             Err(e) => panic!("Failed to open image during PNG conversion: {:?}", e),
         };
 
-        match img.save(image.path.with_extension("png")) {
+        match img.save(path.with_extension("png")) {
             Ok(_) => "",
-            Err(e) => panic!("Could not convert {:?} to PNG: {:?}", image.path, e),
+            Err(e) => panic!("Could not convert {:?} to PNG: {:?}", path, e),
         };
 
-        fs::remove_file(&image.path)?;
-        image.path = image.path.with_extension("png");
+        fs::remove_file(path)?;
+        image.path = path.with_extension("png");
     } else {
-        panic!("Failed to convert provided image: {:?}", image.path);
+        panic!("Failed to convert provided image: {:?}", path);
     }
 
     Ok(image)
