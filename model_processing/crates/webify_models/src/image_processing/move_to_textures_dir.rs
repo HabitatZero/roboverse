@@ -2,6 +2,7 @@
 
 use std::{
     fs,
+    io::{Error, ErrorKind},
     path::{Path, PathBuf},
 };
 
@@ -12,7 +13,11 @@ pub fn move_to_textures_dir<'a>(
     mut image: Image,
     base_path: &Path,
 ) -> std::result::Result<Image, std::io::Error> {
-    let file_name = image.path.file_name().unwrap().to_str().unwrap();
+    let file_name = image
+        .path
+        .file_name()
+        .and_then(|f| f.to_str())
+        .ok_or(Error::new(ErrorKind::Other, "Path not provided, no work to do"))?;
     let textures_path: PathBuf = Path::new("materials").join("textures").join(file_name);
     let meshes_path: PathBuf = Path::new("meshes").join(file_name);
 
