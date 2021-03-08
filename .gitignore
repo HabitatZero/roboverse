@@ -9,12 +9,14 @@ build_*
 # Just IDE Things
 .vscode
 
+# Rust
+target
+
 # Etc
 *.*~
 *~
 *.orig
 *.swp
-http/client/assets
 node_modules
 http/client
 coverage

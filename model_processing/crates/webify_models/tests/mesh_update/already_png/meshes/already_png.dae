@@ -1,0 +1,5 @@
+<!-- This is not a valid DAE, just a test file -->
+
+<image id="Test_Diffuse_png">
+  <init_from>test_diffuse.png</init_from>
+</image>

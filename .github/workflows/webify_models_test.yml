@@ -1,0 +1,28 @@
+name: webify_models
+
+on: push
+# on:
+#   push:
+#     paths:
+#     - 'model_processing/crates/webify_models/**'
+
+defaults:
+  run:
+    shell: bash
+    working-directory: model_processing/crates/webify_models
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Stable with rustfmt and clippy
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+    - run: cargo test
