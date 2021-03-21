@@ -1,8 +1,7 @@
-
-declare global  {
-	interface ImportMeta {
-		hot:any;
-    }    
+declare global {
+  interface ImportMeta {
+    hot: any;
+  }
 }
 
 export default {};

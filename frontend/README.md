@@ -7,7 +7,7 @@ The goal with this template was to get the fullest, quickest, and most integrate
 - :heavy_check_mark: Chrome Debugging in VSCode: set a breakpoint, hit F5, your application is started and the breakpoint is hit.
 - :heavy_check_mark: Snowpack V2 for development
 - :heavy_check_mark: Svelte 3 + TypeScript + SCSS
-- :heavy_check_mark: Easily importable SCSS variables setup 
+- :heavy_check_mark: Easily importable SCSS variables setup
 - :heavy_check_mark: Jest + TypeScript for testing
 - :heavy_check_mark: Prettier + Svelte configured
 - :heavy_check_mark: Production bundling with Rollup
@@ -20,8 +20,6 @@ npx degit processtract/svelte-ts-snowpack-vscode
 npm install
 npm run dev (or select the 'Debug Application' configuration in VSCode and hit F5)
 ```
-
-
 
 ## Reference Projects
 

@@ -1,32 +1,29 @@
-import { writable, derived, readable } from 'svelte/store'
-import type { Writable, Readable } from 'svelte/store';
+import { writable, derived, readable } from "svelte/store";
+import type { Writable, Readable } from "svelte/store";
 
 export abstract class BaseComponent<PropertyType> {
+  properties: Writable<PropertyType>;
 
-    properties: Writable<PropertyType>;
+  constructor(
+    private propsGetter: () => PropertyType,
+    onMountCallback: (fn: any) => void,
+    beforeUpdateCallback: (fn: any) => void
+  ) {
+    this.properties = writable(propsGetter());
 
-    constructor(
-        private propsGetter: () => PropertyType,
-        onMountCallback: (fn: any) => void,
-        beforeUpdateCallback: (fn: any) => void
-    ) {
-        this.properties = writable(propsGetter());
-                
-        onMountCallback(() => this.onMount())    
-        beforeUpdateCallback(() => this.beforeUpdate())    
+    onMountCallback(() => this.onMount());
+    beforeUpdateCallback(() => this.beforeUpdate());
 
-        this.updateProperties();
-    }
+    this.updateProperties();
+  }
 
-    protected onMount() {
-        
-    }
+  protected onMount() {}
 
-    protected beforeUpdate() {
-        this.updateProperties();
-    }
+  protected beforeUpdate() {
+    this.updateProperties();
+  }
 
-    protected updateProperties() {
-        this.properties.set(this.propsGetter());
-    }
+  protected updateProperties() {
+    this.properties.set(this.propsGetter());
+  }
 }
