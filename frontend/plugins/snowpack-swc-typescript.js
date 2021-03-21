@@ -2,7 +2,7 @@ const swc = require("@swc/core");
 const path = require("path");
 const fs = require("fs");
 
-module.exports = function (snowpackConfig, pluginOptions) {
+module.exports = function () {
   return {
     name: "tsmap",
     resolve: {
