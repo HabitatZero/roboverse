@@ -41,7 +41,7 @@ module.exports = function () {
       const output = {
         ".js": {
           code: result.code,
-          map: map,
+          map,
         },
         ".ts": {
           code: codeToCompile,
