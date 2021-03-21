@@ -1,4 +1,10 @@
-<div data-role="content" id="container">
+<style lang="scss">
+  #content {
+    display: none;
+  }
+</style>
+
+<div data-role="content" id="content">
   <div data-role="popup" id="notification-popup" data-history="false"></div>
   <div data-role="popup" data-corners="false" id="model-popup" data-history="false">
     <ul data-role="listview">

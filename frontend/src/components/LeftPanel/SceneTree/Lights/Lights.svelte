@@ -1,5 +1,5 @@
 <div id="expand-LIGHTS" class="clickable expandableTree" ng-click="expandTree('LIGHTS')">
-  <img src="style/images/play.png" />
+  <img src="./images/play.png" />
   Lights
 </div>
 <div id="expandable-LIGHTS" class="expandedContent">

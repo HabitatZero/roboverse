@@ -4,7 +4,13 @@
   // import SceneTree from './SceneTree/SceneTree.svelte';
 </script>
 
-<div id="leftPanel" class="gzGUI">
+<style lang="scss">
+  #left-panel {
+    display: block;
+  }
+</style>
+
+<div id="left-panel">
   <MainMenu />
   <InsertMenu />
   <!-- <SceneTree /> -->
