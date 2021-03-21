@@ -31,11 +31,9 @@ module.exports = function () {
       if (result.map) {
         map = JSON.parse(result.map);
         map.sources[0] =
-          "sources://" +
-          path.relative(process.cwd(), filePath).replace(/\\/g, "/");
+          `sources://${path.relative(process.cwd(), filePath).replace(/\\/g, "/")}`;
         map.file =
-          "sources://" +
-          path.relative(process.cwd(), filePath).replace(/\\/g, "/");
+          `sources://${path.relative(process.cwd(), filePath).replace(/\\/g, "/")}`;
       }
 
       const output = {

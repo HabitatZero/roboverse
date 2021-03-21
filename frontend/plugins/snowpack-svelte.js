@@ -15,11 +15,9 @@ module.exports = function plugin(snowpackConfig, pluginOptions = {}) {
       });
 
       result[".js"].map.sources[0] =
-        "sources://" +
-        path.relative(process.cwd(), filePath).replace(/\\/g, "/");
+        `sources://${path.relative(process.cwd(), filePath).replace(/\\/g, "/")}`;
       result[".js"].map.file =
-        "sources://" +
-        path.relative(process.cwd(), filePath).replace(/\\/g, "/");
+        `sources://${path.relative(process.cwd(), filePath).replace(/\\/g, "/")}`;
 
       return result;
     },
