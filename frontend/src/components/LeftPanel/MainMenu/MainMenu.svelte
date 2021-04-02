@@ -4,15 +4,23 @@
   import Options from './Options/Options.svelte';
 </script>
 
-<div id="mainMenu" class="leftPanels ui-overlay-shadow">
-  <div class="clickable panelTitle closePanels">
-    <h3>Menu</h3>
-  </div>
-  <div class="panelContent">
-    <ul>
-      <Edit />
-      <View />
-      <Options />
-    </ul>
-  </div>
+<style lang="scss">
+  @import "variables";
+
+  .main-menu {
+    display: block;
+  }
+
+  h2 {
+    padding: $space/2;
+    margin: 0;
+    font-size: $baseline*1.25;
+  }
+</style>
+
+<div class="main-menu">
+  <h2>Menu</h2>
+  <Edit />
+  <View />
+  <Options />
 </div>

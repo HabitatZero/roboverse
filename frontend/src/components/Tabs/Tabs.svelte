@@ -17,7 +17,13 @@
 </style>
 
 <div class="tabs">
-  <a id="mainMenuTab" class="gzGUI tab clickable"><img src="./images/bars.png" title="Menu" /></a>
-  <a id="treeMenuTab" class="gzGUI tab clickable"><img src="./images/tree.png" title="Scene Tree" /></a>
-  <a id="insertMenuTab" class="gzGUI tab clickable"><img src="./images/insert.png" title="Insert" /></a>
+  <a id="mainMenuTab" class="gzGUI tab clickable">
+    <img src="./images/bars.png" alt="Menu" title="Menu" />
+  </a>
+  <a id="treeMenuTab" class="gzGUI tab clickable">
+    <img src="./images/tree.png" alt="Scene Tree" title="Scene Tree" />
+  </a>
+  <a id="insertMenuTab" class="gzGUI tab clickable">
+    <img src="./images/insert.png" alt="Insert" title="Insert" />
+  </a>
 </div>

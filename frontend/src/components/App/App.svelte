@@ -14,6 +14,9 @@
     background-color: $base-color;
     color: $text-color;
     font-family: 'Roboto', sans-serif;
+    font-size: $baseline;
+    padding: 0;
+    margin: 0;
   }
 
   #roboverse {

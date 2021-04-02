@@ -5,8 +5,12 @@
 </script>
 
 <style lang="scss">
+  @import "variables";
+
   #left-panel {
     display: block;
+    background-color: $primary-5;
+    height: 100vh;
   }
 </style>
 
