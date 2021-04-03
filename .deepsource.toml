@@ -20,11 +20,3 @@ enabled = true
   ]
   plugins = ["angularjs"]
   style_guide = "airbnb"
-
-[[transformers]]
-name = "prettier"
-enabled = true
-
-[[transformers]]
-name = "standardjs"
-enabled = true
